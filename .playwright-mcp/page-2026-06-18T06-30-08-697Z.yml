@@ -1,0 +1,57 @@
+- generic [ref=e200]:
+  - generic [ref=e201]:
+    - img [ref=e202]
+    - generic [ref=e213]: CareerSwipe
+  - generic [ref=e214]:
+    - heading "How It Works" [level=2] [ref=e215]
+    - paragraph [ref=e216]: Swipe through real careers. We'll calculate your unique interest profile.
+  - button "How to use the app" [ref=e218] [cursor=pointer]:
+    - img [ref=e219]
+    - text: How to use the app
+  - generic [ref=e221]:
+    - generic [ref=e222]:
+      - img [ref=e223]
+      - generic [ref=e226]:
+        - paragraph [ref=e227]: Swipe Right = Interested
+        - paragraph [ref=e228]: If the career sounds appealing to you
+    - generic [ref=e229]:
+      - img [ref=e230]
+      - generic [ref=e233]:
+        - paragraph [ref=e234]: Swipe Left = Not For Me
+        - paragraph [ref=e235]: If it doesn't spark your interest
+    - generic [ref=e236]:
+      - img [ref=e238]
+      - generic [ref=e242]:
+        - paragraph [ref=e243]: Tap to Learn More
+        - paragraph [ref=e244]: Flip any card to see job details from O*NET
+  - generic [ref=e245]:
+    - generic [ref=e246]:
+      - paragraph [ref=e247]: "60"
+      - paragraph [ref=e248]: Careers
+    - generic [ref=e250]:
+      - paragraph [ref=e251]: "6"
+      - paragraph [ref=e252]: Categories
+    - generic [ref=e254]:
+      - paragraph [ref=e255]: "1"
+      - paragraph [ref=e256]: Unique You
+  - button "Read cards aloud & sound" [pressed] [ref=e258] [cursor=pointer]:
+    - generic [ref=e259]:
+      - img [ref=e261]
+      - paragraph [ref=e265]: Read cards aloud & sound
+  - generic [ref=e268]:
+    - paragraph [ref=e269]: Pick your card style
+    - paragraph [ref=e270]: You can change this anytime while swiping
+    - generic [ref=e271]:
+      - button "Classic" [ref=e272] [cursor=pointer]
+      - button "Blocky World" [ref=e273] [cursor=pointer]
+      - button "Critters" [pressed] [ref=e274] [cursor=pointer]
+      - button "Pixel Pals" [ref=e275] [cursor=pointer]
+      - button "Career Heroes" [ref=e276] [cursor=pointer]
+    - paragraph [ref=e277]: A peek at this style
+    - generic [ref=e278]:
+      - img "Chef" [ref=e280]
+      - img "Firefighter" [ref=e282]
+      - img "Pilot" [ref=e284]
+  - generic [ref=e285]:
+    - button "Let's Go!" [ref=e286] [cursor=pointer]
+    - paragraph [ref=e287]: You can use keyboard arrows on desktop

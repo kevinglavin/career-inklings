@@ -1,0 +1,57 @@
+- generic [ref=e88]:
+  - generic [ref=e89]:
+    - img [ref=e90]
+    - generic [ref=e101]: Inklings
+  - generic [ref=e102]:
+    - heading "Cómo Funciona" [level=2] [ref=e103]
+    - paragraph [ref=e104]: Desliza por carreras reales. Calcularemos tu perfil de intereses único.
+  - button "Cómo usar la app" [ref=e106] [cursor=pointer]:
+    - img [ref=e107]
+    - text: Cómo usar la app
+  - generic [ref=e109]:
+    - generic [ref=e110]:
+      - img [ref=e111]
+      - generic [ref=e114]:
+        - paragraph [ref=e115]: Deslizar Derecha = Me Interesa
+        - paragraph [ref=e116]: Si la carrera te parece atractiva
+    - generic [ref=e117]:
+      - img [ref=e118]
+      - generic [ref=e121]:
+        - paragraph [ref=e122]: Deslizar Izquierda = No es para mí
+        - paragraph [ref=e123]: Si no despierta tu interés
+    - generic [ref=e124]:
+      - img [ref=e126]
+      - generic [ref=e130]:
+        - paragraph [ref=e131]: Toca para Saber Más
+        - paragraph [ref=e132]: Voltea cualquier tarjeta para ver detalles de O*NET
+  - generic [ref=e133]:
+    - generic [ref=e134]:
+      - paragraph [ref=e135]: "60"
+      - paragraph [ref=e136]: Carreras
+    - generic [ref=e138]:
+      - paragraph [ref=e139]: "6"
+      - paragraph [ref=e140]: Categorías
+    - generic [ref=e142]:
+      - paragraph [ref=e143]: "1"
+      - paragraph [ref=e144]: Tú, Único
+  - button "Leer en voz alta y sonido" [pressed] [ref=e146] [cursor=pointer]:
+    - generic [ref=e147]:
+      - img [ref=e149]
+      - paragraph [ref=e153]: Leer en voz alta y sonido
+  - generic [ref=e156]:
+    - paragraph [ref=e157]: Elige tu estilo de tarjeta
+    - paragraph [ref=e158]: Puedes cambiarlo en cualquier momento
+    - generic [ref=e159]:
+      - button "Classic" [pressed] [ref=e160] [cursor=pointer]
+      - button "Blocky World" [ref=e161] [cursor=pointer]
+      - button "Critters" [ref=e162] [cursor=pointer]
+      - button "Pixel Pals" [ref=e163] [cursor=pointer]
+      - button "Career Heroes" [ref=e164] [cursor=pointer]
+    - paragraph [ref=e165]: Un vistazo a este estilo
+    - generic [ref=e166]:
+      - img "Chef" [ref=e168]
+      - img "Firefighter" [ref=e170]
+      - img "Pilot" [ref=e172]
+  - generic [ref=e173]:
+    - button "¡Vamos!" [ref=e174] [cursor=pointer]
+    - paragraph [ref=e175]: Puedes usar las flechas del teclado en computadora

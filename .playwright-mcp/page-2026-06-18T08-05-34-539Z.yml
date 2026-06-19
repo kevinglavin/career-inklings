@@ -1,0 +1,74 @@
+- generic [ref=e17]:
+  - generic [ref=e18]:
+    - generic [ref=e19]:
+      - button "Salir al inicio" [ref=e20] [cursor=pointer]:
+        - img [ref=e21]
+      - img [ref=e24]
+      - generic [ref=e35]: Inklings
+    - generic [ref=e36]:
+      - button "Silenciar sonidos" [ref=e37] [cursor=pointer]:
+        - img [ref=e38]
+      - button "Deshacer el último deslizamiento" [disabled] [ref=e42]:
+        - img [ref=e43]
+  - generic [ref=e47]:
+    - generic [ref=e48]: 0 de 60
+    - generic [ref=e49]: 0%
+  - generic [ref=e53]:
+    - generic [ref=e54] [cursor=pointer]:
+      - generic:
+        - img
+      - generic:
+        - img
+      - generic [ref=e56]:
+        - img "Químico/a"
+      - generic [ref=e58]:
+        - heading "Químico/a" [level=2] [ref=e59]
+        - paragraph [ref=e60]: Realiza investigaciones y experimentos para desarrollar nuevos productos y procesos.
+        - button "Leer esta tarjeta en voz alta" [ref=e61]:
+          - img [ref=e62]
+        - button "Ver detalles" [ref=e66]:
+          - img [ref=e67]
+    - generic [ref=e69]:
+      - generic [ref=e70]:
+        - generic [ref=e71]:
+          - heading "Químico/a" [level=3] [ref=e72]
+          - generic [ref=e73]: Investigador
+        - button [ref=e74] [cursor=pointer]:
+          - img [ref=e75]
+      - generic [ref=e78]:
+        - paragraph [ref=e79]: Realiza investigaciones y experimentos para desarrollar nuevos productos y procesos.
+        - generic [ref=e80]:
+          - paragraph [ref=e81]: Datos obtenidos de O*NET OnLine
+          - link "Ver el informe completo en O*NET" [ref=e82] [cursor=pointer]:
+            - /url: https://www.onetonline.org/link/summary/19-2031.00
+            - text: Ver el informe completo en O*NET
+            - img [ref=e83]
+        - generic [ref=e87]:
+          - generic [ref=e88]:
+            - img [ref=e89]
+            - heading "Tareas principales" [level=4] [ref=e92]
+          - list [ref=e93]:
+            - listitem [ref=e94]: Analizar sustancias para determinar su composición
+            - listitem [ref=e96]: Desarrollar nuevos productos y procesos químicos
+            - listitem [ref=e98]: Realizar pruebas y control de calidad de los materiales
+            - listitem [ref=e100]: Preparar informes y presentar los resultados de las investigaciones
+        - generic [ref=e102]:
+          - generic [ref=e103]:
+            - img [ref=e104]
+            - heading "Principales actividades laborales" [level=4] [ref=e106]
+          - generic [ref=e107]:
+            - generic [ref=e108]:
+              - generic [ref=e109]: Analizar datos
+              - generic [ref=e110]: Interpretar los resultados de pruebas químicas y datos experimentales
+            - generic [ref=e111]:
+              - generic [ref=e112]: Procesar información
+              - generic [ref=e113]: Usar métodos científicos para resolver problemas químicos
+            - generic [ref=e114]:
+              - generic [ref=e115]: Documentar información
+              - generic [ref=e116]: Registrar resultados de pruebas y redactar informes técnicos
+      - button "Volver a deslizar" [active] [ref=e119] [cursor=pointer]
+  - generic [ref=e122]:
+    - button "No me gusta" [ref=e123] [cursor=pointer]:
+      - img [ref=e124]
+    - button "Me gusta" [ref=e126] [cursor=pointer]:
+      - img [ref=e127]

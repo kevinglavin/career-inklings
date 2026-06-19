@@ -1,0 +1,414 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inklings — Interest Builder Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Georgia&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#44A2B9; --red:#CF3327; --deep:#00384D; --orange:#FF6C37;
+    --teal:#44797B; --gold:#FFB548; --char:#1D252C;
+    --ink:#27313a; --muted:#7c8893; --line:#e9edf0; --soft:#f6f8f9;
+    --sans:'Poppins',system-ui,sans-serif; --serif:Georgia,serif; --mono:ui-monospace,Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#dfe3e6;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .doc{display:flex;flex-direction:column;align-items:center;gap:26px;padding:30px 16px 70px}
+  .page{width:794px;max-width:100%;min-height:1123px;background:#fff;border-radius:5px;box-shadow:0 16px 46px rgba(20,30,38,.18);display:flex;flex-direction:column}
+  a{color:inherit}
+  .smallcap{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:600;color:var(--muted)}
+  .reveal{opacity:0;animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.93)}to{opacity:1;transform:none}}
+
+  /* ---------- COVER ---------- */
+  .cover{background:#fdfbf7;position:relative;justify-content:center}
+  .cover .leaf{position:absolute;opacity:.5}
+  .cover .leaf.tl{top:-10px;left:-14px;transform:rotate(8deg)}
+  .cover .leaf.br{bottom:-18px;right:-10px;transform:rotate(190deg)}
+  .cover .inner{margin:auto;text-align:center;padding:40px}
+  .cover .ey{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--teal);font-weight:600}
+  .cover .title{font-size:78px;font-weight:800;color:var(--deep);margin:14px 0 0;letter-spacing:-.01em;line-height:1}
+  .cover .sub{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--orange);margin-top:8px}
+  .cover .rule{width:46px;height:2px;background:var(--deep);margin:30px auto}
+  .cover .for{font-size:14px;color:#6b6253;letter-spacing:.02em}
+  .cover .for b{color:var(--deep);font-weight:600}
+  .cover .lett{display:flex;gap:9px;justify-content:center;margin-top:18px}
+  .cover .lett span{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:17px}
+  .cover .by{position:absolute;bottom:30px;left:0;right:0;text-align:center;font-size:11.5px;color:var(--muted)}
+  .cover .by a{color:var(--orange);text-decoration:none;font-weight:600}
+
+  .brandbar{height:5px;background:linear-gradient(90deg,var(--teal),var(--deep),var(--blue),var(--gold),var(--orange),var(--red))}
+  .mast{display:flex;justify-content:space-between;align-items:center;padding:24px 48px 0}
+  .wm{display:flex;align-items:center;gap:11px;text-decoration:none}
+  .wm .nm{font-weight:700;font-size:18px;color:var(--deep)}
+  .wm .nm small{display:block;font-weight:500;font-size:10.5px;color:var(--muted);letter-spacing:.14em;text-transform:uppercase;margin-top:1px}
+  .mast .who{text-align:right;font-size:11px;color:var(--muted);line-height:1.7}
+  .mast .who b{color:var(--ink);font-weight:600}
+
+  .hero{display:grid;grid-template-columns:1fr 1fr;gap:30px;padding:22px 48px 6px;align-items:center}
+  .clab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin-bottom:10px}
+  .codegrid{display:flex;gap:12px}
+  .citem{display:flex;flex-direction:column;align-items:center;gap:8px;text-decoration:none}
+  .citem .l{width:84px;height:88px;border-radius:16px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:46px;box-shadow:0 7px 15px rgba(0,0,0,.13);position:relative;transition:transform .18s ease,box-shadow .18s ease;animation:pop .5s backwards}
+  .citem:hover .l{transform:translateY(-5px) scale(1.02);box-shadow:0 14px 26px rgba(0,0,0,.2)}
+  .citem:active .l{transform:translateY(-1px) scale(.99)}
+  .citem .l .go{position:absolute;top:8px;right:10px;font-size:12px;opacity:.8}
+  .citem .word{font-size:12.5px;font-weight:600;color:var(--deep)}
+  .lede{font-size:13.5px;line-height:1.7;color:#3c4750;margin-top:16px}
+  .lede b{font-weight:600;color:var(--deep)}
+  .radarbox{background:var(--soft);border:1px solid var(--line);border-radius:14px;padding:12px 12px 10px;text-align:center;position:relative}
+  .radarbox .slot svg .hit{cursor:pointer}
+  .radarbox .slot svg .dot{transition:r .15s ease}
+  .radarbox .cap{font-size:11px;color:var(--muted);line-height:1.5;margin:4px 6px 0}
+
+  .panel{padding:16px 48px}
+  .panel h3{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 12px}
+
+  .bars{display:flex;flex-direction:column;gap:9px}
+  .brow{display:grid;grid-template-columns:118px 64px 1fr 46px;align-items:center;gap:10px;font-size:13px}
+  .brow .lab{color:#3c4750;font-weight:500}
+  .brow .raw{font-family:var(--mono);font-size:12px;color:#3c4750}
+  .brow .raw b{font-size:14px;color:var(--deep)}
+  .track{height:14px;background:#eef1f3;border-radius:7px;overflow:hidden}
+  .fill{height:100%;border-radius:7px;animation:grow 1s cubic-bezier(.2,.7,.2,1) backwards}
+  @keyframes grow{from{width:0 !important;opacity:.4}}
+  .brow .val{font-family:var(--mono);font-size:12px;text-align:right;color:#6c7882}
+  .legend{font-size:11.5px;color:var(--muted);margin-top:11px;line-height:1.55}
+  .legend b{color:var(--ink);font-weight:600}
+
+  .reads{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .read{background:var(--soft);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  .read h4{margin:0 0 5px;font-size:13px;color:var(--deep);font-weight:700}
+  .read p{margin:0;font-size:12.2px;line-height:1.6;color:#566069}
+
+  .setnote{font-size:11.5px;color:var(--muted);margin:0 0 10px;font-style:italic}
+  .chips{display:flex;flex-wrap:wrap;gap:8px}
+  .chip{display:inline-flex;align-items:center;gap:8px;border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;color:var(--ink);font-weight:500;cursor:pointer;background:#fff;font-family:inherit;transition:transform .15s ease,border-color .15s ease}
+  .chip:hover{transform:translateY(-2px);border-color:var(--blue)}
+  .chip:active{transform:scale(.98)}
+  .chip .d{width:8px;height:8px;border-radius:50%;flex:none}
+  .chip .plus{color:var(--muted);font-weight:700}
+
+  .explore{display:flex;flex-wrap:wrap;gap:10px}
+  .xlink{display:inline-flex;align-items:center;gap:7px;background:#fff;border:1.5px solid var(--line);border-radius:999px;padding:8px 14px;font-size:12.5px;font-weight:500;text-decoration:none;color:var(--deep);transition:border-color .15s}
+  .xlink:hover{border-color:var(--blue)}
+  .xlink .sw{width:9px;height:9px;border-radius:50%}
+
+  .pagefoot{margin-top:auto;padding:16px 48px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:11px;color:var(--muted)}
+  .pagefoot a{color:var(--deep);font-weight:600;text-decoration:none}
+  .pagefoot .cyw a{color:var(--orange)}
+
+  .p2head{padding:30px 48px 0}
+  .p2head h2{font-size:23px;color:var(--deep);margin:6px 0 4px;font-weight:700}
+  .p2head p{font-size:13px;line-height:1.7;color:#3c4750;max-width:64ch;margin:8px 0 0}
+  .types{padding:18px 48px 6px;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .type{border:1px solid var(--line);border-radius:11px;padding:13px 15px}
+  .type.lead{background:var(--soft);border-color:transparent}
+  .type .h{display:flex;align-items:center;gap:9px;margin-bottom:5px}
+  .type .h .sw{width:13px;height:13px;border-radius:4px}
+  .type .h b{font-size:13.5px;color:var(--deep)}
+  .type .h .badge{margin-left:auto;font-size:9.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--orange)}
+  .type p{font-size:11.8px;line-height:1.55;color:#566069;margin:0}
+  .concept{padding:14px 48px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
+  .concept h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 8px}
+  .concept p{font-size:12.5px;line-height:1.65;color:#3c4750;margin:0}
+  .orders{font-family:var(--mono);font-size:12px;color:var(--deep);background:var(--soft);border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-top:8px;letter-spacing:.04em}
+  .disc{margin:6px 48px 0;background:#fff7ef;border:1px solid #ffd9bd;border-left:4px solid var(--orange);border-radius:9px;padding:14px 16px}
+  .disc b{color:var(--deep);font-size:12.5px}
+  .disc p{font-size:11.8px;line-height:1.6;color:#5a4634;margin:5px 0 0}
+  .refs{padding:14px 48px 4px}
+  .refs h4{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-weight:600;margin:0 0 7px}
+  .refs ol{margin:0;padding-left:18px}
+  .refs li{font-size:10.8px;line-height:1.5;color:#6c7882;margin-bottom:3px}
+
+  .tip{position:fixed;z-index:60;background:var(--deep);color:#fff;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;pointer-events:none;opacity:0;transition:opacity .12s;white-space:nowrap}
+  .modal{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,30,38,.45)}
+  .modal.open{display:flex}
+  .sheet{background:#fff;border-radius:18px;max-width:430px;width:100%;padding:24px 26px;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop .25s}
+  .sheet .top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+  .sheet .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:20px;flex:none}
+  .sheet h3{margin:0;font-size:18px;color:var(--deep)}
+  .sheet .ty{font-size:11.5px;color:var(--muted);font-weight:500}
+  .sheet p{font-size:13.5px;line-height:1.6;color:#4f5660;margin:0 0 16px}
+  .sheet .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .sheet .open{background:var(--orange);color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:9px 16px;border-radius:999px}
+  .sheet .x{background:none;border:1px solid var(--line);color:var(--muted);font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;font-family:inherit}
+
+  @media(max-width:760px){
+    .hero,.reads,.types,.concept{grid-template-columns:1fr}
+    .mast,.hero,.panel,.p2head,.types,.concept,.refs,.cover .inner{padding-left:24px;padding-right:24px}
+    .disc{margin-left:24px;margin-right:24px}.pagefoot{padding-left:24px;padding-right:24px}
+    .page{min-height:0}.cover .title{font-size:56px}
+  }
+  @media(prefers-reduced-motion:reduce){.reveal,.citem .l,.fill,.sheet{animation:none;opacity:1}.citem:hover .l,.chip:hover{transform:none}}
+  @media print{
+    body{background:#fff}.doc{gap:0;padding:0}
+    .page{box-shadow:none;border-radius:0;page-break-after:always;min-height:100vh}
+    .page:last-child{page-break-after:auto}
+    .reveal,.citem .l,.fill{animation:none;opacity:1}
+    .tip,.modal,.chip .plus,.citem .l .go,.cardhint{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <!-- ============ COVER ============ -->
+  <section class="page cover">
+    <svg class="leaf tl" width="220" height="220" viewBox="0 0 200 200" aria-hidden="true">
+      <g fill="none" stroke="#44797B" stroke-width="2.4" stroke-linecap="round">
+        <path d="M30 18 C70 60 95 110 110 180"/>
+        <path d="M52 52 C40 40 28 44 22 58 C40 66 52 64 58 56" fill="#9bbfb6" fill-opacity=".5" stroke-opacity=".7"/>
+        <path d="M70 84 C58 70 44 74 38 88 C58 98 70 94 76 88" fill="#9bbfb6" fill-opacity=".5" stroke-opacity=".7"/>
+        <path d="M86 120 C74 106 60 110 54 124 C74 134 86 130 92 124" fill="#9bbfb6" fill-opacity=".5" stroke-opacity=".7"/>
+        <path d="M58 50 C70 36 86 36 96 46 C82 58 68 58 60 52" fill="#cfe0d6" fill-opacity=".55" stroke-opacity=".7"/>
+        <path d="M76 86 C88 72 104 72 114 82 C100 94 86 94 78 88" fill="#cfe0d6" fill-opacity=".55" stroke-opacity=".7"/>
+      </g>
+    </svg>
+    <svg class="leaf br" width="200" height="200" viewBox="0 0 200 200" aria-hidden="true">
+      <g fill="none" stroke="#FFB548" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8">
+        <path d="M30 18 C70 60 95 110 110 180"/>
+        <path d="M52 52 C40 40 28 44 22 58 C40 66 52 64 58 56" fill="#ffe0ad" fill-opacity=".5"/>
+        <path d="M70 84 C58 70 44 74 38 88 C58 98 70 94 76 88" fill="#ffe0ad" fill-opacity=".5"/>
+        <path d="M86 120 C74 106 60 110 54 124 C74 134 86 130 92 124" fill="#ffe0ad" fill-opacity=".5"/>
+      </g>
+    </svg>
+    <div class="inner">
+      <div class="ey">Interest Builder Report</div>
+      <div class="title">Inklings</div>
+      <div class="sub">Follow your inklings</div>
+      <div class="rule"></div>
+      <div class="for">Prepared for <b>Career Explorer</b></div>
+      <div class="lett"><span style="background:#FF6C37">A</span><span style="background:#FFB548">S</span><span style="background:#00384D">I</span></div>
+    </div>
+    <div class="by">by <a href="https://createyourwhy.com" target="_blank" rel="noopener">Create Your Why, LLC</a></div>
+  </section>
+
+  <!-- ============ RESULTS ============ -->
+  <section class="page">
+    <div class="brandbar"></div>
+    <header class="mast">
+      <a class="wm" href="https://inklings.createyourwhy.com" target="_blank" rel="noopener">
+        <svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="18.5" fill="none" stroke="#00384D" stroke-width="2"/>
+          <circle cx="20" cy="20" r="2.4" fill="#00384D"/>
+          <polygon points="20,6 24,20 20,17 16,20" fill="#FF6C37"/>
+          <polygon points="20,34 16,20 20,23 24,20" fill="#44A2B9"/>
+        </svg>
+        <div class="nm">Inklings<small>Interest Builder</small></div>
+      </a>
+      <div class="who">Prepared for <b>Career Explorer</b><br>Your self-reported interests · 14 Jun 2026</div>
+    </header>
+
+    <div class="hero">
+      <div class="reveal" style="animation-delay:.05s">
+        <div class="clab">Your top three interest types</div>
+        <div class="codegrid" id="codegrid"></div>
+        <p class="lede">Your interests are strongest where <b>creativity, people, and ideas</b> meet. That points toward work where you make something original, stay close to others, and keep learning. You can read these three letters in <b>any order</b>.</p>
+        <p class="setnote cardhint" style="margin-top:10px">Click a letter to see careers for that type on O*NET.</p>
+      </div>
+      <div class="radarbox reveal" style="animation-delay:.18s">
+        <div class="slot" data-size="330"></div>
+        <div class="cap">The further a point sits from the center, the more you liked that type. Click a point to explore it.</div>
+      </div>
+    </div>
+
+    <div class="panel reveal" style="animation-delay:.1s">
+      <h3>Your scores</h3>
+      <div class="bars" id="bars"></div>
+      <p class="legend"><b>Likes</b> is how many careers of that type you swiped right on. <b>%</b> is that type's share of all your likes.</p>
+    </div>
+
+    <div class="panel reveal" style="animation-delay:.1s">
+      <h3>What your scores show</h3>
+      <div class="reads" id="reads"></div>
+    </div>
+
+    <div class="panel reveal" style="animation-delay:.1s">
+      <h3>Careers you liked</h3>
+      <p class="setnote">In no particular order. Click any one to learn what they do.</p>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="panel reveal" style="animation-delay:.1s">
+      <h3>Explore more careers</h3>
+      <div class="explore">
+        <a class="xlink" href="https://www.onetonline.org/explore/interests/Artistic/" target="_blank" rel="noopener"><span class="sw" style="background:#FF6C37"></span>O*NET · Artistic</a>
+        <a class="xlink" href="https://www.onetonline.org/explore/interests/Social/" target="_blank" rel="noopener"><span class="sw" style="background:#FFB548"></span>O*NET · Social</a>
+        <a class="xlink" href="https://www.onetonline.org/explore/interests/Investigative/" target="_blank" rel="noopener"><span class="sw" style="background:#00384D"></span>O*NET · Investigative</a>
+        <a class="xlink" href="https://www.careeronestop.org/" target="_blank" rel="noopener"><span class="sw" style="background:#44797B"></span>CareerOneStop</a>
+      </div>
+    </div>
+
+    <div class="pagefoot">
+      <span>Based on Holland's RIASEC model · O*NET occupation data · Page 1 of 2</span>
+      <span class="cyw">© <a href="https://createyourwhy.com" target="_blank" rel="noopener">Create Your Why, LLC</a></span>
+    </div>
+  </section>
+
+  <!-- ============ UNDERSTANDING ============ -->
+  <section class="page">
+    <div class="brandbar"></div>
+    <div class="p2head">
+      <div class="smallcap">How to read your results</div>
+      <h2>Understanding your results</h2>
+      <p>John Holland's model sorts people and jobs into six interest types. People tend to be happiest when their work matches their type. This exercise reflects the interests you reported about yourself, so use it as a place to start exploring, not a final answer.</p>
+    </div>
+
+    <div class="types" id="types"></div>
+
+    <div class="concept">
+      <div>
+        <h4>The hexagon</h4>
+        <p>The six types are arranged in a ring: R, I, A, S, E, C. Types next to each other are alike. Types across from each other are most different. Your top two, Artistic and Social, are neighbors, which is why they fit well together.</p>
+      </div>
+      <div>
+        <h4>Read your code in any order</h4>
+        <p>Look at careers that match any ordering of your three letters, not only the one shown. All six combinations are worth a look:</p>
+        <div class="orders">ASI · AIS · SAI · SIA · IAS · ISA</div>
+      </div>
+    </div>
+
+    <div class="disc">
+      <b>Please note</b>
+      <p>Inklings is an informal interest-sorting exercise based on Holland's RIASEC model. It is not an empirically validated assessment and does not give a clinical or diagnostic result. For a validated measure with normed scores, consider Holland's Self-Directed Search. We encourage you to talk through your results with a career practitioner, and to change your code if a different order fits you better.</p>
+    </div>
+
+    <div class="refs">
+      <h4>Selected references</h4>
+      <ol>
+        <li>Bolles, R. N. (2022). <em>What color is your parachute?</em> Ten Speed Press.</li>
+        <li>Holland, J. L. (1997). <em>Making vocational choices</em> (3rd ed.). Psychological Assessment Resources.</li>
+        <li>Holland, J. L., &amp; Messer, M. A. (2013). <em>Self-Directed Search</em> (5th ed.). PAR.</li>
+        <li>Nauta, M. M. (2010). The development, evolution, and status of Holland's theory of vocational personalities. <em>Journal of Counseling Psychology, 57</em>(1), 11-22.</li>
+      </ol>
+    </div>
+
+    <div class="pagefoot">
+      <span>Inklings · Interest Builder Report · Page 2 of 2</span>
+      <span class="cyw">© <a href="https://createyourwhy.com" target="_blank" rel="noopener">Create Your Why, LLC</a></span>
+    </div>
+  </section>
+</div>
+
+<div class="tip" id="tip"></div>
+<div class="modal" id="modal">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="top"><div class="ic" id="mIc"></div><div><h3 id="mTitle"></h3><div class="ty" id="mTy"></div></div></div>
+    <p id="mDesc"></p>
+    <div class="row">
+      <a class="open" id="mLink" href="#" target="_blank" rel="noopener">View on O*NET</a>
+      <button class="x" id="mClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TYPES=[
+ {k:'R',name:'Realistic',raw:5,c:'#44797B',onet:'Realistic',desc:'Prefers working with things over people. Strong mechanical, manual, and physical skills; enjoys the outdoors. Example roles: mechanic, electrician, engineer.'},
+ {k:'I',name:'Investigative',raw:9,c:'#00384D',onet:'Investigative',desc:'Prefers working with ideas. Strong analytical and scientific skills; enjoys deep thought and problem solving. Example roles: researcher, analyst, physician.'},
+ {k:'A',name:'Artistic',raw:12,c:'#FF6C37',onet:'Artistic',desc:'Prefers working with feeling and form. Strong creative and self-expressive skills; enjoys imagination and originality. Example roles: writer, designer, musician.'},
+ {k:'S',name:'Social',raw:10,c:'#FFB548',onet:'Social',desc:'Prefers working with and for people. Strong people and listening skills; enjoys close personal contact. Example roles: counselor, teacher, therapist.'},
+ {k:'E',name:'Enterprising',raw:8,c:'#CF3327',onet:'Enterprising',desc:'Prefers leading and persuading. Strong leadership and presenting skills; enjoys influencing others. Example roles: manager, salesperson, entrepreneur.'},
+ {k:'C',name:'Conventional',raw:7,c:'#44A2B9',onet:'Conventional',desc:'Prefers working with data over people. Strong organizing and number skills; enjoys planning and structure. Example roles: accountant, analyst, administrator.'},
+];
+const TOTAL=TYPES.reduce((a,t)=>a+t.raw,0);
+TYPES.forEach(t=>t.pct=+(t.raw/TOTAL*100).toFixed(1));
+const TOP3=['A','S','I'];
+const byk=k=>TYPES.find(t=>t.k===k);
+const onetURL=type=>`https://www.onetonline.org/explore/interests/${type}/`;
+const ANG=[0,60,120,180,240,300];
+
+function radar(size){
+  const max=Math.ceil(Math.max(...TYPES.map(t=>t.pct))/5)*5;
+  const pad=size*0.19,cx=size/2,cy=size/2,R=size/2-pad,rings=5,grid='rgba(0,56,77,.13)';
+  const pt=(d,r)=>{const t=d*Math.PI/180;return[cx+r*Math.sin(t),cy-r*Math.cos(t)];};
+  let g='';
+  for(let kk=1;kk<=rings;kk++){const rr=R*kk/rings;
+    g+=`<polygon points="${ANG.map(a=>pt(a,rr).map(n=>n.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${grid}" stroke-width="1" opacity="${kk<rings?.5:1}"/>`;}
+  ANG.forEach(a=>{const[x,y]=pt(a,R);g+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${grid}" stroke-width="1" opacity=".45"/>`;});
+  const dp=TYPES.map((t,i)=>pt(ANG[i],R*Math.min(t.pct,max)/max));
+  const poly=dp.map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ');
+  let hits='',labs='';
+  TYPES.forEach((t,i)=>{const[x,y]=dp[i];const top=TOP3.includes(t.k);
+    hits+=`<g class="hit" data-k="${t.k}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="13" fill="transparent"/>
+      <circle class="dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${top?5:3.4}" fill="${t.c}" stroke="#fff" stroke-width="1.5"><title>${t.name}: ${t.raw} likes (${t.pct}%)</title></circle></g>`;
+    const[lx,ly]=pt(ANG[i],R+pad*0.62);
+    labs+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-family="Poppins" font-size="${(size*0.046).toFixed(1)}" font-weight="${top?700:500}" fill="${top?t.c:'#7c8893'}">${t.k}</text>`;});
+  return `<svg viewBox="0 0 ${size} ${size}" width="100%" role="img" aria-label="Radar chart of interest scores, Artistic highest">${g}<polygon points="${poly}" fill="rgba(255,108,55,.16)" stroke="#FF6C37" stroke-width="2.6" stroke-linejoin="round"/>${hits}${labs}</svg>`;
+}
+document.querySelector('.slot').innerHTML=radar(330);
+
+/* clickable letter cards -> O*NET */
+document.getElementById('codegrid').innerHTML=TOP3.map((k,i)=>{
+  const t=byk(k);
+  return `<a class="citem" style="--d:${i}" href="${onetURL(t.onet)}" target="_blank" rel="noopener">
+    <div class="l" style="background:${t.c};animation-delay:${.1+i*.07}s">${t.k}<span class="go">↗</span></div>
+    <div class="word">${t.name}</div></a>`;}).join('');
+
+const sorted=[...TYPES].sort((a,b)=>b.pct-a.pct),mx=sorted[0].pct;
+document.getElementById('bars').innerHTML=sorted.map((t,i)=>{
+  const top=TOP3.includes(t.k);
+  return `<div class="brow"><span class="lab">${t.name}</span>
+    <span class="raw"><b>${t.raw}</b> likes</span>
+    <span class="track"><span class="fill" style="width:${(t.pct/mx*100).toFixed(0)}%;background:${t.c};opacity:${top?1:.45};animation-delay:${.15+i*.06}s"></span></span>
+    <span class="val">${t.pct}%</span></div>`;}).join('');
+
+const hi=sorted[0],lo=sorted[sorted.length-1];
+document.getElementById('reads').innerHTML=`
+  <div class="read"><h4>You have clear favorites</h4>
+    <p>You liked ${hi.raw} ${hi.name} careers and only ${lo.raw} ${lo.name} ones. That gap means you lean toward a few types rather than liking a bit of everything.</p></div>
+  <div class="read"><h4>Your top types fit together</h4>
+    <p>Your two strongest types, Artistic and Social, sit next to each other on Holland's hexagon. Neighboring types tend to show up together in the same kinds of careers.</p></div>`;
+
+/* liked occupations -> info modal (samples; production binds to occupation.description + onetCode) */
+const LIKED=[
+ {t:'Art Therapist',k:'A',d:'Art therapists use creative processes to help clients explore emotions, reduce anxiety, and improve wellbeing.'},
+ {t:'Mental Health Counselor',k:'S',d:'Mental health counselors support people through emotional and behavioral challenges and help them build coping strategies.'},
+ {t:'Speech-Language Pathologist',k:'S',d:'Speech-language pathologists assess and treat communication and swallowing difficulties across all ages.'},
+ {t:'Museum Curator',k:'A',d:'Curators research, acquire, and interpret collections, and design exhibitions for the public.'},
+ {t:'UX Researcher',k:'I',d:'UX researchers study how people use products and turn findings into design recommendations.'},
+ {t:'Music Teacher',k:'A',d:'Music teachers instruct students in performance, theory, and appreciation, in schools or private studios.'},
+ {t:'Graphic Designer',k:'A',d:'Graphic designers craft visual communication through typography, imagery, and layout for print and screen.'},
+ {t:'Recreation Therapist',k:'S',d:'Recreation therapists use activities such as arts, games, and outings to support recovery and quality of life.'},
+];
+document.getElementById('chips').innerHTML=LIKED.map((o,i)=>
+ `<button class="chip" data-i="${i}"><span class="d" style="background:${byk(o.k).c}"></span>${o.t}<span class="plus">+</span></button>`).join('');
+
+document.getElementById('types').innerHTML=TYPES.map(t=>{
+  const lead=TOP3.includes(t.k);
+  return `<div class="type${lead?' lead':''}"><div class="h"><span class="sw" style="background:${t.c}"></span><b>${t.name}</b>${lead?'<span class="badge">your code</span>':''}</div><p>${t.desc}</p></div>`;}).join('');
+
+/* interactions */
+const tip=document.getElementById('tip');
+document.querySelectorAll('.radarbox .hit').forEach(h=>{
+  const t=byk(h.dataset.k);
+  h.addEventListener('mouseenter',()=>{tip.textContent=`${t.name}: ${t.raw} likes (${t.pct}%)`;tip.style.opacity=1;});
+  h.addEventListener('mousemove',e=>{tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';tip.style.transform='translate(-50%,-130%)';});
+  h.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  h.addEventListener('click',()=>window.open(onetURL(t.onet),'_blank','noopener'));
+});
+
+const modal=document.getElementById('modal');
+function openOcc(o){
+  const c=byk(o.k);
+  document.getElementById('mIc').style.background=c.c;
+  document.getElementById('mIc').textContent=o.k;
+  document.getElementById('mTitle').textContent=o.t;
+  document.getElementById('mTy').textContent=c.name+' interest';
+  document.getElementById('mDesc').textContent=o.d;
+  document.getElementById('mLink').href='https://www.onetonline.org/find/quick?s='+encodeURIComponent(o.t);
+  modal.classList.add('open');
+}
+document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>openOcc(LIKED[+b.dataset.i])));
+function closeM(){modal.classList.remove('open');}
+document.getElementById('mClose').addEventListener('click',closeM);
+modal.addEventListener('click',e=>{if(e.target===modal)closeM();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();});
+</script>
+</body>
+</html>

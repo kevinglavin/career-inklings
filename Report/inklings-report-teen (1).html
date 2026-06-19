@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Inklings — My Interests (Student)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Georgia&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blue:#44A2B9; --red:#CF3327; --deep:#00384D; --orange:#FF6C37;
+    --teal:#44797B; --gold:#FFB548;
+    --ink:#2a2118; --muted:#8a8073; --paper:#FBF6EE; --card:#fff; --line:#efe7da;
+    --sans:'Poppins',system-ui,sans-serif; --serif:Georgia,serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:#e7e2d8;color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+  .doc{display:flex;flex-direction:column;align-items:center;gap:26px;padding:30px 16px 70px}
+  .page{width:794px;max-width:100%;background:var(--paper);border-radius:8px;box-shadow:0 16px 46px rgba(40,33,24,.18);overflow:hidden}
+  a{color:inherit}
+  .reveal{opacity:0;animation:fadeUp .6s cubic-bezier(.2,.7,.2,1) forwards}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+  @keyframes pop{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:none}}
+
+  /* ---------- COVER ---------- */
+  .cover{min-height:1000px;display:flex;flex-direction:column;position:relative;background:#fdfbf7}
+  .cover .leaf{position:absolute;opacity:.5}
+  .cover .leaf.tl{top:-10px;left:-14px;transform:rotate(8deg)}
+  .cover .leaf.br{bottom:-18px;right:-10px;transform:rotate(190deg)}
+  .cover .inner{margin:auto;text-align:center;padding:40px}
+  .cover .ey{font-size:12px;letter-spacing:.34em;text-transform:uppercase;color:var(--teal);font-weight:600}
+  .cover .title{font-size:78px;font-weight:800;color:var(--deep);margin:14px 0 0;letter-spacing:-.01em;line-height:1}
+  .cover .sub{font-family:var(--serif);font-style:italic;font-size:20px;color:var(--orange);margin-top:8px}
+  .cover .rule{width:46px;height:2px;background:var(--deep);margin:30px auto}
+  .cover .for{font-size:14px;color:#6b6253;letter-spacing:.02em}
+  .cover .for b{color:var(--deep);font-weight:600}
+  .cover .lett{display:flex;gap:9px;justify-content:center;margin-top:18px}
+  .cover .lett span{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;color:#fff;font-weight:700;font-size:17px}
+  .cover .by{position:absolute;bottom:30px;left:0;right:0;text-align:center;font-size:11.5px;color:var(--muted)}
+  .cover .by a{color:var(--orange);text-decoration:none;font-weight:600}
+
+  /* ---------- HEADER (results) ---------- */
+  .hd{background:linear-gradient(120deg,var(--deep),#0b5066);color:#fff;padding:22px 40px;display:flex;justify-content:space-between;align-items:center}
+  .hd .wm{display:flex;align-items:center;gap:11px;font-weight:700;font-size:18px}
+  .hd .wm small{display:block;font-weight:500;font-size:10px;color:#a9d4df;letter-spacing:.12em;text-transform:uppercase}
+  .hd .tag{font-size:12px;color:#bfe2ec;font-weight:500}
+
+  .intro{padding:28px 40px 6px;text-align:center}
+  .intro h1{font-size:30px;margin:0;color:var(--deep);font-weight:800}
+  .intro p{font-size:14.5px;line-height:1.6;color:#5f5648;max-width:50ch;margin:10px auto 0}
+
+  /* ---------- BIG clickable cards (2x) ---------- */
+  .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;padding:24px 40px 4px}
+  .c{display:block;text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:24px;overflow:hidden;box-shadow:0 8px 20px rgba(150,120,80,.12);transition:transform .18s ease,box-shadow .18s ease;animation:pop .5s backwards}
+  .c:hover{transform:translateY(-6px) scale(1.015);box-shadow:0 16px 32px rgba(150,120,80,.20)}
+  .c:active{transform:translateY(-2px) scale(.99)}
+  .c .cap{height:158px;display:grid;place-items:center;color:#fff;font-size:84px;font-weight:800;position:relative}
+  .c .cap .go{position:absolute;top:12px;right:14px;font-size:13px;opacity:.85}
+  .c .b{padding:16px 12px 20px;text-align:center}
+  .c .b .w{font-size:20px;font-weight:700;color:var(--deep)}
+  .c .b .n{font-size:13px;color:var(--muted);margin-top:3px}
+  .cards-hint{text-align:center;font-size:11.5px;color:var(--muted);margin:10px 0 0;font-style:italic}
+
+  /* ---------- RADAR (clickable points) ---------- */
+  .radar{margin:16px 40px 6px;background:var(--card);border:1px solid var(--line);border-radius:24px;padding:18px;text-align:center;position:relative}
+  .radar .slot{max-width:340px;margin:0 auto}
+  .radar svg .hit{cursor:pointer}
+  .radar svg .dot{transition:r .15s ease}
+  .radar .cap{font-size:12px;color:var(--muted);line-height:1.5;margin:6px auto 0;max-width:48ch}
+  .radar .total{font-size:12px;color:var(--muted);margin-top:8px}
+  .radar .total b{color:var(--deep)}
+  .tip{position:fixed;z-index:60;background:var(--deep);color:#fff;font-size:12px;font-weight:600;padding:6px 10px;border-radius:8px;pointer-events:none;opacity:0;transform:transl(-50%,-120%);transition:opacity .12s;white-space:nowrap}
+
+  .sec{padding:18px 40px 0}
+  .sec h2{font-size:14px;color:var(--orange);font-weight:700;letter-spacing:.04em;margin:0 0 12px;text-transform:uppercase}
+  .means{display:flex;flex-direction:column;gap:10px}
+  .mean{display:flex;gap:13px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 16px}
+  .mean .sw{width:40px;height:40px;border-radius:12px;flex:none;display:grid;place-items:center;color:#fff;font-weight:800;font-size:19px}
+  .mean .tx b{font-size:14px;color:var(--deep)}
+  .mean .tx p{margin:3px 0 0;font-size:12.8px;line-height:1.55;color:#5f5648}
+
+  .setnote{font-size:12px;color:var(--muted);margin:-4px 0 12px;font-style:italic}
+  .chips{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{display:inline-flex;align-items:center;gap:8px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:9px 15px;font-size:13px;font-weight:500;color:var(--ink);cursor:pointer;transition:transform .15s ease,border-color .15s ease;font-family:inherit}
+  .chip:hover{transform:translateY(-2px) scale(1.03);border-color:var(--gold)}
+  .chip:active{transform:scale(.98)}
+  .chip .d{width:9px;height:9px;border-radius:50%;flex:none}
+  .chip .plus{color:var(--muted);font-weight:700;margin-left:1px}
+
+  .steps{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+  .step{display:flex;gap:12px;align-items:flex-start;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:13px 15px}
+  .step .num{width:28px;height:28px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;font-size:14px;display:grid;place-items:center;flex:none}
+  .step p{margin:0;font-size:12.8px;line-height:1.5;color:#4f463a}
+  .step a{color:var(--orange);font-weight:600;text-decoration:none}
+
+  .note{margin:20px 40px 0;background:#eef6f8;border:1px solid #cfe7ee;border-radius:16px;padding:15px 18px}
+  .note b{color:var(--deep);font-size:13px}
+  .note p{margin:5px 0 0;font-size:12.8px;line-height:1.6;color:#41606b}
+
+  .ft{margin-top:22px;padding:16px 40px 22px;border-top:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:var(--muted)}
+  .ft a{color:var(--orange);font-weight:600;text-decoration:none}
+
+  /* ---------- occupation modal ---------- */
+  .modal{position:fixed;inset:0;z-index:80;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(20,30,38,.45)}
+  .modal.open{display:flex}
+  .sheet{background:#fff;border-radius:20px;max-width:420px;width:100%;padding:24px 26px;box-shadow:0 24px 60px rgba(0,0,0,.3);animation:pop .25s}
+  .sheet .top{display:flex;align-items:center;gap:11px;margin-bottom:12px}
+  .sheet .ic{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:800;font-size:20px;flex:none}
+  .sheet h3{margin:0;font-size:18px;color:var(--deep)}
+  .sheet .ty{font-size:11.5px;color:var(--muted);font-weight:500}
+  .sheet p{font-size:13.5px;line-height:1.6;color:#4f463a;margin:0 0 16px}
+  .sheet .row{display:flex;gap:10px;align-items:center;justify-content:space-between}
+  .sheet .open{background:var(--orange);color:#fff;text-decoration:none;font-weight:600;font-size:13px;padding:9px 16px;border-radius:999px}
+  .sheet .x{background:none;border:1px solid var(--line);color:var(--muted);font-size:13px;padding:9px 14px;border-radius:999px;cursor:pointer;font-family:inherit}
+
+  @media(max-width:760px){
+    .cards{grid-template-columns:1fr 1fr}.steps{grid-template-columns:1fr}
+    .hd,.intro,.cards,.radar,.sec,.note,.ft,.cover .inner{padding-left:22px;padding-right:22px}
+    .radar,.note{margin-left:22px;margin-right:22px}
+    .cover .title{font-size:54px}.c .cap{height:128px;font-size:64px}
+  }
+  @media(prefers-reduced-motion:reduce){
+    .reveal,.c,.sheet{animation:none;opacity:1}
+    .c:hover,.chip:hover{transform:none}
+  }
+  @media print{
+    body{background:#fff}.doc{gap:0;padding:0}
+    .page{box-shadow:none;border-radius:0}
+    .cover{page-break-after:always}
+    .reveal,.c{animation:none;opacity:1}
+    .cards-hint,.tip,.modal,.chip .plus,.c .cap .go{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="doc">
+
+  <!-- ================= COVER (prints first) ================= -->
+  <section class="page cover">
+    <svg class="leaf tl" width="220" height="220" viewBox="0 0 200 200" aria-hidden="true">
+      <g fill="none" stroke="#44797B" stroke-width="2.4" stroke-linecap="round">
+        <path d="M30 18 C70 60 95 110 110 180"/>
+        <path d="M52 52 C40 40 28 44 22 58 C40 66 52 64 58 56" fill="#9bbfb6" fill-opacity=".5" stroke-opacity=".7"/>
+        <path d="M70 84 C58 70 44 74 38 88 C58 98 70 94 76 88" fill="#9bbfb6" fill-opacity=".5" stroke-opacity=".7"/>
+        <path d="M86 120 C74 106 60 110 54 124 C74 134 86 130 92 124" fill="#9bbfb6" fill-opacity=".5" stroke-opacity=".7"/>
+        <path d="M58 50 C70 36 86 36 96 46 C82 58 68 58 60 52" fill="#cfe0d6" fill-opacity=".55" stroke-opacity=".7"/>
+        <path d="M76 86 C88 72 104 72 114 82 C100 94 86 94 78 88" fill="#cfe0d6" fill-opacity=".55" stroke-opacity=".7"/>
+      </g>
+    </svg>
+    <svg class="leaf br" width="200" height="200" viewBox="0 0 200 200" aria-hidden="true">
+      <g fill="none" stroke="#FFB548" stroke-width="2.2" stroke-linecap="round" stroke-opacity=".8">
+        <path d="M30 18 C70 60 95 110 110 180"/>
+        <path d="M52 52 C40 40 28 44 22 58 C40 66 52 64 58 56" fill="#ffe0ad" fill-opacity=".5"/>
+        <path d="M70 84 C58 70 44 74 38 88 C58 98 70 94 76 88" fill="#ffe0ad" fill-opacity=".5"/>
+        <path d="M86 120 C74 106 60 110 54 124 C74 134 86 130 92 124" fill="#ffe0ad" fill-opacity=".5"/>
+      </g>
+    </svg>
+
+    <div class="inner">
+      <div class="ey">Interests Report</div>
+      <div class="title">Inklings</div>
+      <div class="sub">Follow your inklings</div>
+      <div class="rule"></div>
+      <div class="for">Prepared for <b>Career Explorer</b></div>
+      <div class="lett">
+        <span style="background:#FF6C37">A</span>
+        <span style="background:#FFB548">S</span>
+        <span style="background:#00384D">I</span>
+      </div>
+    </div>
+    <div class="by">by <a href="https://www.createyourwhy.com" target="_blank" rel="noopener">Create Your Why, LLC</a></div>
+  </section>
+
+  <!-- ================= RESULTS ================= -->
+  <section class="page">
+    <header class="hd">
+      <div class="wm">
+        <svg width="34" height="34" viewBox="0 0 40 40" aria-hidden="true">
+          <circle cx="20" cy="20" r="18.5" fill="none" stroke="#fff" stroke-width="2.2"/>
+          <circle cx="20" cy="20" r="2.4" fill="#fff"/>
+          <polygon points="20,6 24,20 20,17 16,20" fill="#FF6C37"/>
+          <polygon points="20,34 16,20 20,23 24,20" fill="#FFB548"/>
+        </svg>
+        <div>Inklings<small>Interests</small></div>
+      </div>
+      <div class="tag">Follow your inklings</div>
+    </header>
+
+    <div class="intro reveal" style="animation-delay:.05s">
+      <h1>Here is what you are into</h1>
+      <p>Everyone is a mix of six interest types. These three sound the most like you <b>right now</b>. Tap anything to dig deeper.</p>
+    </div>
+
+    <div class="cards" id="cards"></div>
+    <div class="cards-hint reveal" style="animation-delay:.3s">Tap a card to see careers for that type on O*NET.</div>
+
+    <div class="radar reveal" style="animation-delay:.2s">
+      <div class="slot" data-size="340"></div>
+      <div class="cap">Each point is one of the six types. The further it stretches out, the more careers of that kind you liked. Tap a point to explore it.</div>
+      <div class="total">You sorted <b id="tot"></b> careers in total.</div>
+    </div>
+
+    <div class="sec reveal" style="animation-delay:.1s">
+      <h2>What these mean</h2>
+      <div class="means" id="means"></div>
+    </div>
+
+    <div class="sec reveal" style="animation-delay:.1s">
+      <h2>Careers you liked</h2>
+      <p class="setnote">In no particular order. Tap any one to learn what they do.</p>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="sec reveal" style="animation-delay:.1s">
+      <h2>Try this next</h2>
+      <div class="steps">
+        <div class="step"><div class="num">1</div><p>Talk to your school counselor about classes and clubs that match your top interests.</p></div>
+        <div class="step"><div class="num">2</div><p>Try one new thing this term in a top area. Trying something is the best way to find out if you like it.</p></div>
+        <div class="step"><div class="num">3</div><p>Look up a job that sounds cool on <a href="https://www.mynextmove.org/" target="_blank" rel="noopener">My Next Move</a>, a free site made for students.</p></div>
+        <div class="step"><div class="num">4</div><p>Ask an adult who has an interesting job what their day is really like.</p></div>
+      </div>
+    </div>
+
+    <div class="note reveal" style="animation-delay:.1s">
+      <b>One thing to remember</b>
+      <p>This is not a test, and there are no right or wrong answers. It is a fun way to start thinking about what you enjoy. Your interests will keep changing as you grow, and that is completely normal.</p>
+    </div>
+
+    <div class="ft">
+      <span>Inklings · based on Holland's interest types</span>
+      <span>© <a href="https://www.createyourwhy.com" target="_blank" rel="noopener">Create Your Why, LLC</a></span>
+    </div>
+  </section>
+</div>
+
+<!-- tooltip + modal -->
+<div class="tip" id="tip"></div>
+<div class="modal" id="modal">
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="top"><div class="ic" id="mIc"></div><div><h3 id="mTitle"></h3><div class="ty" id="mTy"></div></div></div>
+    <p id="mDesc"></p>
+    <div class="row">
+      <a class="open" id="mLink" href="#" target="_blank" rel="noopener">Explore on My Next Move</a>
+      <button class="x" id="mClose">Close</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const TYPES=[
+ {k:'R',name:'Realistic',raw:5,c:'#44797B',onet:'Realistic'},
+ {k:'I',name:'Investigative',raw:9,c:'#00384D',onet:'Investigative'},
+ {k:'A',name:'Artistic',raw:12,c:'#FF6C37',onet:'Artistic'},
+ {k:'S',name:'Social',raw:10,c:'#FFB548',onet:'Social'},
+ {k:'E',name:'Enterprising',raw:8,c:'#CF3327',onet:'Enterprising'},
+ {k:'C',name:'Conventional',raw:7,c:'#44A2B9',onet:'Conventional'},
+];
+const TOTAL=TYPES.reduce((a,t)=>a+t.raw,0);
+TYPES.forEach(t=>t.pct=+(t.raw/TOTAL*100).toFixed(1));
+document.getElementById('tot').textContent=TOTAL;
+const TOP=['A','S','I'];
+const byk=k=>TYPES.find(t=>t.k===k);
+const onetURL=type=>`https://www.onetonline.org/explore/interests/${type}/`;
+const MEAN={
+ A:'You like to create and use your imagination. Art, music, design, writing, video, or anything where you make something new.',
+ S:'You like helping people and being part of a team. Teaching, coaching, health, or looking after others.',
+ I:'You like figuring things out and asking why and how. Science, tech, puzzles, and getting to the bottom of things.',
+};
+const ANG=[0,60,120,180,240,300];
+
+/* radar with interactive points */
+function radar(size){
+  const max=Math.ceil(Math.max(...TYPES.map(t=>t.pct))/5)*5;
+  const pad=size*0.2,cx=size/2,cy=size/2,R=size/2-pad,rings=4,grid='rgba(0,56,77,.14)';
+  const pt=(d,r)=>{const t=d*Math.PI/180;return[cx+r*Math.sin(t),cy-r*Math.cos(t)];};
+  let g='';
+  for(let kk=1;kk<=rings;kk++){const rr=R*kk/rings;
+    g+=`<polygon points="${ANG.map(a=>pt(a,rr).map(n=>n.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${grid}" stroke-width="1" opacity="${kk<rings?.5:1}"/>`;}
+  ANG.forEach(a=>{const[x,y]=pt(a,R);g+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${grid}" stroke-width="1" opacity=".45"/>`;});
+  const dp=TYPES.map((t,i)=>pt(ANG[i],R*Math.min(t.pct,max)/max));
+  const poly=dp.map(p=>p.map(n=>n.toFixed(1)).join(',')).join(' ');
+  let hits='',labs='';
+  TYPES.forEach((t,i)=>{const[x,y]=dp[i];const top=TOP.includes(t.k);
+    hits+=`<g class="hit" data-k="${t.k}"><circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="14" fill="transparent"/>
+      <circle class="dot" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${top?6:3.8}" fill="${t.c}" stroke="#fff" stroke-width="1.6"><title>${t.name}: ${t.raw} likes (${t.pct}%)</title></circle></g>`;
+    const[lx,ly]=pt(ANG[i],R+pad*0.6);
+    labs+=`<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="middle" dominant-baseline="middle" font-family="Poppins" font-size="${(size*0.05).toFixed(1)}" font-weight="${top?700:500}" fill="${top?t.c:'#8a8073'}">${t.k}</text>`;});
+  return `<svg viewBox="0 0 ${size} ${size}" width="100%" role="img" aria-label="Your interest shape across six types">${g}<polygon points="${poly}" fill="rgba(255,108,55,.18)" stroke="#FF6C37" stroke-width="3" stroke-linejoin="round"/>${hits}${labs}</svg>`;
+}
+document.querySelector('.slot').innerHTML=radar(340);
+
+/* big clickable cards -> O*NET */
+document.getElementById('cards').innerHTML=TOP.map((k,i)=>{
+  const t=byk(k);
+  return `<a class="c" style="animation-delay:${.12+i*.08}s" href="${onetURL(t.onet)}" target="_blank" rel="noopener">
+    <div class="cap" style="background:${t.c}">${t.k}<span class="go">↗</span></div>
+    <div class="b"><div class="w">${t.name}</div><div class="n">you liked ${t.raw}</div></div></a>`;}).join('');
+
+document.getElementById('means').innerHTML=TOP.map(k=>{
+  const t=byk(k);
+  return `<div class="mean"><div class="sw" style="background:${t.c}">${t.k}</div>
+    <div class="tx"><b>${t.name}</b><p>${MEAN[k]}</p></div></div>`;}).join('');
+
+/* liked careers -> open info modal */
+const LIKED=[
+ {t:'Artist',k:'A',d:'Artists create work to share ideas and feelings, using paint, digital tools, sculpture, photography, and more.'},
+ {t:'Music Teacher',k:'A',d:'Music teachers help people learn to play, sing, and understand music, in schools or one on one.'},
+ {t:'Graphic Designer',k:'A',d:'Graphic designers use type, color, and images to make posters, logos, apps, and ads.'},
+ {t:'Counselor',k:'S',d:'Counselors listen and help people work through challenges and make plans for their future.'},
+ {t:'Coach',k:'S',d:'Coaches train people in a sport or skill and help them improve and stay motivated.'},
+ {t:'Speech Therapist',k:'S',d:'Speech therapists help people of all ages communicate more clearly and confidently.'},
+ {t:'Game Designer',k:'I',d:'Game designers plan how games work and feel, from the rules to the levels to the fun.'},
+ {t:'Scientist',k:'I',d:'Scientists ask questions about the world and run experiments to find the answers.'},
+];
+document.getElementById('chips').innerHTML=LIKED.map((o,i)=>
+ `<button class="chip" data-i="${i}"><span class="d" style="background:${byk(o.k).c}"></span>${o.t}<span class="plus">+</span></button>`).join('');
+
+/* ---- interactions ---- */
+const tip=document.getElementById('tip');
+document.querySelectorAll('.radar .hit').forEach(h=>{
+  const t=byk(h.dataset.k);
+  h.addEventListener('mouseenter',e=>{tip.textContent=`${t.name}: ${t.raw} likes (${t.pct}%)`;tip.style.opacity=1;});
+  h.addEventListener('mousemove',e=>{tip.style.left=e.clientX+'px';tip.style.top=e.clientY+'px';tip.style.transform='translate(-50%,-130%)';});
+  h.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  h.addEventListener('click',()=>window.open(onetURL(t.onet),'_blank','noopener'));
+});
+
+const modal=document.getElementById('modal');
+function openOcc(o){
+  const c=byk(o.k);
+  document.getElementById('mIc').style.background=c.c;
+  document.getElementById('mIc').textContent=o.k;
+  document.getElementById('mTitle').textContent=o.t;
+  document.getElementById('mTy').textContent=c.name+' interest';
+  document.getElementById('mDesc').textContent=o.d;
+  document.getElementById('mLink').href='https://www.mynextmove.org/find/search?type=keyword&kw='+encodeURIComponent(o.t);
+  modal.classList.add('open');
+}
+document.querySelectorAll('.chip').forEach(b=>b.addEventListener('click',()=>openOcc(LIKED[+b.dataset.i])));
+function closeM(){modal.classList.remove('open');}
+document.getElementById('mClose').addEventListener('click',closeM);
+modal.addEventListener('click',e=>{if(e.target===modal)closeM();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeM();});
+</script>
+</body>
+</html>

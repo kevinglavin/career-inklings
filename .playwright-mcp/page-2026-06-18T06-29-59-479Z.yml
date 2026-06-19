@@ -1,0 +1,37 @@
+- generic [ref=e131]:
+  - generic [ref=e132]:
+    - generic [ref=e133]:
+      - img [ref=e134]
+      - generic [ref=e145]: CareerSwipe
+    - generic [ref=e146]:
+      - group "Language" [ref=e147]:
+        - button "EN" [pressed] [ref=e148] [cursor=pointer]
+        - button "ES" [ref=e149] [cursor=pointer]
+      - button "Admin access" [ref=e150] [cursor=pointer]: Admin
+  - generic [ref=e151]:
+    - heading "Find Your Career Direction" [level=1] [ref=e152]:
+      - text: Find Your Career
+      - text: Direction
+    - paragraph [ref=e153]: Swipe through 60 real occupations and discover your unique career personality type.
+  - generic [ref=e154]:
+    - generic [ref=e155]:
+      - img [ref=e157]
+      - paragraph [ref=e159]: 5 Min Assessment
+    - generic [ref=e160]:
+      - img [ref=e162]
+      - paragraph [ref=e166]: RIASEC Model
+    - generic [ref=e167]:
+      - img [ref=e169]
+      - paragraph [ref=e171]: Personal Report
+  - generic [ref=e176]:
+    - img [ref=e178]
+    - generic [ref=e189]:
+      - paragraph [ref=e190]: Swipe to Explore
+      - paragraph [ref=e191]: 60 Real Careers
+  - generic [ref=e192]:
+    - textbox "Enter your name (optional)" [ref=e193]
+    - button "Start Exploring" [ref=e194] [cursor=pointer]:
+      - generic [ref=e195]:
+        - text: Start Exploring
+        - img [ref=e196]
+    - paragraph [ref=e198]: Takes about 5 minutes · No account needed
