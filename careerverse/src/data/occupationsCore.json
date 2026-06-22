@@ -1,0 +1,1562 @@
+[
+  {
+    "id": "r1",
+    "title": "Chef",
+    "category": "Realistic",
+    "description": "Direct and participate in food preparation and cooking, plan menus, and supervise kitchen staff.",
+    "onetCode": "35-1011.00",
+    "tasks": [
+      "Plan menus and food preparation",
+      "Direct cooking and food preparation staff",
+      "Inspect supplies, equipment, and work areas for cleanliness",
+      "Monitor food for quality and portion control"
+    ],
+    "workActivities": [
+      "Creative Thinking — Developing new recipes and menus",
+      "Organizing and Planning — Coordinating kitchen operations and staff schedules",
+      "Performing Physical Activities — Preparing and cooking food in fast-paced environments"
+    ],
+    "interests": {
+      "Realistic": 4.84,
+      "Investigative": 1.68,
+      "Artistic": 2.72,
+      "Social": 2.95,
+      "Enterprising": 5.13,
+      "Conventional": 4.35
+    }
+  },
+  {
+    "id": "r2",
+    "title": "Firefighter",
+    "category": "Realistic",
+    "description": "Control and extinguish fires, protect life and property, and conduct rescue efforts.",
+    "onetCode": "33-2011.00",
+    "tasks": [
+      "Respond to fire alarms and emergency calls",
+      "Rescue victims from burning buildings or accidents",
+      "Operate firefighting equipment and apparatus",
+      "Perform first aid and CPR on injured persons"
+    ],
+    "workActivities": [
+      "Performing Physical Activities — Carrying equipment and rescuing people",
+      "Making Decisions — Assessing danger and choosing rescue strategies",
+      "Assisting Others — Providing emergency medical care and community safety education"
+    ],
+    "interests": {
+      "Realistic": 6.49,
+      "Investigative": 2.92,
+      "Artistic": 1.31,
+      "Social": 3.39,
+      "Enterprising": 3.01,
+      "Conventional": 3.47
+    }
+  },
+  {
+    "id": "r3",
+    "title": "Park Naturalist",
+    "category": "Realistic",
+    "description": "Plan and deliver programs to inform the public about natural areas such as parks and forests.",
+    "onetCode": "19-1031.03",
+    "tasks": [
+      "Develop and present nature education programs",
+      "Conduct field trips and guided nature walks",
+      "Maintain trails, exhibits, and nature facilities",
+      "Monitor wildlife populations and natural resources"
+    ],
+    "workActivities": [
+      "Communicating — Teaching visitors about ecosystems and conservation",
+      "Performing Physical Activities — Maintaining trails and conducting fieldwork",
+      "Getting Information — Researching local flora, fauna, and ecology"
+    ],
+    "interests": {
+      "Realistic": 4.38,
+      "Investigative": 4.24,
+      "Artistic": 3.74,
+      "Social": 4.87,
+      "Enterprising": 3.46,
+      "Conventional": 3.43
+    }
+  },
+  {
+    "id": "r4",
+    "title": "Pilot",
+    "category": "Realistic",
+    "description": "Navigate and fly airplanes or helicopters to transport passengers or cargo safely.",
+    "onetCode": "53-2011.00",
+    "tasks": [
+      "Check aircraft before flights to ensure safety",
+      "Monitor instruments and weather conditions during flights",
+      "Communicate with air traffic control",
+      "Navigate and operate the aircraft controls"
+    ],
+    "workActivities": [
+      "Controlling Machines — Operating complex flight systems and instruments",
+      "Making Decisions — Responding to weather changes and emergencies",
+      "Getting Information — Monitoring flight instruments, fuel, and weather data"
+    ],
+    "interests": {
+      "Realistic": 4.74,
+      "Investigative": 3.15,
+      "Artistic": 1.44,
+      "Social": 2.5,
+      "Enterprising": 3.81,
+      "Conventional": 4.7
+    }
+  },
+  {
+    "id": "r5",
+    "title": "Police Officer",
+    "category": "Realistic",
+    "description": "Maintain order, enforce laws, and protect people and property in communities.",
+    "onetCode": "33-3051.00",
+    "tasks": [
+      "Patrol assigned areas to maintain public safety",
+      "Respond to emergency and non-emergency calls",
+      "Investigate crimes and collect evidence",
+      "Write detailed reports of incidents and arrests"
+    ],
+    "workActivities": [
+      "Resolving Conflicts — Mediating disputes and maintaining public order",
+      "Making Decisions — Evaluating situations to determine appropriate action",
+      "Communicating — Interviewing witnesses and writing incident reports"
+    ],
+    "interests": {
+      "Realistic": 5.36,
+      "Investigative": 2.76,
+      "Artistic": 1.07,
+      "Social": 3.45,
+      "Enterprising": 4.08,
+      "Conventional": 4.35
+    }
+  },
+  {
+    "id": "r6",
+    "title": "Truck Driver",
+    "category": "Realistic",
+    "description": "Drive heavy trucks to transport goods and materials over long distances.",
+    "onetCode": "53-3032.00",
+    "tasks": [
+      "Drive trucks along established routes",
+      "Load and unload cargo or arrange for loading",
+      "Inspect vehicles for mechanical issues before trips",
+      "Maintain logs of driving hours and cargo delivery"
+    ],
+    "workActivities": [
+      "Operating Vehicles — Driving and maneuvering large trucks safely",
+      "Inspecting Equipment — Checking vehicles and cargo for safety compliance",
+      "Documenting Information — Keeping accurate delivery and driving records"
+    ],
+    "interests": {
+      "Realistic": 7,
+      "Investigative": 1.92,
+      "Artistic": 1,
+      "Social": 1.33,
+      "Enterprising": 1.3,
+      "Conventional": 4.1
+    }
+  },
+  {
+    "id": "r7",
+    "title": "Carpenter",
+    "category": "Realistic",
+    "description": "Construct, install, and repair structures and fixtures made of wood and other materials.",
+    "onetCode": "47-2031.00",
+    "tasks": [
+      "Measure and cut wood or other materials to specifications",
+      "Build frameworks including walls, floors, and doorframes",
+      "Install structures such as cabinets, siding, and trim",
+      "Read and interpret blueprints and building plans"
+    ],
+    "workActivities": [
+      "Handling Objects — Cutting, shaping, and assembling wood and materials",
+      "Inspecting Equipment — Ensuring structures meet safety and building codes",
+      "Getting Information — Reading blueprints and project specifications"
+    ],
+    "interests": {
+      "Realistic": 6.75,
+      "Investigative": 1.91,
+      "Artistic": 2.18,
+      "Social": 1.9,
+      "Enterprising": 1.79,
+      "Conventional": 3.46
+    }
+  },
+  {
+    "id": "r8",
+    "title": "Electrician",
+    "category": "Realistic",
+    "description": "Install, maintain, and repair electrical wiring, equipment, and fixtures.",
+    "onetCode": "47-2111.00",
+    "tasks": [
+      "Install and maintain electrical systems in buildings",
+      "Inspect electrical components such as transformers and breakers",
+      "Diagnose malfunctioning equipment and systems",
+      "Read blueprints and technical diagrams"
+    ],
+    "workActivities": [
+      "Repairing — Fixing and maintaining electrical systems and wiring",
+      "Inspecting Equipment — Testing circuits to ensure safety and proper function",
+      "Getting Information — Reading technical plans and electrical codes"
+    ],
+    "interests": {
+      "Realistic": 7,
+      "Investigative": 2.7,
+      "Artistic": 1.24,
+      "Social": 1.32,
+      "Enterprising": 1.81,
+      "Conventional": 4.09
+    }
+  },
+  {
+    "id": "r9",
+    "title": "Farmer",
+    "category": "Realistic",
+    "description": "Plan, direct, and coordinate farming operations for growing crops or raising livestock.",
+    "onetCode": "11-9013.00",
+    "tasks": [
+      "Plant, cultivate, and harvest crops",
+      "Monitor crop and animal health",
+      "Operate and maintain farm machinery and equipment",
+      "Manage business operations including budgets and supply purchases"
+    ],
+    "workActivities": [
+      "Performing Physical Activities — Planting, tending, and harvesting crops",
+      "Making Decisions — Planning planting schedules based on weather and markets",
+      "Controlling Machines — Operating tractors, harvesters, and irrigation systems"
+    ],
+    "interests": {
+      "Realistic": 5.16,
+      "Investigative": 2.74,
+      "Artistic": 1.06,
+      "Social": 2.63,
+      "Enterprising": 5.52,
+      "Conventional": 4.53
+    }
+  },
+  {
+    "id": "r10",
+    "title": "Mechanic",
+    "category": "Realistic",
+    "description": "Diagnose, adjust, repair, or overhaul automobiles and light trucks.",
+    "onetCode": "49-3023.00",
+    "tasks": [
+      "Diagnose vehicle problems using diagnostic equipment",
+      "Repair or replace worn or broken parts",
+      "Perform routine maintenance such as oil changes and tire rotations",
+      "Test drive vehicles to verify repairs"
+    ],
+    "workActivities": [
+      "Repairing — Fixing engines, brakes, transmissions, and other vehicle systems",
+      "Inspecting Equipment — Using diagnostic tools to identify mechanical issues",
+      "Updating Knowledge — Staying current with new vehicle technologies"
+    ],
+    "interests": {
+      "Realistic": 7,
+      "Investigative": 3.58,
+      "Artistic": 1,
+      "Social": 1.45,
+      "Enterprising": 1.6,
+      "Conventional": 4.31
+    }
+  },
+  {
+    "id": "i1",
+    "title": "Biologist",
+    "category": "Investigative",
+    "description": "Study living organisms and their relationships to the environment.",
+    "onetCode": "19-1020.01",
+    "tasks": [
+      "Conduct research on living organisms",
+      "Collect and analyze biological data and samples",
+      "Write research papers and reports",
+      "Design and conduct experiments in laboratories or the field"
+    ],
+    "workActivities": [
+      "Analyzing Data — Studying specimens and interpreting research findings",
+      "Documenting Information — Writing research reports and scientific papers",
+      "Thinking Creatively — Designing experiments to test hypotheses"
+    ],
+    "interests": {
+      "Realistic": 4.11,
+      "Investigative": 7,
+      "Artistic": 2.4,
+      "Social": 2.62,
+      "Enterprising": 2.76,
+      "Conventional": 4.45
+    }
+  },
+  {
+    "id": "i2",
+    "title": "Chemist",
+    "category": "Investigative",
+    "description": "Conduct research and experiments to develop new products and processes.",
+    "onetCode": "19-2031.00",
+    "tasks": [
+      "Analyze substances to determine their composition",
+      "Develop new chemical products and processes",
+      "Conduct tests and quality control on materials",
+      "Prepare reports and present research findings"
+    ],
+    "workActivities": [
+      "Analyzing Data — Interpreting chemical test results and experimental data",
+      "Processing Information — Using scientific methods to solve chemical problems",
+      "Documenting Information — Recording test results and writing technical reports"
+    ],
+    "interests": {
+      "Realistic": 5.67,
+      "Investigative": 6.71,
+      "Artistic": 1.52,
+      "Social": 1.14,
+      "Enterprising": 1.6,
+      "Conventional": 4.81
+    }
+  },
+  {
+    "id": "i3",
+    "title": "Computer Programmer",
+    "category": "Investigative",
+    "description": "Create, modify, and test code and scripts that allow computer applications to run.",
+    "onetCode": "15-1251.00",
+    "tasks": [
+      "Write and test code for software applications",
+      "Debug and troubleshoot existing programs",
+      "Update and maintain software systems",
+      "Collaborate with software developers on design and architecture"
+    ],
+    "workActivities": [
+      "Working with Computers — Writing, testing, and debugging program code",
+      "Analyzing Data — Identifying bugs and optimizing software performance",
+      "Thinking Creatively — Designing solutions for complex technical problems"
+    ],
+    "interests": {
+      "Realistic": 3.37,
+      "Investigative": 5.1,
+      "Artistic": 2.51,
+      "Social": 1.98,
+      "Enterprising": 2.09,
+      "Conventional": 5.92
+    }
+  },
+  {
+    "id": "i4",
+    "title": "Economist",
+    "category": "Investigative",
+    "description": "Study how society distributes resources such as land, labor, and raw materials.",
+    "onetCode": "19-3011.00",
+    "tasks": [
+      "Research economic issues and analyze data",
+      "Develop economic models and forecasts",
+      "Advise governments and businesses on economic policy",
+      "Write reports and present economic analyses"
+    ],
+    "workActivities": [
+      "Analyzing Data — Studying economic trends, data, and statistics",
+      "Processing Information — Building models to forecast economic activity",
+      "Communicating — Presenting findings and policy recommendations"
+    ],
+    "interests": {
+      "Realistic": 1.35,
+      "Investigative": 7,
+      "Artistic": 2.43,
+      "Social": 2.4,
+      "Enterprising": 3.93,
+      "Conventional": 4.53
+    }
+  },
+  {
+    "id": "i5",
+    "title": "Geologist",
+    "category": "Investigative",
+    "description": "Study the composition, structure, and history of the Earth and its processes.",
+    "onetCode": "19-2042.00",
+    "tasks": [
+      "Analyze rock, mineral, and fossil samples",
+      "Conduct field studies and geological surveys",
+      "Prepare geological maps and reports",
+      "Assess sites for natural resource extraction or construction"
+    ],
+    "workActivities": [
+      "Getting Information — Collecting geological field data and samples",
+      "Analyzing Data — Interpreting geological maps and survey results",
+      "Documenting Information — Writing reports on findings and assessments"
+    ],
+    "interests": {
+      "Realistic": 5.59,
+      "Investigative": 7,
+      "Artistic": 2.72,
+      "Social": 2.24,
+      "Enterprising": 1.65,
+      "Conventional": 4.16
+    }
+  },
+  {
+    "id": "i6",
+    "title": "Mathematician",
+    "category": "Investigative",
+    "description": "Conduct research to develop and understand mathematical principles and apply techniques to solve problems.",
+    "onetCode": "15-2021.00",
+    "tasks": [
+      "Develop mathematical models to solve practical problems",
+      "Apply mathematical theories to scientific and engineering issues",
+      "Conduct research in fundamental mathematics",
+      "Analyze data using statistical and computational methods"
+    ],
+    "workActivities": [
+      "Analyzing Data — Using advanced math to interpret data and solve problems",
+      "Processing Information — Developing formulas and mathematical models",
+      "Thinking Creatively — Finding novel approaches to complex quantitative problems"
+    ],
+    "interests": {
+      "Realistic": 3.22,
+      "Investigative": 7,
+      "Artistic": 3.23,
+      "Social": 1.95,
+      "Enterprising": 1.11,
+      "Conventional": 5.03
+    }
+  },
+  {
+    "id": "i7",
+    "title": "Medical Scientist",
+    "category": "Investigative",
+    "description": "Conduct research to improve human health by understanding diseases and treatments.",
+    "onetCode": "19-1042.00",
+    "tasks": [
+      "Plan and conduct medical research studies",
+      "Collect and analyze data from clinical trials",
+      "Develop new drugs, treatments, or medical devices",
+      "Write research proposals and scientific publications"
+    ],
+    "workActivities": [
+      "Analyzing Data — Interpreting clinical trial data and research results",
+      "Getting Information — Reviewing medical literature and research findings",
+      "Documenting Information — Publishing research in scientific journals"
+    ],
+    "interests": {
+      "Realistic": 4.27,
+      "Investigative": 7,
+      "Artistic": 2.42,
+      "Social": 3.29,
+      "Enterprising": 2.22,
+      "Conventional": 3.7
+    }
+  },
+  {
+    "id": "i8",
+    "title": "Pharmacist",
+    "category": "Investigative",
+    "description": "Dispense medications, advise patients on drug use, and ensure safe pharmaceutical care.",
+    "onetCode": "29-1051.00",
+    "tasks": [
+      "Review and fill medication prescriptions",
+      "Advise patients on proper medication use and side effects",
+      "Monitor patient drug therapies for interactions",
+      "Collaborate with physicians on treatment plans"
+    ],
+    "workActivities": [
+      "Processing Information — Checking prescriptions for accuracy and interactions",
+      "Communicating — Counseling patients about medications and health",
+      "Updating Knowledge — Staying current on new drugs and pharmaceutical research"
+    ],
+    "interests": {
+      "Realistic": 2.82,
+      "Investigative": 5.67,
+      "Artistic": 1.48,
+      "Social": 4.88,
+      "Enterprising": 2.62,
+      "Conventional": 4.56
+    }
+  },
+  {
+    "id": "i9",
+    "title": "Psychologist",
+    "category": "Investigative",
+    "description": "Study human behavior and mental processes, and help people manage behavioral and emotional challenges.",
+    "onetCode": "19-3031.00",
+    "tasks": [
+      "Conduct psychological assessments and evaluations",
+      "Provide therapy and counseling services",
+      "Design and conduct behavioral research studies",
+      "Write reports and treatment recommendations"
+    ],
+    "workActivities": [
+      "Assisting Others — Providing therapy and emotional support to clients",
+      "Analyzing Data — Interpreting psychological tests and assessment results",
+      "Documenting Information — Recording session notes and treatment plans"
+    ],
+    "interests": {
+      "Realistic": 1.05,
+      "Investigative": 5.58,
+      "Artistic": 3.06,
+      "Social": 6.57,
+      "Enterprising": 2.65,
+      "Conventional": 3.49
+    }
+  },
+  {
+    "id": "i10",
+    "title": "Doctor",
+    "category": "Investigative",
+    "description": "Diagnose and treat injuries, diseases, and disorders in patients.",
+    "onetCode": "29-1216.00",
+    "tasks": [
+      "Examine patients and diagnose medical conditions",
+      "Prescribe medications and treatment plans",
+      "Order and interpret diagnostic tests",
+      "Counsel patients on preventive healthcare"
+    ],
+    "workActivities": [
+      "Making Decisions — Diagnosing conditions and determining treatment plans",
+      "Assisting Others — Providing medical care and health guidance to patients",
+      "Updating Knowledge — Keeping current with medical research and best practices"
+    ],
+    "interests": {
+      "Realistic": 4.43,
+      "Investigative": 6.81,
+      "Artistic": 1.44,
+      "Social": 6.08,
+      "Enterprising": 2.1,
+      "Conventional": 3.63
+    }
+  },
+  {
+    "id": "a1",
+    "title": "Actor",
+    "category": "Artistic",
+    "description": "Play parts in stage, television, radio, video, or film productions for entertainment and communication.",
+    "onetCode": "27-2011.00",
+    "tasks": [
+      "Interpret scripts and portray characters",
+      "Rehearse lines and scenes with cast members",
+      "Audition for roles in productions",
+      "Collaborate with directors on character development"
+    ],
+    "workActivities": [
+      "Thinking Creatively — Interpreting scripts and developing characters",
+      "Performing — Delivering lines and actions on stage or screen",
+      "Communicating — Collaborating with directors, writers, and fellow actors"
+    ],
+    "interests": {
+      "Realistic": 2.29,
+      "Investigative": 2.16,
+      "Artistic": 7,
+      "Social": 4.08,
+      "Enterprising": 4,
+      "Conventional": 1.81
+    }
+  },
+  {
+    "id": "a2",
+    "title": "Art Teacher",
+    "category": "Artistic",
+    "description": "Instruct students in visual arts, including drawing, painting, and sculpture.",
+    "onetCode": "25-1121.00",
+    "tasks": [
+      "Plan and deliver art lessons and projects",
+      "Demonstrate techniques in various art media",
+      "Evaluate student artwork and provide feedback",
+      "Organize art exhibits and displays of student work"
+    ],
+    "workActivities": [
+      "Teaching — Instructing students in artistic techniques and art history",
+      "Thinking Creatively — Designing engaging lessons and art projects",
+      "Coaching — Mentoring students to develop their artistic skills"
+    ],
+    "interests": {
+      "Realistic": 3.03,
+      "Investigative": 4.14,
+      "Artistic": 5.73,
+      "Social": 6.99,
+      "Enterprising": 2.12,
+      "Conventional": 2.61
+    }
+  },
+  {
+    "id": "a3",
+    "title": "Dancer",
+    "category": "Artistic",
+    "description": "Perform dances, usually accompanied by music, to entertain audiences.",
+    "onetCode": "27-2031.00",
+    "tasks": [
+      "Rehearse and perform dance routines",
+      "Audition for roles in productions",
+      "Maintain physical fitness and flexibility",
+      "Collaborate with choreographers on new routines"
+    ],
+    "workActivities": [
+      "Performing — Executing choreographed dance routines on stage",
+      "Performing Physical Activities — Training and conditioning the body daily",
+      "Thinking Creatively — Expressing emotions and stories through movement"
+    ],
+    "interests": {
+      "Realistic": 4.83,
+      "Investigative": 1.43,
+      "Artistic": 6.39,
+      "Social": 3.65,
+      "Enterprising": 3.18,
+      "Conventional": 1.61
+    }
+  },
+  {
+    "id": "a4",
+    "title": "Fashion Designer",
+    "category": "Artistic",
+    "description": "Design clothing, accessories, and footwear based on trends and creative vision.",
+    "onetCode": "27-1022.00",
+    "tasks": [
+      "Sketch designs and create patterns for garments",
+      "Select fabrics and materials for production",
+      "Oversee production of samples and final products",
+      "Research current fashion trends and consumer preferences"
+    ],
+    "workActivities": [
+      "Thinking Creatively — Conceptualizing original clothing designs",
+      "Getting Information — Researching trends, fabrics, and market demand",
+      "Communicating — Presenting collections to buyers and clients"
+    ],
+    "interests": {
+      "Realistic": 4.34,
+      "Investigative": 2.17,
+      "Artistic": 7,
+      "Social": 2.35,
+      "Enterprising": 3.96,
+      "Conventional": 2.94
+    }
+  },
+  {
+    "id": "a5",
+    "title": "Film Director",
+    "category": "Artistic",
+    "description": "Direct and coordinate all aspects of a film, TV, or video production.",
+    "onetCode": "27-2012.02",
+    "tasks": [
+      "Interpret scripts and guide actors on performance",
+      "Coordinate with cinematographers, editors, and crew",
+      "Make creative decisions about visual style and pacing",
+      "Oversee post-production editing and sound design"
+    ],
+    "workActivities": [
+      "Guiding Others — Directing actors and production crew",
+      "Thinking Creatively — Shaping the artistic vision of a production",
+      "Organizing — Managing schedules, budgets, and production logistics"
+    ],
+    "interests": {
+      "Realistic": 2.13,
+      "Investigative": 2.24,
+      "Artistic": 6.14,
+      "Social": 3.12,
+      "Enterprising": 5.78,
+      "Conventional": 3.56
+    }
+  },
+  {
+    "id": "a6",
+    "title": "Graphic Designer",
+    "category": "Artistic",
+    "description": "Create visual concepts using software to communicate ideas that inspire and inform consumers.",
+    "onetCode": "27-1024.00",
+    "tasks": [
+      "Design graphics for print, web, and social media",
+      "Create logos, branding materials, and layouts",
+      "Collaborate with clients to understand design needs",
+      "Use design software such as Adobe Creative Suite"
+    ],
+    "workActivities": [
+      "Thinking Creatively — Developing original visual concepts and designs",
+      "Working with Computers — Using design software to create digital artwork",
+      "Communicating — Presenting design concepts to clients and teams"
+    ],
+    "interests": {
+      "Realistic": 3.38,
+      "Investigative": 2.86,
+      "Artistic": 7,
+      "Social": 2.16,
+      "Enterprising": 3.43,
+      "Conventional": 3.92
+    }
+  },
+  {
+    "id": "a7",
+    "title": "Interior Designer",
+    "category": "Artistic",
+    "description": "Plan, design, and furnish interior spaces to be functional, safe, and aesthetically pleasing.",
+    "onetCode": "27-1025.00",
+    "tasks": [
+      "Create design plans for residential or commercial spaces",
+      "Select materials, furniture, colors, and lighting",
+      "Coordinate with contractors and architects",
+      "Present design proposals and cost estimates to clients"
+    ],
+    "workActivities": [
+      "Thinking Creatively — Envisioning interior spaces that are beautiful and functional",
+      "Communicating — Presenting design plans and collaborating with clients",
+      "Getting Information — Researching materials, codes, and design trends"
+    ],
+    "interests": {
+      "Realistic": 4.12,
+      "Investigative": 3.07,
+      "Artistic": 5.56,
+      "Social": 2.68,
+      "Enterprising": 3.7,
+      "Conventional": 3.82
+    }
+  },
+  {
+    "id": "a8",
+    "title": "Musician",
+    "category": "Artistic",
+    "description": "Play musical instruments, sing, or compose music for live or recorded performances.",
+    "onetCode": "27-2042.00",
+    "tasks": [
+      "Practice and rehearse music regularly",
+      "Perform for live audiences or recording sessions",
+      "Compose or arrange musical pieces",
+      "Collaborate with other musicians and producers"
+    ],
+    "workActivities": [
+      "Performing — Playing instruments or singing for audiences",
+      "Thinking Creatively — Composing, arranging, and improvising music",
+      "Performing Physical Activities — Practicing instruments for extended periods"
+    ],
+    "interests": {
+      "Realistic": 2.87,
+      "Investigative": 1.53,
+      "Artistic": 6.66,
+      "Social": 3.41,
+      "Enterprising": 3.42,
+      "Conventional": 2.17
+    }
+  },
+  {
+    "id": "a9",
+    "title": "Photographer",
+    "category": "Artistic",
+    "description": "Photograph people, places, and events using digital or film cameras.",
+    "onetCode": "27-4021.00",
+    "tasks": [
+      "Set up and adjust lighting and equipment",
+      "Photograph subjects in various settings",
+      "Edit and retouch digital images",
+      "Market services and manage client relationships"
+    ],
+    "workActivities": [
+      "Thinking Creatively — Composing shots and creating artistic imagery",
+      "Working with Computers — Editing and processing digital photographs",
+      "Communicating — Working with clients to capture their vision"
+    ],
+    "interests": {
+      "Realistic": 5.54,
+      "Investigative": 2.18,
+      "Artistic": 5.28,
+      "Social": 1.94,
+      "Enterprising": 2.28,
+      "Conventional": 3.35
+    }
+  },
+  {
+    "id": "a10",
+    "title": "Writer",
+    "category": "Artistic",
+    "description": "Write original content such as scripts, essays, novels, or articles for various media.",
+    "onetCode": "27-3043.00",
+    "tasks": [
+      "Research topics and develop story ideas",
+      "Write, edit, and revise content for publication",
+      "Meet with editors and clients to discuss projects",
+      "Adapt writing style for different audiences and formats"
+    ],
+    "workActivities": [
+      "Thinking Creatively — Generating original ideas for stories and articles",
+      "Communicating — Writing clearly for specific audiences and purposes",
+      "Getting Information — Researching subjects to ensure accuracy and depth"
+    ],
+    "interests": {
+      "Realistic": 1,
+      "Investigative": 3.25,
+      "Artistic": 6.68,
+      "Social": 2.86,
+      "Enterprising": 4.75,
+      "Conventional": 3.34
+    }
+  },
+  {
+    "id": "s1",
+    "title": "School Counselor",
+    "category": "Social",
+    "description": "Help students develop academic, career, and social skills through individual and group counseling.",
+    "onetCode": "21-1012.00",
+    "tasks": [
+      "Counsel students on academic and career planning",
+      "Provide individual and group guidance sessions",
+      "Collaborate with teachers and parents on student development",
+      "Identify and refer students needing specialized support"
+    ],
+    "workActivities": [
+      "Assisting Others — Helping students navigate personal and academic challenges",
+      "Communicating — Meeting with students, parents, and school staff",
+      "Organizing — Planning guidance programs and career exploration activities"
+    ],
+    "interests": {
+      "Realistic": 1,
+      "Investigative": 3.3,
+      "Artistic": 3.13,
+      "Social": 7,
+      "Enterprising": 3.92,
+      "Conventional": 4.09
+    }
+  },
+  {
+    "id": "s2",
+    "title": "Physical Therapist",
+    "category": "Social",
+    "description": "Help injured or ill people improve movement and manage pain through exercise and therapy.",
+    "onetCode": "29-1123.00",
+    "tasks": [
+      "Evaluate patients physical abilities and limitations",
+      "Develop and implement treatment plans",
+      "Guide patients through therapeutic exercises",
+      "Document patient progress and adjust treatments"
+    ],
+    "workActivities": [
+      "Assisting Others — Helping patients recover mobility and strength",
+      "Making Decisions — Designing individualized treatment plans",
+      "Performing Physical Activities — Demonstrating and guiding exercises"
+    ],
+    "interests": {
+      "Realistic": 4.33,
+      "Investigative": 4.87,
+      "Artistic": 2.17,
+      "Social": 5.91,
+      "Enterprising": 2.49,
+      "Conventional": 3.07
+    }
+  },
+  {
+    "id": "s3",
+    "title": "Social Worker",
+    "category": "Social",
+    "description": "Help people solve and cope with problems in their everyday lives and connect them with resources.",
+    "onetCode": "21-1021.00",
+    "tasks": [
+      "Assess client needs and develop service plans",
+      "Connect clients with community resources and services",
+      "Advocate for clients rights and wellbeing",
+      "Maintain case records and documentation"
+    ],
+    "workActivities": [
+      "Assisting Others — Supporting individuals and families in crisis",
+      "Communicating — Interviewing clients and coordinating with agencies",
+      "Resolving Conflicts — Mediating disputes and advocating for vulnerable populations"
+    ],
+    "interests": {
+      "Realistic": 1.7,
+      "Investigative": 3.32,
+      "Artistic": 2.9,
+      "Social": 6.85,
+      "Enterprising": 2.94,
+      "Conventional": 3.57
+    }
+  },
+  {
+    "id": "s4",
+    "title": "Speech-Language Pathologist",
+    "category": "Social",
+    "description": "Diagnose and treat speech, language, voice, and swallowing disorders in patients of all ages.",
+    "onetCode": "29-1127.00",
+    "tasks": [
+      "Assess patients speech and language abilities",
+      "Develop individualized treatment plans",
+      "Provide therapy to improve communication skills",
+      "Educate families on supporting speech development"
+    ],
+    "workActivities": [
+      "Assisting Others — Helping patients improve communication abilities",
+      "Making Decisions — Diagnosing disorders and planning treatments",
+      "Documenting Information — Recording patient assessments and progress"
+    ],
+    "interests": {
+      "Realistic": 2.62,
+      "Investigative": 5.57,
+      "Artistic": 3,
+      "Social": 6.09,
+      "Enterprising": 1.44,
+      "Conventional": 4.03
+    }
+  },
+  {
+    "id": "s5",
+    "title": "Rehabilitation Counselor",
+    "category": "Social",
+    "description": "Help people with physical, mental, or emotional disabilities live independently and find employment.",
+    "onetCode": "21-1015.00",
+    "tasks": [
+      "Assess clients abilities, interests, and limitations",
+      "Develop rehabilitation plans and set achievable goals",
+      "Coordinate with employers to find job placements",
+      "Connect clients with assistive technology and services"
+    ],
+    "workActivities": [
+      "Assisting Others — Supporting clients in building independence",
+      "Communicating — Coordinating with employers, doctors, and families",
+      "Organizing — Managing caseloads and tracking client progress"
+    ],
+    "interests": {
+      "Realistic": 1.23,
+      "Investigative": 3.27,
+      "Artistic": 2.98,
+      "Social": 6.8,
+      "Enterprising": 3.56,
+      "Conventional": 3.26
+    }
+  },
+  {
+    "id": "s6",
+    "title": "Registered Nurse",
+    "category": "Social",
+    "description": "Provide and coordinate patient care, educate patients about health conditions, and offer emotional support.",
+    "onetCode": "29-1141.00",
+    "tasks": [
+      "Assess patient health and record vital signs",
+      "Administer medications and treatments",
+      "Educate patients and families about health management",
+      "Collaborate with physicians on care plans"
+    ],
+    "workActivities": [
+      "Assisting Others — Providing direct patient care and emotional support",
+      "Making Decisions — Monitoring patient conditions and responding to changes",
+      "Documenting Information — Maintaining accurate medical records"
+    ],
+    "interests": {
+      "Realistic": 3.46,
+      "Investigative": 4.71,
+      "Artistic": 1.34,
+      "Social": 5.57,
+      "Enterprising": 2.38,
+      "Conventional": 4.75
+    }
+  },
+  {
+    "id": "s7",
+    "title": "Teacher (Elementary)",
+    "category": "Social",
+    "description": "Teach students basic academic, social, and life skills in elementary school settings.",
+    "onetCode": "25-2021.00",
+    "tasks": [
+      "Plan and deliver lessons across core subjects",
+      "Assess student learning and provide feedback",
+      "Create an engaging and supportive classroom environment",
+      "Communicate with parents about student progress"
+    ],
+    "workActivities": [
+      "Teaching — Instructing students in reading, math, science, and social studies",
+      "Coaching — Mentoring students in personal and academic growth",
+      "Organizing — Planning curriculum and managing classroom activities"
+    ],
+    "interests": {
+      "Realistic": 2.64,
+      "Investigative": 3.35,
+      "Artistic": 3.87,
+      "Social": 7,
+      "Enterprising": 2.57,
+      "Conventional": 3.78
+    }
+  },
+  {
+    "id": "s8",
+    "title": "Childcare Worker",
+    "category": "Social",
+    "description": "Attend to children in schools, businesses, or homes, providing care and supervision.",
+    "onetCode": "39-9011.00",
+    "tasks": [
+      "Supervise and monitor children during activities",
+      "Plan and lead educational games and creative play",
+      "Prepare meals and snacks for children",
+      "Communicate with parents about daily activities and behavior"
+    ],
+    "workActivities": [
+      "Assisting Others — Caring for children and supporting their development",
+      "Organizing — Planning daily schedules and age-appropriate activities",
+      "Communicating — Updating parents and collaborating with co-workers"
+    ],
+    "interests": {
+      "Realistic": 3.08,
+      "Investigative": 1.48,
+      "Artistic": 3.58,
+      "Social": 6.18,
+      "Enterprising": 2.75,
+      "Conventional": 3.44
+    }
+  },
+  {
+    "id": "s9",
+    "title": "Occupational Therapist",
+    "category": "Social",
+    "description": "Help patients develop, recover, and improve skills needed for daily living and working.",
+    "onetCode": "29-1122.00",
+    "tasks": [
+      "Evaluate patients daily living and work skills",
+      "Design customized treatment activities",
+      "Recommend adaptive equipment and modifications",
+      "Document patient progress toward therapy goals"
+    ],
+    "workActivities": [
+      "Assisting Others — Helping patients regain independence in daily tasks",
+      "Making Decisions — Selecting therapies suited to each patients needs",
+      "Thinking Creatively — Designing adaptive solutions for functional challenges"
+    ],
+    "interests": {
+      "Realistic": 3.57,
+      "Investigative": 4.23,
+      "Artistic": 3.07,
+      "Social": 6.08,
+      "Enterprising": 1.83,
+      "Conventional": 3.12
+    }
+  },
+  {
+    "id": "s10",
+    "title": "Clergy",
+    "category": "Social",
+    "description": "Lead religious services, provide spiritual guidance, and support community members in times of need.",
+    "onetCode": "21-2011.00",
+    "tasks": [
+      "Lead worship services, ceremonies, and rituals",
+      "Provide counseling and spiritual guidance",
+      "Visit sick, grieving, or homebound community members",
+      "Organize community outreach and service programs"
+    ],
+    "workActivities": [
+      "Assisting Others — Offering emotional and spiritual support",
+      "Communicating — Delivering sermons and counseling individuals",
+      "Organizing — Planning worship services and community programs"
+    ],
+    "interests": {
+      "Realistic": 2.1,
+      "Investigative": 2.11,
+      "Artistic": 3.44,
+      "Social": 5.91,
+      "Enterprising": 4.17,
+      "Conventional": 2.89
+    }
+  },
+  {
+    "id": "e1",
+    "title": "Business Executive",
+    "category": "Enterprising",
+    "description": "Plan, direct, and coordinate operations of companies or organizations at the highest level.",
+    "onetCode": "11-1011.00",
+    "tasks": [
+      "Set organizational goals and strategic direction",
+      "Oversee budgets, operations, and staff performance",
+      "Negotiate contracts and business agreements",
+      "Represent the organization to stakeholders and the public"
+    ],
+    "workActivities": [
+      "Making Decisions — Setting strategy and directing organizational priorities",
+      "Guiding Others — Leading teams and managing senior staff",
+      "Communicating — Presenting to boards, investors, and the public"
+    ],
+    "interests": {
+      "Realistic": 1.26,
+      "Investigative": 3.05,
+      "Artistic": 2.16,
+      "Social": 3.54,
+      "Enterprising": 6.96,
+      "Conventional": 4.97
+    }
+  },
+  {
+    "id": "e2",
+    "title": "Sales Manager",
+    "category": "Enterprising",
+    "description": "Direct sales teams and develop strategies to meet organizational sales goals.",
+    "onetCode": "11-2022.00",
+    "tasks": [
+      "Set sales goals and develop sales plans",
+      "Train and motivate sales team members",
+      "Analyze sales data and market trends",
+      "Build and maintain key client relationships"
+    ],
+    "workActivities": [
+      "Guiding Others — Coaching and managing sales representatives",
+      "Analyzing Data — Reviewing sales metrics to improve performance",
+      "Communicating — Negotiating deals and presenting to clients"
+    ],
+    "interests": {
+      "Realistic": 1.49,
+      "Investigative": 1.67,
+      "Artistic": 1.36,
+      "Social": 3.37,
+      "Enterprising": 7,
+      "Conventional": 5.53
+    }
+  },
+  {
+    "id": "e3",
+    "title": "Lawyer",
+    "category": "Enterprising",
+    "description": "Advise and represent clients in legal matters, draft documents, and advocate in court.",
+    "onetCode": "23-1011.00",
+    "tasks": [
+      "Research legal issues and interpret laws and regulations",
+      "Represent clients in court proceedings",
+      "Draft contracts, wills, and other legal documents",
+      "Advise clients on their legal rights and obligations"
+    ],
+    "workActivities": [
+      "Processing Information — Researching case law and legal precedents",
+      "Communicating — Arguing cases and negotiating settlements",
+      "Making Decisions — Advising clients on legal strategy"
+    ],
+    "interests": {
+      "Realistic": 1.12,
+      "Investigative": 4.38,
+      "Artistic": 2.4,
+      "Social": 3.48,
+      "Enterprising": 5.51,
+      "Conventional": 4.59
+    }
+  },
+  {
+    "id": "e4",
+    "title": "Entrepreneur",
+    "category": "Enterprising",
+    "description": "Start and run businesses, identify market opportunities, and manage all aspects of a venture.",
+    "onetCode": "11-1021.00",
+    "tasks": [
+      "Develop business plans and secure funding",
+      "Identify market opportunities and customer needs",
+      "Manage daily operations, staff, and finances",
+      "Market products and services to grow the business"
+    ],
+    "workActivities": [
+      "Thinking Creatively — Innovating products, services, and business models",
+      "Making Decisions — Evaluating risks and allocating resources",
+      "Communicating — Pitching to investors and building customer relationships"
+    ],
+    "interests": {
+      "Realistic": 2.2,
+      "Investigative": 2.37,
+      "Artistic": 1.29,
+      "Social": 3.38,
+      "Enterprising": 7,
+      "Conventional": 5.34
+    }
+  },
+  {
+    "id": "e5",
+    "title": "Financial Advisor",
+    "category": "Enterprising",
+    "description": "Advise clients on financial plans, investments, insurance, and other financial decisions.",
+    "onetCode": "13-2052.00",
+    "tasks": [
+      "Assess client financial goals and risk tolerance",
+      "Recommend investment strategies and products",
+      "Monitor client portfolios and market conditions",
+      "Prepare financial plans and reports"
+    ],
+    "workActivities": [
+      "Analyzing Data — Evaluating financial markets and investment options",
+      "Communicating — Explaining complex financial concepts to clients",
+      "Making Decisions — Recommending strategies based on client goals"
+    ],
+    "interests": {
+      "Realistic": 1,
+      "Investigative": 3.27,
+      "Artistic": 1.69,
+      "Social": 4.07,
+      "Enterprising": 5.85,
+      "Conventional": 5.61
+    }
+  },
+  {
+    "id": "e6",
+    "title": "Public Relations Specialist",
+    "category": "Enterprising",
+    "description": "Create and maintain a favorable public image for organizations or public figures.",
+    "onetCode": "27-3031.00",
+    "tasks": [
+      "Write press releases and prepare media kits",
+      "Coordinate public appearances and events",
+      "Monitor public opinion and media coverage",
+      "Develop communication strategies for clients or organizations"
+    ],
+    "workActivities": [
+      "Communicating — Crafting messages and managing media relationships",
+      "Thinking Creatively — Developing campaigns to shape public perception",
+      "Organizing — Planning events and coordinating media outreach"
+    ],
+    "interests": {
+      "Realistic": 1,
+      "Investigative": 2.72,
+      "Artistic": 4.68,
+      "Social": 3.94,
+      "Enterprising": 5.82,
+      "Conventional": 3.45
+    }
+  },
+  {
+    "id": "e7",
+    "title": "Car Salesperson",
+    "category": "Enterprising",
+    "description": "Sell new or used vehicles and help customers find cars that fit their needs and budget.",
+    "onetCode": "41-4011.00",
+    "tasks": [
+      "Greet customers and assess their vehicle needs",
+      "Demonstrate vehicle features and arrange test drives",
+      "Negotiate prices and financing options",
+      "Complete sales paperwork and delivery procedures"
+    ],
+    "workActivities": [
+      "Communicating — Persuading customers and explaining vehicle features",
+      "Making Decisions — Matching customers with the right vehicles",
+      "Processing Information — Handling financing and sales documentation"
+    ],
+    "interests": {
+      "Realistic": 2.8,
+      "Investigative": 3.15,
+      "Artistic": 1.44,
+      "Social": 3.12,
+      "Enterprising": 5.27,
+      "Conventional": 5.14
+    }
+  },
+  {
+    "id": "e8",
+    "title": "Motivational Speaker",
+    "category": "Enterprising",
+    "description": "Deliver speeches and presentations to inspire and motivate audiences toward personal or professional growth.",
+    "onetCode": "27-3099.00",
+    "tasks": [
+      "Research and develop presentation topics and content",
+      "Deliver engaging speeches to diverse audiences",
+      "Market speaking services and book engagements",
+      "Tailor messages for specific groups and events"
+    ],
+    "workActivities": [
+      "Communicating — Delivering powerful presentations to large audiences",
+      "Thinking Creatively — Crafting compelling stories and motivational content",
+      "Organizing — Managing bookings, travel, and marketing efforts"
+    ],
+    "interests": {
+      "Realistic": 1.5,
+      "Investigative": 2.5,
+      "Artistic": 4.5,
+      "Social": 4,
+      "Enterprising": 5.5,
+      "Conventional": 2.5
+    }
+  },
+  {
+    "id": "e9",
+    "title": "Politician",
+    "category": "Enterprising",
+    "description": "Represent constituents in government, develop legislation, and address community issues.",
+    "onetCode": "11-1031.00",
+    "tasks": [
+      "Meet with constituents to understand community needs",
+      "Draft and vote on legislation and policy proposals",
+      "Campaign for elected office and build public support",
+      "Collaborate with other officials on governance issues"
+    ],
+    "workActivities": [
+      "Communicating — Speaking publicly and debating policy issues",
+      "Making Decisions — Voting on laws and setting policy priorities",
+      "Resolving Conflicts — Negotiating compromises between competing interests"
+    ],
+    "interests": {
+      "Realistic": 1.54,
+      "Investigative": 3.35,
+      "Artistic": 2.7,
+      "Social": 3.69,
+      "Enterprising": 5.52,
+      "Conventional": 3.62
+    }
+  },
+  {
+    "id": "e10",
+    "title": "Property Manager",
+    "category": "Enterprising",
+    "description": "Manage real estate properties on behalf of owners, handling operations, tenants, and maintenance.",
+    "onetCode": "11-9141.00",
+    "tasks": [
+      "Screen tenants and manage lease agreements",
+      "Coordinate property maintenance and repairs",
+      "Collect rent and manage property budgets",
+      "Ensure properties comply with housing regulations"
+    ],
+    "workActivities": [
+      "Organizing — Overseeing property operations and maintenance schedules",
+      "Communicating — Interacting with tenants, owners, and contractors",
+      "Making Decisions — Resolving tenant issues and managing finances"
+    ],
+    "interests": {
+      "Realistic": 3.28,
+      "Investigative": 2.11,
+      "Artistic": 1.69,
+      "Social": 3.53,
+      "Enterprising": 6.67,
+      "Conventional": 5.26
+    }
+  },
+  {
+    "id": "c1",
+    "title": "Accountant",
+    "category": "Conventional",
+    "description": "Prepare and examine financial records, ensure accuracy, and that taxes are paid properly.",
+    "onetCode": "13-2011.00",
+    "tasks": [
+      "Prepare and examine financial statements",
+      "Ensure compliance with tax regulations",
+      "Audit financial records for accuracy",
+      "Advise clients on financial planning and budgeting"
+    ],
+    "workActivities": [
+      "Analyzing Data — Reviewing financial records and identifying discrepancies",
+      "Processing Information — Preparing tax returns and financial reports",
+      "Documenting Information — Maintaining accurate accounting records"
+    ],
+    "interests": {
+      "Realistic": 1.14,
+      "Investigative": 3.57,
+      "Artistic": 1.08,
+      "Social": 2.13,
+      "Enterprising": 3.87,
+      "Conventional": 7
+    }
+  },
+  {
+    "id": "c2",
+    "title": "Financial Analyst",
+    "category": "Conventional",
+    "description": "Analyze financial data and trends to guide business investment decisions.",
+    "onetCode": "13-2051.00",
+    "tasks": [
+      "Analyze financial statements and market trends",
+      "Prepare reports with investment recommendations",
+      "Build financial models to forecast performance",
+      "Monitor economic conditions affecting investments"
+    ],
+    "workActivities": [
+      "Analyzing Data — Evaluating financial data and market conditions",
+      "Processing Information — Building spreadsheets and financial models",
+      "Communicating — Presenting analysis and recommendations to stakeholders"
+    ],
+    "interests": {
+      "Realistic": 1,
+      "Investigative": 5.06,
+      "Artistic": 1.78,
+      "Social": 2.25,
+      "Enterprising": 5.09,
+      "Conventional": 5.54
+    }
+  },
+  {
+    "id": "c3",
+    "title": "Paralegal",
+    "category": "Conventional",
+    "description": "Assist lawyers by researching legal precedents, organizing case files, and drafting documents.",
+    "onetCode": "23-2011.00",
+    "tasks": [
+      "Research legal precedents and compile case materials",
+      "Draft legal documents and correspondence",
+      "Organize and maintain case files and databases",
+      "Assist attorneys in preparing for trials and hearings"
+    ],
+    "workActivities": [
+      "Processing Information — Researching laws and organizing legal materials",
+      "Documenting Information — Drafting documents and maintaining case files",
+      "Working with Computers — Using legal databases and case management software"
+    ],
+    "interests": {
+      "Realistic": 1.74,
+      "Investigative": 5.04,
+      "Artistic": 2.24,
+      "Social": 3.12,
+      "Enterprising": 3.92,
+      "Conventional": 5.28
+    }
+  },
+  {
+    "id": "c4",
+    "title": "Medical Records Technician",
+    "category": "Conventional",
+    "description": "Organize, manage, and code patient health information data in electronic systems.",
+    "onetCode": "29-2072.00",
+    "tasks": [
+      "Review and code patient health records",
+      "Ensure accuracy and completeness of medical data",
+      "Maintain electronic health record systems",
+      "Process insurance claims and verify documentation"
+    ],
+    "workActivities": [
+      "Processing Information — Coding diagnoses and procedures accurately",
+      "Working with Computers — Managing electronic health record systems",
+      "Documenting Information — Ensuring medical records meet regulatory standards"
+    ],
+    "interests": {
+      "Realistic": 2.86,
+      "Investigative": 4.33,
+      "Artistic": 1,
+      "Social": 3.41,
+      "Enterprising": 1.88,
+      "Conventional": 6.95
+    }
+  },
+  {
+    "id": "c5",
+    "title": "Court Clerk",
+    "category": "Conventional",
+    "description": "Perform administrative duties in courts of law, manage records, and assist judges.",
+    "onetCode": "43-4031.00",
+    "tasks": [
+      "Prepare court dockets and case calendars",
+      "Record court proceedings and maintain official records",
+      "Process legal documents such as motions and orders",
+      "Assist judges with administrative tasks during trials"
+    ],
+    "workActivities": [
+      "Documenting Information — Recording proceedings and maintaining legal records",
+      "Processing Information — Managing court schedules and case files",
+      "Communicating — Coordinating with judges, attorneys, and the public"
+    ],
+    "interests": {
+      "Realistic": 1.97,
+      "Investigative": 1.91,
+      "Artistic": 1.11,
+      "Social": 3.52,
+      "Enterprising": 4.24,
+      "Conventional": 6.16
+    }
+  },
+  {
+    "id": "c6",
+    "title": "Loan Officer",
+    "category": "Conventional",
+    "description": "Evaluate, authorize, or recommend approval of loan applications for people and businesses.",
+    "onetCode": "13-2072.00",
+    "tasks": [
+      "Review loan applications and financial documents",
+      "Evaluate applicant creditworthiness and risk",
+      "Explain loan terms and conditions to applicants",
+      "Process and approve or deny loan requests"
+    ],
+    "workActivities": [
+      "Analyzing Data — Assessing financial documents and credit histories",
+      "Making Decisions — Approving or denying loan applications",
+      "Communicating — Explaining loan products and terms to clients"
+    ],
+    "interests": {
+      "Realistic": 1.43,
+      "Investigative": 2.32,
+      "Artistic": 1,
+      "Social": 3.65,
+      "Enterprising": 4.98,
+      "Conventional": 6.08
+    }
+  },
+  {
+    "id": "c7",
+    "title": "Office Administrator",
+    "category": "Conventional",
+    "description": "Coordinate office activities and operations to ensure efficiency and compliance with policies.",
+    "onetCode": "43-1011.00",
+    "tasks": [
+      "Manage office supplies, schedules, and correspondence",
+      "Coordinate meetings, travel, and events",
+      "Maintain filing systems and organizational records",
+      "Supervise administrative support staff"
+    ],
+    "workActivities": [
+      "Organizing — Managing office operations and maintaining systems",
+      "Communicating — Coordinating with staff, clients, and vendors",
+      "Working with Computers — Using office software and databases"
+    ],
+    "interests": {
+      "Realistic": 1.58,
+      "Investigative": 1.38,
+      "Artistic": 1,
+      "Social": 4.33,
+      "Enterprising": 6.9,
+      "Conventional": 5.7
+    }
+  },
+  {
+    "id": "c8",
+    "title": "Tax Preparer",
+    "category": "Conventional",
+    "description": "Prepare tax returns for individuals or businesses and ensure compliance with tax codes.",
+    "onetCode": "13-2082.00",
+    "tasks": [
+      "Interview clients to gather financial information",
+      "Prepare federal, state, and local tax returns",
+      "Calculate tax obligations and identify deductions",
+      "Review returns for accuracy before filing"
+    ],
+    "workActivities": [
+      "Processing Information — Computing taxes and preparing accurate returns",
+      "Getting Information — Interviewing clients about income and expenses",
+      "Updating Knowledge — Staying current with changing tax laws and regulations"
+    ],
+    "interests": {
+      "Realistic": 2.17,
+      "Investigative": 2.38,
+      "Artistic": 1,
+      "Social": 2.26,
+      "Enterprising": 3.38,
+      "Conventional": 6.79
+    }
+  },
+  {
+    "id": "c9",
+    "title": "Payroll Clerk",
+    "category": "Conventional",
+    "description": "Compile and record employee time and payroll data, and process paychecks.",
+    "onetCode": "43-3051.00",
+    "tasks": [
+      "Process employee timesheets and calculate wages",
+      "Compute deductions for taxes, benefits, and garnishments",
+      "Issue paychecks and manage direct deposits",
+      "Maintain payroll records and respond to employee inquiries"
+    ],
+    "workActivities": [
+      "Processing Information — Calculating wages, deductions, and net pay",
+      "Working with Computers — Using payroll software and databases",
+      "Documenting Information — Maintaining accurate payroll records"
+    ],
+    "interests": {
+      "Realistic": 1.85,
+      "Investigative": 1.05,
+      "Artistic": 1,
+      "Social": 1.91,
+      "Enterprising": 3.32,
+      "Conventional": 7
+    }
+  },
+  {
+    "id": "c10",
+    "title": "Librarian",
+    "category": "Conventional",
+    "description": "Organize library collections, help people find information, and conduct community programs.",
+    "onetCode": "25-4022.00",
+    "tasks": [
+      "Catalog and classify library materials",
+      "Help patrons locate information and resources",
+      "Plan and conduct community reading programs",
+      "Manage library databases and digital collections"
+    ],
+    "workActivities": [
+      "Organizing — Cataloging and maintaining library collections",
+      "Assisting Others — Helping patrons find information and resources",
+      "Working with Computers — Managing digital catalogs and online databases"
+    ],
+    "interests": {
+      "Realistic": 2.32,
+      "Investigative": 3.63,
+      "Artistic": 2.65,
+      "Social": 4.04,
+      "Enterprising": 2.75,
+      "Conventional": 5.83
+    }
+  }
+]
