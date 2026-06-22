@@ -1,6 +1,6 @@
 import { Container, Sprite } from 'pixi.js';
 import { getStarTextures } from './textures';
-import { GALAXY, PARALLAX } from '../config';
+import { GALAXY, PARALLAX, MOTION } from '../config';
 
 /* deterministic field so the sky doesn't reshuffle between frames/loads */
 function mulberry32(seed: number) {
@@ -66,6 +66,7 @@ export class Starfield {
   }
 
   update(timeMs: number) {
+    if (MOTION.reduced) return; // freeze twinkle for motion-sensitive users
     for (const t of this.twinkles) {
       t.sprite.alpha = t.base * (0.55 + 0.45 * Math.sin(timeMs * t.speed + t.phase));
     }

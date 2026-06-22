@@ -157,7 +157,9 @@ export class StarNodes {
     const s = this.camera.s;
     const tau = STARS.HOVER_TRANSITION_TAU;
     const k = MOTION.reduced ? 1 : 1 - Math.exp(-dtMs / tau);
-    const pulse = 1 + STARS.SUN_PULSE_AMPLITUDE * Math.sin((timeMs / STARS.SUN_PULSE_PERIOD_MS) * Math.PI * 2);
+    const pulse = MOTION.reduced
+      ? 1
+      : 1 + STARS.SUN_PULSE_AMPLITUDE * Math.sin((timeMs / STARS.SUN_PULSE_PERIOD_MS) * Math.PI * 2);
     const showLabelsAtZoom = s >= STARS.LABEL_VISIBLE_ZOOM;
     const vp = this.camera.viewport;
 
