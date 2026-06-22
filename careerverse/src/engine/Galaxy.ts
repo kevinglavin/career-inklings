@@ -1,4 +1,4 @@
-import { Application, Container, Sprite, Text, TextStyle, Texture } from 'pixi.js';
+import { Application, Container, Graphics, Sprite, Text, TextStyle, Texture } from 'pixi.js';
 import { Camera } from './Camera';
 import { Starfield } from './Starfield';
 import { StarNodes } from './StarNodes';
@@ -39,6 +39,8 @@ export class Galaxy {
   private world = new Container();
   private nebula = new Container();
   private regionLabels = new Container();
+  private trail = new Graphics();
+  private trailPts: { x: number; y: number }[] = [];
   private vignette!: Sprite;
 
   private hoverId: string | null = null;
@@ -91,6 +93,7 @@ export class Galaxy {
     this.app.stage.addChild(this.world);
     this.world.addChild(this.nebula);
     this.world.addChild(this.regionLabels);
+    this.world.addChild(this.trail);
     this.world.addChild(this.nodes.glowLayer);
     this.world.addChild(this.constellations.container);
     this.world.addChild(this.nodes.sunLayer);
@@ -124,6 +127,7 @@ export class Galaxy {
     this.starfield.update(now);
     this.nodes.update(dtMs, now);
     this.constellations.update(dtMs, now);
+    this.drawTrail();
     this.updateRegionFade();
 
     // keep the vignette covering the screen
@@ -243,6 +247,28 @@ export class Galaxy {
 
   setVisibleIds(ids: Set<string> | null) {
     this.nodes.setVisible(ids);
+  }
+
+  /** Faint "journey trail" through the stars you've opened, in order. */
+  setTrail(ids: string[]) {
+    this.trailPts = ids
+      .map((id) => this.data.byId.get(id))
+      .filter((s): s is NonNullable<typeof s> => !!s)
+      .map((s) => ({ x: s.x, y: s.y }));
+  }
+
+  private drawTrail() {
+    this.trail.clear();
+    if (this.trailPts.length < 2) return;
+    const w = 1.1 / this.camera.s;
+    this.trail.moveTo(this.trailPts[0].x, this.trailPts[0].y);
+    for (let i = 1; i < this.trailPts.length; i++) {
+      this.trail.lineTo(this.trailPts[i].x, this.trailPts[i].y);
+    }
+    this.trail.stroke({ width: w, color: 0x9fb2ff, alpha: 0.16, cap: 'round', join: 'round' });
+    for (const p of this.trailPts) {
+      this.trail.circle(p.x, p.y, 2.4 / this.camera.s).fill({ color: 0x9fb2ff, alpha: 0.22 });
+    }
   }
 
   /** Glide to a star without changing what's "selected" (used by mini-map etc). */

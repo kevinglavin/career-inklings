@@ -12,6 +12,7 @@ export function useGalaxySync(engine: Galaxy | null) {
   const focusMode = useStore((s) => s.focusMode);
   const jobZone = useStore((s) => s.jobZone);
   const reducedMotion = useStore((s) => s.reducedMotion);
+  const visited = useStore((s) => s.visited);
 
   // selection change → highlight + constellation + eased camera arrival
   useEffect(() => {
@@ -40,4 +41,9 @@ export function useGalaxySync(engine: Galaxy | null) {
   useEffect(() => {
     engine?.setReducedMotion(reducedMotion);
   }, [engine, reducedMotion]);
+
+  // journey trail
+  useEffect(() => {
+    engine?.setTrail(visited);
+  }, [engine, visited]);
 }
