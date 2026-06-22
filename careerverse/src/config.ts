@@ -60,10 +60,10 @@ export const CAMERA = {
 
 export const STARS = {
   /** Core dot radius in world units at the smallest importance. */
-  CORE_MIN_RADIUS: 2.4,
-  CORE_MAX_RADIUS: 5.2,        // most "important" occupations are a touch bigger
+  CORE_MIN_RADIUS: 7,
+  CORE_MAX_RADIUS: 13,         // most "important" occupations are a touch bigger
   /** Glow sprite radius as a multiple of the core radius. */
-  GLOW_SCALE: 7.5,
+  GLOW_SCALE: 5.5,
   GLOW_ALPHA: 0.55,
 
   HOVER_SCALE: 1.35,           // sprite scale-up on hover
