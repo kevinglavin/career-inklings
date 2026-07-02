@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { ArrowRight, Compass, Zap, Target, BarChart3 } from 'lucide-react';
-import { BRAND_COLORS, ADMIN_PASSWORD } from '../constants';
+import { BRAND_COLORS } from '../constants';
 import { useT, LANGUAGES } from '../i18n';
+import { LegalSupport } from './LegalSupport';
 
 interface LoginViewProps {
   onLogin: (asAdmin: boolean, name?: string) => void;
+  onClearData: () => void | Promise<void>;
 }
 
 // Compass Logo Component - reusable across the app
@@ -28,7 +30,7 @@ export const CompassLogo = ({ size = 40, className = '' }: { size?: number; clas
   </svg>
 );
 
-export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData }) => {
   const [name, setName] = useState('');
   const { t, lang, setLang } = useT();
   return (
@@ -55,10 +57,10 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
               </div>
             </div>
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-0.5 rounded-full border border-gray-200 bg-gray-50 p-0.5" role="group" aria-label="Language">
+              <div className="flex min-h-11 items-center gap-0.5 rounded-full border border-gray-200 bg-gray-50 p-0.5" role="group" aria-label="Language">
                 {LANGUAGES.map(l => (
                   <button key={l.code} onClick={() => setLang(l.code)}
-                    className={`text-xs font-bold px-2.5 py-1 rounded-full transition-colors ${lang === l.code ? 'text-white' : 'text-gray-500 hover:text-gray-700'}`}
+                    className={`min-h-11 px-3 text-xs font-bold rounded-full transition-colors ${lang === l.code ? 'text-white' : 'text-gray-500 hover:text-gray-700'}`}
                     style={lang === l.code ? { backgroundColor: BRAND_COLORS.blue } : undefined}
                     aria-pressed={lang === l.code}>
                     {l.label}
@@ -66,8 +68,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
                 ))}
               </div>
               <button
-                onClick={() => { const pw = window.prompt(t('admin.passwordPrompt')); if (pw === null) return; if (pw === ADMIN_PASSWORD) onLogin(true); else alert(t('admin.passwordWrong')); }}
-                className="text-xs font-medium text-gray-500 hover:text-gray-700 transition-colors"
+                onClick={() => onLogin(true)}
+                className="inline-flex min-h-11 items-center px-2 text-xs font-medium text-gray-500 transition-colors hover:text-gray-700"
                 aria-label={t('admin.label')}
               >
                 {t('admin.label')}
@@ -152,6 +154,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin }) => {
             <p className="text-center text-xs text-gray-400 font-medium pb-2">
               {t('login.note')}
             </p>
+            <LegalSupport onClearData={onClearData} />
           </div>
         </div>
       </div>

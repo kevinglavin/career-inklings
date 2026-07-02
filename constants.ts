@@ -61,11 +61,7 @@ export interface ImagePack {
   ready?: boolean;       // true once the pack's art is complete enough to show in the picker
 }
 
-export const DEFAULT_PACK_ID = 'classic';
-
-// Client-side gate for the admin "Customize Deck" screen. NOTE: a deterrent only — it ships
-// in the JS bundle, so it is NOT real security. For true access control, use backend auth.
-export const ADMIN_PASSWORD = 'inklings-admin';
+export const DEFAULT_PACK_ID = 'career-hero';
 
 export const IMAGE_PACKS: ImagePack[] = [
   { id: 'classic', label: 'Classic', folder: null, ready: true },

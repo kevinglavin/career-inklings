@@ -1,19 +1,19 @@
 import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'react';
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Undo2, Info, ListChecks, Activity, ExternalLink, Volume2 } from 'lucide-react';
-import { Occupation } from '../types';
+import { Occupation, ResponseChoice } from '../types';
 import { RIASEC_BG_COLORS, BRAND_COLORS, resolvePackImageUrl, defaultImageUrl } from '../constants';
 import { useT } from '../i18n';
 import { localizeOccupation } from '../occupations.es';
 import { speak, speechSupported } from '../speech';
 
 export interface SwipeCardHandle {
-  triggerSwipe: (direction: 'left' | 'right') => void;
+  triggerSwipe: (direction: ResponseChoice) => void;
 }
 
 interface SwipeCardProps {
   data: Occupation;
-  onSwipe: (direction: 'left' | 'right') => void;
+  onSwipe: (direction: ResponseChoice) => void;
   index: number;
   total: number;
   packId: string;
@@ -81,7 +81,8 @@ const AnimatedOccupationImage = ({ data, packId }: { data: Occupation; packId: s
         key={src}
         src={src}
         alt=""
-        className="relative z-10 w-full h-full object-cover object-top pointer-events-none select-none occupation-image-live"
+        className="relative z-10 w-full h-full object-cover pointer-events-none select-none occupation-image-live"
+        style={{ objectPosition: 'center top' }}
         draggable={false}
         onError={handleImageError}
       />
@@ -96,22 +97,26 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
   const card = localizeOccupation(data, lang);
 
   const x = useMotionValue(0);
+  const y = useMotionValue(0);
   const rotate = useTransform(x, [-200, 200], [-10, 10]);
   const opacity = useTransform(x, [-200, -150, 0, 150, 200], [0, 1, 1, 1, 0]);
 
   // Overlay opacities for Like/Nope indicators
   const likeOpacity = useTransform(x, [0, 100], [0, 1]);
   const nopeOpacity = useTransform(x, [0, -100], [0, 1]);
+  const maybeOpacity = useTransform(y, [0, -100], [0, 1]);
 
   // Allow parent to trigger swipe via button
   useImperativeHandle(ref, () => ({
-    triggerSwipe: (direction: 'left' | 'right') => {
+    triggerSwipe: (direction: ResponseChoice) => {
       onSwipe(direction);
     }
   }));
 
   const handleDragEnd = (_event: any, info: PanInfo) => {
-    if (info.offset.x > 100) {
+    if (info.offset.y < -100 && Math.abs(info.offset.x) < 120) {
+      onSwipe('maybe');
+    } else if (info.offset.x > 100) {
       onSwipe('right');
     } else if (info.offset.x < -100) {
       onSwipe('left');
@@ -122,15 +127,16 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
 
   return (
     <motion.div
-      style={{ x, rotate, opacity }}
-      drag={!isFlipped ? "x" : false}
-      dragConstraints={{ left: 0, right: 0 }}
+      style={{ x, y, rotate, opacity, willChange: 'transform, opacity' }}
+      drag={!isFlipped}
+      dragConstraints={{ left: 0, right: 0, top: 0, bottom: 0 }}
       onDragEnd={handleDragEnd}
       variants={{
         initial: { scale: 0.95, y: 10, opacity: 0 },
         animate: { scale: 1, y: 0, opacity: 1 },
-        exit: (direction: 'left' | 'right') => ({
-          x: direction === 'right' ? 300 : -300,
+        exit: (direction: ResponseChoice) => ({
+          x: direction === 'right' ? 300 : direction === 'left' ? -300 : 0,
+          y: direction === 'maybe' ? -160 : 0,
           opacity: 0,
           scale: 0.95,
           transition: { duration: 0.3 }
@@ -147,6 +153,10 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
 
         {/* --- FRONT OF CARD (IMAGE) --- */}
         <div
+          aria-hidden={isFlipped}
+          role="button"
+          tabIndex={isFlipped ? -1 : 0}
+          onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && !isFlipped) { e.preventDefault(); setIsFlipped(true); } }}
           onClick={() => setIsFlipped(true)}
           className="absolute w-full h-full backface-hidden bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-200 flex flex-col z-10 cursor-pointer"
         >
@@ -158,6 +168,11 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
           <motion.div style={{ opacity: nopeOpacity }} className="absolute top-8 right-8 z-30 transform rotate-12 pointer-events-none">
             <ChunkyThumbsDown size={88} />
           </motion.div>
+          <motion.div style={{ opacity: maybeOpacity }} className="absolute top-8 left-1/2 z-30 -translate-x-1/2 pointer-events-none">
+            <div className="px-5 py-3 rounded-2xl border-4 border-yellow-400 bg-white text-yellow-700 font-black uppercase tracking-wide shadow-lg">
+              {t('common.maybe')}
+            </div>
+          </motion.div>
 
           {/* Image Container */}
           <div className="flex-1 relative bg-gray-100 overflow-hidden">
@@ -165,15 +180,16 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
           </div>
 
           {/* Title Area */}
-          <div className="h-[28%] flex flex-col items-center justify-center p-4 relative" style={{ backgroundColor: BRAND_COLORS.blue }}>
+          <div className="h-[19%] flex flex-col items-center justify-center p-3 relative" style={{ backgroundColor: BRAND_COLORS.blue }}>
             <h2 className="text-2xl font-bold text-white text-center leading-tight px-14">{card.title}</h2>
             {card.description && (
-              <p className="text-xs text-white/70 text-center mt-1 leading-snug line-clamp-2 px-16">{card.description}</p>
+            <p className="text-base text-white text-center mt-1 leading-snug line-clamp-2 px-16">{card.description}</p>
             )}
             {speechSupported && (
               <button
                 onClick={(e) => { e.preventDefault(); e.stopPropagation(); speak(`${card.title}. ${card.description || ''}`, lang); }}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors z-50 cursor-pointer active:scale-90"
+                tabIndex={isFlipped ? -1 : 0}
+                className="absolute left-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 transition-colors hover:bg-white/30 z-50 cursor-pointer active:scale-90"
                 aria-label={t('common.readAloud')}
               >
                 <Volume2 className="w-6 h-6 text-white" />
@@ -181,7 +197,8 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
             )}
             <button
               onClick={(e) => { e.preventDefault(); e.stopPropagation(); setIsFlipped(true); }}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors z-50 cursor-pointer active:scale-90"
+              tabIndex={isFlipped ? -1 : 0}
+              className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full bg-white/20 transition-colors hover:bg-white/30 z-50 cursor-pointer active:scale-90"
               aria-label={t('card.viewDetails')}
             >
               <Info className="w-6 h-6 text-white" />
@@ -190,7 +207,7 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
         </div>
 
         {/* --- BACK OF CARD (DETAILS) --- */}
-        <div className="absolute w-full h-full backface-hidden rotate-y-180 bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-gray-200 z-0">
+        <div aria-hidden={!isFlipped} className="absolute w-full h-full backface-hidden rotate-y-180 bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col border border-gray-200 z-0">
           <div className="flex justify-between items-start p-4 border-b border-gray-100 bg-white sticky top-0 z-10">
             <div className="pr-2">
               <h3 className="text-3xl font-bold text-gray-800 leading-tight">{card.title}</h3>
@@ -199,7 +216,9 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
               </span>
             </div>
             <button onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
-              className="p-2 bg-gray-100 rounded-full hover:bg-gray-200 transition-colors shrink-0 mt-1">
+              tabIndex={!isFlipped ? -1 : 0}
+              aria-label={t('card.backToSwipe')}
+              className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200 shrink-0 mt-1">
               <Undo2 className="w-5 h-5 text-gray-600" />
             </button>
           </div>
@@ -207,12 +226,31 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
             {card.description && (
               <p className="text-lg text-gray-600 leading-relaxed font-medium">{card.description}</p>
             )}
+            <div className="p-4 rounded-xl border border-teal-100 bg-teal-50">
+              <p className="text-sm font-black uppercase tracking-wide text-teal-800 mb-1">{t('card.whatThisMeans')}</p>
+              <p className="text-base text-teal-950 leading-relaxed">{t('card.typeSignal', { type: t('riasec.label.' + data.category) })}</p>
+            </div>
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl mb-2">
               <p className="text-lg text-blue-600/90 font-black mb-2">{t('card.dataSource')}</p>
               <a href={`https://www.onetonline.org/link/summary/${encodeURIComponent(data.onetCode)}`} target="_blank" rel="noopener noreferrer"
+                tabIndex={!isFlipped ? -1 : 0}
                 className="flex items-center text-lg font-bold hover:underline" style={{ color: BRAND_COLORS.blue }}>
                 {t('card.viewReport')} <ExternalLink className="w-6 h-6 ml-2" />
               </a>
+            </div>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="p-4 rounded-xl bg-orange-50 border border-orange-100">
+                <p className="text-sm font-black uppercase tracking-wide text-orange-700 mb-1">{t('card.dayInLife')}</p>
+                <p className="text-base text-orange-900 leading-relaxed">{t('card.day.' + data.category)}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-purple-50 border border-purple-100">
+                <p className="text-sm font-black uppercase tracking-wide text-purple-700 mb-1">{t('card.skills')}</p>
+                <p className="text-base text-purple-900 leading-relaxed">{t('card.skills.' + data.category)}</p>
+              </div>
+              <div className="p-4 rounded-xl bg-yellow-50 border border-yellow-100">
+                <p className="text-sm font-black uppercase tracking-wide text-yellow-700 mb-1">{t('card.tryInSchool')}</p>
+                <p className="text-base text-yellow-900 leading-relaxed">{t('card.try.' + data.category)}</p>
+              </div>
             </div>
             {card.tasks && card.tasks.length > 0 && (
               <div>
@@ -253,6 +291,7 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
           </div>
           <div className="p-4 bg-white border-t border-gray-100 absolute bottom-0 w-full">
             <button onClick={(e) => { e.stopPropagation(); setIsFlipped(false); }}
+              tabIndex={!isFlipped ? -1 : 0}
               className="w-full py-3 text-white rounded-xl font-bold transition-colors shadow-lg"
               style={{ backgroundColor: BRAND_COLORS.black }}>
               {t('card.backToSwipe')}

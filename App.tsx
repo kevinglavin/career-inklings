@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
-import { RotateCcw, Volume2, VolumeX, Trophy, ThumbsUp, ThumbsDown, Home } from 'lucide-react';
+import { RotateCcw, Volume2, VolumeX, Trophy, ThumbsUp, ThumbsDown, Home, HelpCircle } from 'lucide-react';
 import { OCCUPATIONS, BRAND_COLORS, DEFAULT_PACK_ID, resolvePackImageUrl } from './constants';
-import { AppStage, Occupation, Scores, RiasecType } from './types';
+import { AppStage, DeckPreferences, Occupation, ResponseChoice, Scores, SwipeResponse, RiasecType } from './types';
 import { SwipeCard, SwipeCardHandle } from './components/SwipeCard';
 import { LoginView, CompassLogo } from './components/LoginView';
 import { InstructionsView } from './components/InstructionsView';
@@ -13,7 +13,7 @@ const lazyWithReload = <T extends React.ComponentType<any>>(importer: () => Prom
   lazy(() => importer().catch(() => { window.location.reload(); return new Promise<{ default: T }>(() => {}); }));
 const ResultsView = lazyWithReload(() => import('./components/ResultsView').then(m => ({ default: m.ResultsView })));
 const SettingsView = lazyWithReload(() => import('./components/SettingsView').then(m => ({ default: m.SettingsView })));
-import { getOccupations, saveOccupations } from './db';
+import { clearOccupations, getOccupations, saveOccupations } from './db';
 import { useT } from './i18n';
 
 const INITIAL_SCORES: Scores = {
@@ -32,6 +32,86 @@ const shuffleArray = <T,>(array: T[]): T[] => {
     [newArray[i], newArray[j]] = [newArray[j], newArray[i]];
   }
   return newArray;
+};
+
+const pickQuickDeck = (occupations: Occupation[], perType = 4): Occupation[] => {
+  const picked: Occupation[] = [];
+  const seen = new Set<string>();
+  Object.values(RiasecType).forEach(type => {
+    shuffleArray(occupations.filter(o => o.category === type)).slice(0, perType).forEach(card => {
+      picked.push(card);
+      seen.add(card.id);
+    });
+  });
+  if (picked.length < perType * Object.values(RiasecType).length) {
+    shuffleArray(occupations).forEach(card => {
+      if (picked.length >= perType * Object.values(RiasecType).length) return;
+      if (!seen.has(card.id)) picked.push(card);
+    });
+  }
+  return shuffleArray(picked);
+};
+
+const buildPreferredQuickDeck = (occupations: Occupation[], preferredTypes: Set<RiasecType>, target = 24): Occupation[] => {
+  if (preferredTypes.size === 0) return pickQuickDeck(occupations);
+
+  const selected: Occupation[] = [];
+  const seen = new Set<string>();
+  const pushUnique = (cards: Occupation[], limit: number) => {
+    for (const card of cards) {
+      if (selected.length >= target || limit <= 0) break;
+      if (seen.has(card.id)) continue;
+      selected.push(card);
+      seen.add(card.id);
+      limit--;
+    }
+  };
+
+  const preferred = Object.values(RiasecType).filter(type => preferredTypes.has(type));
+  const perPreferred = preferred.length <= 3 ? 5 : 4;
+  preferred.forEach(type => pushUnique(shuffleArray(occupations.filter(o => o.category === type)), perPreferred));
+
+  const pools = Object.values(RiasecType)
+    .filter(type => !preferredTypes.has(type))
+    .map(type => shuffleArray(occupations.filter(o => o.category === type)));
+  let cursor = 0;
+  while (selected.length < target && pools.some(pool => pool.length > 0)) {
+    const pool = pools[cursor % pools.length];
+    const next = pool.shift();
+    if (next && !seen.has(next.id)) {
+      selected.push(next);
+      seen.add(next.id);
+    }
+    cursor++;
+  }
+
+  pushUnique(shuffleArray(occupations), target - selected.length);
+  return shuffleArray(selected);
+};
+
+const buildDeckFromPreferences = (
+  occupations: Occupation[],
+  mode: 'quick' | 'full',
+  preferences?: DeckPreferences,
+): Occupation[] => {
+  const preferredTypes = new Set(preferences?.preferredTypes || []);
+  const avoidedTypes = new Set(preferences?.avoidedTypes || []);
+  const filtered = occupations.filter(card => !avoidedTypes.has(card.category));
+  const source = filtered.length >= 10 ? filtered : occupations;
+
+  if (mode === 'quick') return buildPreferredQuickDeck(source, preferredTypes);
+
+  if (preferredTypes.size === 0) return shuffleArray(source);
+  const preferred = shuffleArray(source.filter(card => preferredTypes.has(card.category)));
+  const rest = shuffleArray(source.filter(card => !preferredTypes.has(card.category)));
+  return [...preferred, ...rest];
+};
+
+const countByType = (liked: Occupation[], maybe: Occupation[]): Scores => {
+  const next = { ...INITIAL_SCORES };
+  liked.forEach(card => { next[card.category] += 1; });
+  maybe.forEach(card => { next[card.category] += 0.45; });
+  return next;
 };
 
 // --- MILESTONE BREAKPOINTS --- (toast text comes from i18n: t('milestone.' + n))
@@ -96,6 +176,9 @@ const STORAGE_KEYS = {
   stage: 'cc_stage', currentIndex: 'cc_currentIndex', scores: 'cc_scores',
   swipeHistory: 'cc_swipeHistory', deckOrder: 'cc_deckOrder',
   soundEnabled: 'cc_soundEnabled', userName: 'cc_userName', imagePack: 'cc_imagePack',
+  likedCardIds: 'cc_likedCardIds', maybeCardIds: 'cc_maybeCardIds',
+  resultTotalCards: 'cc_resultTotalCards', answeredCount: 'cc_answeredCount',
+  responseCountsByType: 'cc_responseCountsByType',
 };
 
 // localStorage can throw (quota exceeded, Safari private mode, disabled storage).
@@ -105,17 +188,22 @@ const safeRemove = (k: string) => { try { localStorage.removeItem(k); } catch { 
 
 // --- MAIN APP COMPONENT ---
 export default function App() {
+  const [baseDeck, setBaseDeck] = useState<Occupation[]>([]);
   const [deck, setDeck] = useState<Occupation[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [scores, setScores] = useState<Scores>({ ...INITIAL_SCORES });
-  const [swipeHistory, setSwipeHistory] = useState<Array<{ index: number; direction: 'left' | 'right'; category: RiasecType }>>([]);
+  const [swipeHistory, setSwipeHistory] = useState<SwipeResponse[]>([]);
   const [likedCards, setLikedCards] = useState<Occupation[]>([]);
+  const [maybeCards, setMaybeCards] = useState<Occupation[]>([]);
+  const [answeredCount, setAnsweredCount] = useState(0);
+  const [resultTotalCards, setResultTotalCards] = useState(0);
+  const [responseCountsByType, setResponseCountsByType] = useState<Scores>({ ...INITIAL_SCORES });
   const [stage, setStage] = useState<AppStage>(AppStage.Login);
   const [isLoading, setIsLoading] = useState(true);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [userName, setUserName] = useState('');
   const [imagePack, setImagePack] = useState<string>(DEFAULT_PACK_ID);
-  const [lastSwipeDirection, setLastSwipeDirection] = useState<'left' | 'right'>('right');
+  const [lastSwipeDirection, setLastSwipeDirection] = useState<ResponseChoice>('right');
   const { t } = useT();
 
   const [milestoneNum, setMilestoneNum] = useState<number | null>(null);
@@ -129,6 +217,7 @@ export default function App() {
       try {
         const customOccupations = await getOccupations();
         const baseData = customOccupations && customOccupations.length > 0 ? customOccupations : OCCUPATIONS;
+        setBaseDeck(baseData);
         const savedStage = localStorage.getItem(STORAGE_KEYS.stage) as AppStage | null;
         const savedIndex = localStorage.getItem(STORAGE_KEYS.currentIndex);
         const savedScores = localStorage.getItem(STORAGE_KEYS.scores);
@@ -136,6 +225,11 @@ export default function App() {
         const savedDeckOrder = localStorage.getItem(STORAGE_KEYS.deckOrder);
         const savedSound = localStorage.getItem(STORAGE_KEYS.soundEnabled);
         const savedName = localStorage.getItem(STORAGE_KEYS.userName);
+        const savedLikedIds = localStorage.getItem(STORAGE_KEYS.likedCardIds);
+        const savedMaybeIds = localStorage.getItem(STORAGE_KEYS.maybeCardIds);
+        const savedResultTotal = localStorage.getItem(STORAGE_KEYS.resultTotalCards);
+        const savedAnsweredCount = localStorage.getItem(STORAGE_KEYS.answeredCount);
+        const savedTypeCounts = localStorage.getItem(STORAGE_KEYS.responseCountsByType);
 
         if (savedSound !== null) { const enabled = savedSound === 'true'; setSoundEnabled(enabled); swipeAudio.enabled = enabled; }
         if (savedName) setUserName(savedName);
@@ -152,22 +246,43 @@ export default function App() {
             if (orderedDeck.length > 0 && orderedDeck.length === orderIds.length && Number.isFinite(idx) && idx >= 0 && idx <= orderedDeck.length) {
               setDeck(orderedDeck); setCurrentIndex(idx);
               if (savedScores) setScores(JSON.parse(savedScores));
+              if (savedResultTotal) {
+                const total = parseInt(savedResultTotal, 10);
+                if (Number.isFinite(total) && total > 0) setResultTotalCards(total);
+              } else {
+                setResultTotalCards(orderedDeck.length);
+              }
+              if (savedAnsweredCount) {
+                const count = parseInt(savedAnsweredCount, 10);
+                if (Number.isFinite(count) && count >= 0) setAnsweredCount(count);
+              }
+              if (savedTypeCounts) setResponseCountsByType({ ...INITIAL_SCORES, ...JSON.parse(savedTypeCounts) });
               if (savedHistory) {
                 const history = JSON.parse(savedHistory);
                 setSwipeHistory(history);
                 // Rebuild likedCards from history + deck
-                const liked = history
-                  .filter((h: any) => h.direction === 'right')
-                  .map((h: any) => orderedDeck[h.index])
-                  .filter(Boolean);
+                const liked = savedLikedIds
+                  ? JSON.parse(savedLikedIds).map((id: string) => baseData.find(o => o.id === id)).filter(Boolean)
+                  : history
+                    .filter((h: any) => h.direction === 'right')
+                    .map((h: any) => orderedDeck[h.index])
+                    .filter(Boolean);
+                const maybe = savedMaybeIds
+                  ? JSON.parse(savedMaybeIds).map((id: string) => baseData.find(o => o.id === id)).filter(Boolean)
+                  : history
+                    .filter((h: any) => h.direction === 'maybe')
+                    .map((h: any) => orderedDeck[h.index])
+                    .filter(Boolean);
                 setLikedCards(liked);
+                setMaybeCards(maybe);
+                if (!savedScores) setScores(countByType(liked, maybe));
               }
               setStage(savedStage); setIsLoading(false); return;
             }
           } catch (e) { console.warn('Failed to restore session, starting fresh'); }
         }
         setDeck(shuffleArray(baseData));
-      } catch (err) { console.error('Failed to load occupations:', err); setDeck(shuffleArray(OCCUPATIONS)); }
+      } catch (err) { console.error('Failed to load occupations:', err); setBaseDeck(OCCUPATIONS); setDeck(shuffleArray(OCCUPATIONS)); }
       setIsLoading(false);
     };
     initDeck();
@@ -181,7 +296,12 @@ export default function App() {
     safeSet(STORAGE_KEYS.scores, JSON.stringify(scores));
     safeSet(STORAGE_KEYS.swipeHistory, JSON.stringify(swipeHistory));
     safeSet(STORAGE_KEYS.deckOrder, JSON.stringify(deck.map(o => o.id)));
-  }, [stage, currentIndex, scores, swipeHistory, deck]);
+    safeSet(STORAGE_KEYS.likedCardIds, JSON.stringify(likedCards.map(o => o.id)));
+    safeSet(STORAGE_KEYS.maybeCardIds, JSON.stringify(maybeCards.map(o => o.id)));
+    safeSet(STORAGE_KEYS.resultTotalCards, String(resultTotalCards || deck.length));
+    safeSet(STORAGE_KEYS.answeredCount, String(resultTotalCards > 0 ? Math.min(answeredCount, resultTotalCards) : answeredCount));
+    safeSet(STORAGE_KEYS.responseCountsByType, JSON.stringify(responseCountsByType));
+  }, [stage, currentIndex, scores, swipeHistory, deck, likedCards, maybeCards, resultTotalCards, answeredCount, responseCountsByType]);
 
   // --- IMAGE PRELOADING ---
   useEffect(() => {
@@ -198,6 +318,7 @@ export default function App() {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowRight') { e.preventDefault(); handleSwipe('right'); }
       else if (e.key === 'ArrowLeft') { e.preventDefault(); handleSwipe('left'); }
+      else if (e.key === 'ArrowUp') { e.preventDefault(); handleSwipe('maybe'); }
       else if (e.key === 'z' && (e.ctrlKey || e.metaKey)) { e.preventDefault(); handleUndo(); }
     };
     window.addEventListener('keydown', handleKeyDown);
@@ -215,17 +336,22 @@ export default function App() {
   }, []);
 
   // --- SWIPE HANDLER ---
-  const handleSwipe = useCallback((direction: 'left' | 'right') => {
+  const handleSwipe = useCallback((direction: ResponseChoice) => {
     if (currentIndex >= deck.length) return;
     const card = deck[currentIndex];
     setLastSwipeDirection(direction);
     if (navigator.vibrate) navigator.vibrate(50);
-    if (direction === 'right') { swipeAudio.playSwipeRight(); } else { swipeAudio.playSwipeLeft(); }
+    if (direction === 'right' || direction === 'maybe') { swipeAudio.playSwipeRight(); } else { swipeAudio.playSwipeLeft(); }
     if (direction === 'right') {
       setScores(prev => ({ ...prev, [card.category]: prev[card.category] + 1 }));
       setLikedCards(prev => [...prev, card]);
+    } else if (direction === 'maybe') {
+      setScores(prev => ({ ...prev, [card.category]: prev[card.category] + 0.45 }));
+      setMaybeCards(prev => [...prev, card]);
     }
-    setSwipeHistory(prev => [...prev, { index: currentIndex, direction, category: card.category }]);
+    setSwipeHistory(prev => [...prev, { index: currentIndex, direction, category: card.category, weight: direction === 'right' ? 1 : direction === 'maybe' ? 0.45 : 0 }]);
+    setAnsweredCount(prev => prev + 1);
+    setResponseCountsByType(prev => ({ ...prev, [card.category]: prev[card.category] + 1 }));
     const nextIndex = currentIndex + 1;
     setCurrentIndex(nextIndex);
     checkMilestone(nextIndex);
@@ -239,8 +365,13 @@ export default function App() {
     if (lastAction.direction === 'right') {
       setScores(prev => ({ ...prev, [lastAction.category]: Math.max(0, prev[lastAction.category] - 1) }));
       setLikedCards(prev => prev.slice(0, -1));
+    } else if (lastAction.direction === 'maybe') {
+      setScores(prev => ({ ...prev, [lastAction.category]: Math.max(0, prev[lastAction.category] - 0.45) }));
+      setMaybeCards(prev => prev.slice(0, -1));
     }
     setSwipeHistory(prev => prev.slice(0, -1));
+    setAnsweredCount(prev => Math.max(0, prev - 1));
+    setResponseCountsByType(prev => ({ ...prev, [lastAction.category]: Math.max(0, prev[lastAction.category] - 1) }));
     setCurrentIndex(lastAction.index);
     if (stage === AppStage.Results) setStage(AppStage.Swipe);
   }, [swipeHistory, stage]);
@@ -265,18 +396,92 @@ export default function App() {
     if (asAdmin) { setStage(AppStage.Settings); } else { setStage(AppStage.Instructions); }
   };
 
-  const handleStartSwiping = () => {
-    if (currentIndex === 0 && swipeHistory.length === 0) setDeck(shuffleArray(deck));
+  const handleStartSwiping = (mode: 'quick' | 'full' = 'full', preferences?: DeckPreferences) => {
+    const source = baseDeck.length ? baseDeck : deck;
+    const nextDeck = buildDeckFromPreferences(source, mode, preferences);
+    setDeck(nextDeck);
+    setResultTotalCards(nextDeck.length);
+    setAnsweredCount(0);
+    setResponseCountsByType({ ...INITIAL_SCORES });
+    setScores({ ...INITIAL_SCORES });
+    setSwipeHistory([]);
+    setLikedCards([]);
+    setMaybeCards([]);
+    setCurrentIndex(0);
     setStage(AppStage.Swipe);
   };
 
   const handleRestart = () => {
-    setScores({ ...INITIAL_SCORES }); setSwipeHistory([]); setLikedCards([]); setCurrentIndex(0);
-    setDeck(shuffleArray(deck)); setUserName('');
+    setScores({ ...INITIAL_SCORES }); setSwipeHistory([]); setLikedCards([]); setMaybeCards([]); setCurrentIndex(0);
+    setAnsweredCount(0); setResultTotalCards(0); setResponseCountsByType({ ...INITIAL_SCORES });
+    setDeck(shuffleArray(baseDeck.length ? baseDeck : deck)); setUserName('');
     safeRemove(STORAGE_KEYS.stage); safeRemove(STORAGE_KEYS.currentIndex);
     safeRemove(STORAGE_KEYS.scores); safeRemove(STORAGE_KEYS.swipeHistory);
     safeRemove(STORAGE_KEYS.deckOrder); safeRemove(STORAGE_KEYS.userName);
+    safeRemove(STORAGE_KEYS.likedCardIds); safeRemove(STORAGE_KEYS.maybeCardIds);
+    safeRemove(STORAGE_KEYS.resultTotalCards); safeRemove(STORAGE_KEYS.answeredCount);
+    safeRemove(STORAGE_KEYS.responseCountsByType);
     setStage(AppStage.Login);
+  };
+
+  const handleClearLocalData = async () => {
+    const freshDeck = shuffleArray(OCCUPATIONS);
+    try {
+      Object.keys(localStorage)
+        .filter(key => key.startsWith('cc_'))
+        .forEach(safeRemove);
+    } catch {
+      Object.values(STORAGE_KEYS).forEach(safeRemove);
+      safeRemove('cc_favoriteCareers');
+      safeRemove('cc_careerNotes');
+      safeRemove('cc_lang');
+    }
+
+    try { await clearOccupations(); } catch (e) { console.error('Failed to clear local deck customizations:', e); }
+
+    setBaseDeck(OCCUPATIONS);
+    setDeck(freshDeck);
+    setScores({ ...INITIAL_SCORES });
+    setSwipeHistory([]);
+    setLikedCards([]);
+    setMaybeCards([]);
+    setAnsweredCount(0);
+    setResultTotalCards(0);
+    setResponseCountsByType({ ...INITIAL_SCORES });
+    setCurrentIndex(0);
+    setUserName('');
+    setImagePack(DEFAULT_PACK_ID);
+    setSoundEnabled(true);
+    swipeAudio.enabled = true;
+    setStage(AppStage.Login);
+  };
+
+  const handleFinishNow = () => {
+    if (currentIndex > 0 || answeredCount > 0) setStage(AppStage.Results);
+  };
+
+  const handleRetakeType = (type: RiasecType) => {
+    const source = baseDeck.length ? baseDeck : OCCUPATIONS;
+    const typeCards = shuffleArray(source.filter(card => card.category === type));
+    const previousTypeCount = responseCountsByType[type] || 0;
+    const retakeSize = previousTypeCount > 0 ? previousTypeCount : Math.min(4, typeCards.length);
+    const retakeDeck = typeCards.slice(0, retakeSize);
+    if (retakeDeck.length === 0) return;
+    const nextLiked = likedCards.filter(card => card.category !== type);
+    const nextMaybe = maybeCards.filter(card => card.category !== type);
+    const nextAnsweredBase = Math.max(0, answeredCount - previousTypeCount);
+    const nextTotal = Math.max(0, (resultTotalCards || answeredCount || deck.length || source.length) - previousTypeCount + retakeDeck.length);
+
+    setDeck(retakeDeck);
+    setCurrentIndex(0);
+    setLikedCards(nextLiked);
+    setMaybeCards(nextMaybe);
+    setScores(countByType(nextLiked, nextMaybe));
+    setSwipeHistory([]);
+    setAnsweredCount(Math.min(nextAnsweredBase, nextTotal || nextAnsweredBase));
+    setResponseCountsByType(prev => ({ ...prev, [type]: 0 }));
+    setResultTotalCards(nextTotal || retakeDeck.length);
+    setStage(AppStage.Swipe);
   };
 
   const handleEditResponses = () => {
@@ -288,11 +493,14 @@ export default function App() {
 
   const handleOccupationUpdate = async (id: string, updates: Partial<Occupation>) => {
     const updatedDeck = deck.map(occ => occ.id === id ? { ...occ, ...updates } : occ);
+    const updatedBaseDeck = (baseDeck.length ? baseDeck : deck).map(occ => occ.id === id ? { ...occ, ...updates } : occ);
     setDeck(updatedDeck);
-    try { await saveOccupations(updatedDeck); } catch (e) { console.error('Failed to save occupation update:', e); }
+    setBaseDeck(updatedBaseDeck);
+    try { await saveOccupations(updatedBaseDeck); } catch (e) { console.error('Failed to save occupation update:', e); }
   };
 
   const handleSettingsReset = async () => {
+    setBaseDeck(OCCUPATIONS);
     setDeck(shuffleArray(OCCUPATIONS));
     try { await saveOccupations(OCCUPATIONS); } catch (e) { console.error('Failed to reset occupations:', e); }
   };
@@ -302,7 +510,8 @@ export default function App() {
   // --- EXIT ANIMATION VARIANTS (direction-aware) ---
   const cardExitVariants = {
     exit: {
-      x: lastSwipeDirection === 'right' ? 300 : -300,
+      x: lastSwipeDirection === 'right' ? 300 : lastSwipeDirection === 'left' ? -300 : 0,
+      y: lastSwipeDirection === 'maybe' ? -160 : 0,
       opacity: 0,
       scale: 0.95,
       transition: { duration: 0.3 }
@@ -322,10 +531,10 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-    <div className="h-screen w-screen flex items-center justify-center bg-gray-100 overflow-hidden">
-      <div className="relative w-full max-w-md h-full max-h-[900px] bg-white shadow-2xl overflow-hidden flex flex-col">
+    <div className="h-screen w-screen flex items-center justify-center bg-[#dfeceb] overflow-hidden">
+      <div className="relative w-full max-w-md h-full max-h-[900px] bg-[#f6f9f6] shadow-2xl overflow-hidden flex flex-col">
 
-        {stage === AppStage.Login && <LoginView onLogin={handleLogin} />}
+        {stage === AppStage.Login && <LoginView onLogin={handleLogin} onClearData={handleClearLocalData} />}
         {stage === AppStage.Instructions && <InstructionsView onStart={handleStartSwiping} isLoading={false} imagePack={imagePack} onPackChange={handlePackChange} soundEnabled={soundEnabled} onToggleSound={toggleSound} />}
         {(stage === AppStage.Settings || stage === AppStage.Results) && (
           <Suspense fallback={<div className="h-full w-full flex items-center justify-center"><CompassLogo size={48} className="animate-pulse" /></div>}>
@@ -334,19 +543,20 @@ export default function App() {
             )}
             {stage === AppStage.Results && (
               <ResultsView scores={scores} onRestart={handleRestart} onEditResponses={handleEditResponses}
-                totalCards={deck.length} userName={userName} swipeHistory={swipeHistory} deck={deck} likedCards={likedCards} />
+                totalCards={resultTotalCards || deck.length} answeredCount={answeredCount} onRetakeType={handleRetakeType}
+                userName={userName} swipeHistory={swipeHistory} deck={deck} likedCards={likedCards} maybeCards={maybeCards} onClearData={handleClearLocalData} />
             )}
           </Suspense>
         )}
 
         {/* === SWIPE VIEW === */}
         {stage === AppStage.Swipe && (
-          <div className="flex flex-col h-full" role="main">
+          <div className="flex flex-col h-full bg-[#f6f9f6]" role="main">
             <h1 className="sr-only">{t('app.swipeTitle')}</h1>
             {/* -- TOP BAR -- */}
-            <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0 z-30 bg-white">
+            <div className="flex items-center justify-between px-4 pt-4 pb-2 shrink-0 z-30 bg-[#f6f9f6]/95">
               <div className="flex items-center gap-2">
-                <button onClick={handleExitToStart} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                <button onClick={handleExitToStart} className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
                   aria-label={t('common.exitToStart')}>
                   <Home className="w-4 h-4 text-gray-600" />
                 </button>
@@ -354,12 +564,12 @@ export default function App() {
                 <span className="text-sm font-bold text-gray-800">Inklings</span>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={toggleSound} className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+                <button onClick={toggleSound} className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200"
                   aria-label={soundEnabled ? t('app.mute') : t('app.unmute')}>
                   {soundEnabled ? <Volume2 className="w-4 h-4 text-gray-600" /> : <VolumeX className="w-4 h-4 text-gray-400" />}
                 </button>
                 <button onClick={handleUndo} disabled={swipeHistory.length === 0}
-                  className="p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                  className="flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 transition-colors hover:bg-gray-200 disabled:opacity-30 disabled:cursor-not-allowed"
                   aria-label={t('app.undo')}>
                   <RotateCcw className="w-4 h-4 text-gray-600" />
                 </button>
@@ -370,7 +580,14 @@ export default function App() {
             <div className="px-4 pb-2 shrink-0">
               <div className="flex items-center justify-between mb-1">
                 <span className="text-xs font-medium text-gray-500" role="status" aria-live="polite">{currentIndex} {t('app.of')} {deck.length}</span>
-                <span className="text-xs font-medium text-gray-500">{Math.round(progress)}%</span>
+                <div className="flex items-center gap-3">
+                  {currentIndex >= 12 && currentIndex < deck.length && (
+                    <button onClick={handleFinishNow} className="text-xs font-bold underline underline-offset-2" style={{ color: BRAND_COLORS.blue }}>
+                      {t('app.finishNow')}
+                    </button>
+                  )}
+                  <span className="text-xs font-medium text-gray-500">{Math.round(progress)}%</span>
+                </div>
               </div>
               <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
                 <motion.div className="h-full rounded-full" style={{ backgroundColor: BRAND_COLORS.blue }}
@@ -401,31 +618,48 @@ export default function App() {
               )}
             </div>
 
-            {/* -- THUMBS UP / DOWN BUTTONS -- */}
+            {/* -- RESPONSE BUTTONS -- */}
             {currentIndex < deck.length && (
-              <div className="flex items-center justify-center gap-8 py-3 px-4 shrink-0 bg-white">
-                <button
-                  onClick={() => { if (cardRef.current) cardRef.current.triggerSwipe('left'); }}
-                  className="w-16 h-16 rounded-full bg-red-50 border-2 border-red-200 flex items-center justify-center hover:bg-red-100 active:scale-90 transition-all shadow-sm"
-                  aria-label={t('common.dislike')}
-                >
-                  <ThumbsDown className="w-7 h-7 text-red-500" />
-                </button>
-                <button
-                  onClick={() => { if (cardRef.current) cardRef.current.triggerSwipe('right'); }}
-                  className="w-16 h-16 rounded-full bg-green-50 border-2 border-green-200 flex items-center justify-center hover:bg-green-100 active:scale-90 transition-all shadow-sm"
-                  aria-label={t('common.like')}
-                >
-                  <ThumbsUp className="w-7 h-7 text-green-500" />
-                </button>
+              <div className="px-4 pt-3 pb-4 shrink-0 bg-[#f6f9f6]">
+                <div className="flex items-center justify-center gap-5">
+                  <button
+                    onClick={() => { if (cardRef.current) cardRef.current.triggerSwipe('left'); }}
+                    className="w-14 h-14 rounded-full bg-red-50 border-2 border-red-200 flex items-center justify-center hover:bg-red-100 active:scale-90 transition-all shadow-sm"
+                    aria-label={t('common.dislike')}
+                  >
+                    <ThumbsDown className="w-6 h-6 text-red-500" />
+                  </button>
+                  <button
+                    onClick={() => { if (cardRef.current) cardRef.current.triggerSwipe('maybe'); }}
+                    className="w-14 h-14 rounded-full bg-yellow-50 border-2 border-yellow-200 flex items-center justify-center hover:bg-yellow-100 active:scale-90 transition-all shadow-sm"
+                    aria-label={t('common.maybe')}
+                  >
+                    <HelpCircle className="w-6 h-6 text-yellow-600" />
+                  </button>
+                  <button
+                    onClick={() => { if (cardRef.current) cardRef.current.triggerSwipe('right'); }}
+                    className="w-14 h-14 rounded-full bg-green-50 border-2 border-green-200 flex items-center justify-center hover:bg-green-100 active:scale-90 transition-all shadow-sm"
+                    aria-label={t('common.like')}
+                  >
+                    <ThumbsUp className="w-6 h-6 text-green-500" />
+                  </button>
+                </div>
+                {swipeHistory.length > 0 && (
+                  <button onClick={handleUndo}
+                    className="mt-3 mx-auto flex items-center gap-1.5 text-xs font-bold underline underline-offset-2"
+                    style={{ color: BRAND_COLORS.blue }}>
+                    <RotateCcw className="w-3.5 h-3.5" />
+                    {t('app.undoLastChoice')}
+                  </button>
+                )}
               </div>
             )}
 
             {/* -- MILESTONE TOAST -- */}
             <AnimatePresence>
               {milestoneNum !== null && (
-                <motion.div initial={{ opacity: 0, y: 30, scale: 0.9 }} animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -20, scale: 0.9 }} className="absolute bottom-24 left-4 right-4 z-50 pointer-events-none">
+                <motion.div initial={{ opacity: 0, y: -12, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -12, scale: 0.96 }} className="absolute left-4 right-4 top-[76px] z-50 pointer-events-none">
                   <div className="flex items-center gap-3 px-5 py-4 rounded-2xl shadow-xl mx-auto max-w-sm"
                     style={{ backgroundColor: BRAND_COLORS.blue }} role="status" aria-live="polite">
                     <Trophy className="w-6 h-6 text-yellow-400 shrink-0" />

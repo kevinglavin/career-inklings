@@ -21,7 +21,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ occupations, onUpdat
       <div className="p-4 border-b border-gray-100 flex items-center justify-between bg-white sticky top-0 z-10 shadow-sm">
          <button
             onClick={onBack}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors text-gray-600"
+            className="flex h-11 w-11 items-center justify-center rounded-full text-gray-600 transition-colors hover:bg-gray-100"
          >
             <ArrowLeft className="w-6 h-6" />
          </button>
@@ -53,7 +53,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ occupations, onUpdat
                          <button
                             key={pack.id}
                             onClick={() => onPackChange(pack.id)}
-                            className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition-colors ${active ? 'text-white' : 'text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100'}`}
+                            className={`min-h-11 px-3 py-2 rounded-full text-sm font-semibold border transition-colors ${active ? 'text-white' : 'text-gray-600 bg-gray-50 border-gray-200 hover:bg-gray-100'}`}
                             style={active ? { backgroundColor: BRAND_COLORS.blue, borderColor: BRAND_COLORS.blue } : undefined}
                          >
                             {pack.label}
@@ -99,7 +99,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ occupations, onUpdat
                         type="text"
                         value={occ.description}
                         onChange={(e) => onUpdate(occ.id, { description: e.target.value })}
-                        className="w-full text-xs text-gray-500 bg-transparent border-b border-gray-200 focus:border-blue-500 focus:bg-gray-50 focus:outline-none transition-all py-1 mt-1 rounded-b-sm"
+                        className="mt-1 min-h-10 w-full rounded-b-sm border-b border-gray-200 bg-transparent py-2 text-base text-gray-500 transition-all focus:border-blue-500 focus:bg-gray-50 focus:outline-none"
                         placeholder={t('admin.description')}
                      />
                  </div>

@@ -1,8 +1,8 @@
-import React, { useState, useRef } from 'react';
-import { ExternalLink, Download, ChevronRight, Undo2, Loader2, ArrowLeft, Volume2 } from 'lucide-react';
-import { Scores, RiasecType, Occupation } from '../types';
+import React, { useEffect, useMemo, useState } from 'react';
+import { ExternalLink, Download, ChevronRight, Undo2, Loader2, ArrowLeft, Volume2, Copy, Star, Search, Share2, Lightbulb, Printer, MessageCircle, ClipboardCheck, RefreshCcw } from 'lucide-react';
+import { Scores, RiasecType, Occupation, SwipeResponse } from '../types';
 import { RIASEC_COLORS, BRAND_COLORS } from '../constants';
-import { computeProfile, Profile, RIASEC_TYPES } from '../careerProfile';
+import { computeProfile, generateSummary, RIASEC_TYPES } from '../careerProfile';
 import { localizeOccupation } from '../occupations.es';
 import { CompassLogo } from './LoginView';
 import { motion } from 'framer-motion';
@@ -11,20 +11,25 @@ import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Responsi
 import { jsPDF } from 'jspdf';
 import { useT } from '../i18n';
 import { speak, speechSupported } from '../speech';
+import { LegalSupport } from './LegalSupport';
 
 interface ResultsViewProps {
   scores: Scores;
   onRestart: () => void;
   onEditResponses: () => void;
+  onRetakeType: (type: RiasecType) => void;
   totalCards: number;
+  answeredCount: number;
   userName: string;
-  swipeHistory: Array<{ index: number; direction: 'left' | 'right'; category: RiasecType }>;
+  swipeHistory: SwipeResponse[];
   deck: Occupation[];
   likedCards: Occupation[];
+  maybeCards: Occupation[];
+  onClearData: () => void | Promise<void>;
 }
 
 // Flippable Result Card
-const ResultItemCard: React.FC<{ type: RiasecType; score: number; rank: number }> = ({ type, score, rank }) => {
+const ResultItemCard: React.FC<{ type: RiasecType; score: number; rawScore: number; rank: number }> = ({ type, score, rawScore, rank }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const { t } = useT();
   const bgColor = RIASEC_COLORS[type];
@@ -45,6 +50,7 @@ const ResultItemCard: React.FC<{ type: RiasecType; score: number; rank: number }
             </div>
           </div>
           <p className="text-gray-600 text-base leading-relaxed line-clamp-3 my-2">{t('riasec.desc.' + type)}</p>
+          <p className="text-xs font-bold text-gray-500">{Math.round(rawScore * 10) / 10} {t('results.rawScore')}</p>
           <div className="text-sm font-bold uppercase tracking-wide flex items-center" style={{ color: bgColor }}>
             {t('results.tapToLearn')} <ChevronRight className="w-4 h-4 ml-1" />
           </div>
@@ -71,17 +77,37 @@ function hexToRgb(hex: string): [number, number, number] {
   return [r, g, b];
 }
 
-export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onEditResponses, totalCards, userName, swipeHistory, deck, likedCards }) => {
+export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onEditResponses, onRetakeType, totalCards, answeredCount, userName, swipeHistory, deck, likedCards, maybeCards, onClearData }) => {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfError, setPdfError] = useState(false);
+  const [shortlistExpanded, setShortlistExpanded] = useState(false);
+  const [careerQuery, setCareerQuery] = useState('');
+  const [careerFilter, setCareerFilter] = useState<'all' | 'starred' | RiasecType>('all');
+  const [copiedSummary, setCopiedSummary] = useState(false);
+  const [counselorView, setCounselorView] = useState(false);
+  const [favorites, setFavorites] = useState<Record<string, boolean>>(() => {
+    try { return JSON.parse(localStorage.getItem('cc_favoriteCareers') || '{}'); } catch { return {}; }
+  });
+  const [notes, setNotes] = useState<Record<string, string>>(() => {
+    try { return JSON.parse(localStorage.getItem('cc_careerNotes') || '{}'); } catch { return {}; }
+  });
   const { t, lang } = useT();
 
   // --- Weighted Profile Computation ---
-  const profile = computeProfile(likedCards);
+  const profile = computeProfile(likedCards, maybeCards);
+  const generatedSummary = generateSummary(profile);
   const { ranked, code: hollandCode, codeTypes, hasTopTie, hasBoundaryTie, tiedTypes } = profile;
 
   const top3 = codeTypes.slice(0, 3);
   const displayName = userName || t('results.defaultName');
+  const summary = lang === 'en'
+    ? generatedSummary
+    : {
+        heading: t('summary.heading'),
+        body: top3.length
+          ? t('summary.body', { types: top3.map(x => t('riasec.label.' + x.type)).join(', ') })
+          : t('summary.empty'),
+      };
 
   // O*NET link: point at the single top interest, not the multi-type path
   const topInterestType = top3.length > 0 ? top3[0].type : '';
@@ -92,12 +118,60 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   // For the score breakdown bar chart
   const maxScore = ranked[0]?.score || 1;
   const totalLikes = profile.likedCount;
+  const maybeCount = maybeCards.length;
   const likedSeen = new Set<string>();
   const likedUnique: Occupation[] = likedCards.filter(o => {
     if (likedSeen.has(o.id)) return false;
     likedSeen.add(o.id);
     return true;
   });
+  const maybeSeen = new Set<string>(likedUnique.map(o => o.id));
+  const maybeUnique: Occupation[] = maybeCards.filter(o => {
+    if (maybeSeen.has(o.id)) return false;
+    maybeSeen.add(o.id);
+    return true;
+  });
+  const shortlist = [
+    ...likedUnique.map(occ => ({ occ, response: 'liked' as const })),
+    ...maybeUnique.map(occ => ({ occ, response: 'maybe' as const })),
+  ];
+  const likedByType = RIASEC_TYPES.reduce((acc, type) => {
+    acc[type] = likedUnique.filter(o => o.category === type).length;
+    return acc;
+  }, {} as Record<RiasecType, number>);
+  const maybeByType = RIASEC_TYPES.reduce((acc, type) => {
+    acc[type] = maybeUnique.filter(o => o.category === type).length;
+    return acc;
+  }, {} as Record<RiasecType, number>);
+  const strongestEvidence = ranked
+    .slice(0, 3)
+    .map(item => `${t('riasec.label.' + item.type)} (${likedByType[item.type]} ${t('results.likesShort')}, ${maybeByType[item.type]} ${t('results.maybesShort')})`)
+    .join(' | ');
+  const topSignals = ranked.slice(0, 3).map(item => ({
+    ...item,
+    liked: likedByType[item.type],
+    maybe: maybeByType[item.type],
+    weighted: item.score,
+  }));
+  const displayAnsweredCount = totalCards > 0 ? Math.min(answeredCount, totalCards) : answeredCount;
+  const answeredRatio = totalCards > 0 ? displayAnsweredCount / totalCards : 0;
+  const topGap = ranked[0] && ranked[1] ? ranked[0].score - ranked[1].score : 0;
+  const topGapRatio = ranked[0]?.score ? topGap / ranked[0].score : 0;
+  const confidenceLevel = displayAnsweredCount < Math.min(12, totalCards || 12) || answeredRatio < 0.45
+    ? 'low'
+    : (hasTopTie || hasBoundaryTie || topGapRatio < 0.08 ? 'medium' : 'high');
+  const confidenceColor = confidenceLevel === 'high' ? BRAND_COLORS.green : confidenceLevel === 'medium' ? BRAND_COLORS.orange : BRAND_COLORS.red;
+  const filteredShortlist = useMemo(() => shortlist.filter(({ occ }) => {
+    const lo = localizeOccupation(occ, lang);
+    const query = careerQuery.trim().toLowerCase();
+    const matchesQuery = !query || `${lo.title} ${lo.description} ${t('riasec.label.' + occ.category)}`.toLowerCase().includes(query);
+    const matchesFilter = careerFilter === 'all' || (careerFilter === 'starred' ? favorites[occ.id] : occ.category === careerFilter);
+    return matchesQuery && matchesFilter;
+  }), [shortlist, careerFilter, careerQuery, favorites, lang, t]);
+  const visibleShortlist = shortlistExpanded ? filteredShortlist : filteredShortlist.slice(0, 8);
+
+  useEffect(() => { try { localStorage.setItem('cc_favoriteCareers', JSON.stringify(favorites)); } catch { /* ignore */ } }, [favorites]);
+  useEffect(() => { try { localStorage.setItem('cc_careerNotes', JSON.stringify(notes)); } catch { /* ignore */ } }, [notes]);
   const spokenResults = hollandCode
     ? t('report.spoken', { code: hollandCode.split('').join(', '), n: totalLikes, total: totalCards, types: top3.map(x => t('riasec.label.' + x.type)).join(', ') })
     : t('results.noSignificant');
@@ -110,8 +184,9 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   }));
 
   // --- Share Handlers ---
-  const currentUrl = window.location.href;
+  const currentUrl = 'https://career-inklings.netlify.app/';
   const shareText = t('results.shareText', { code: hollandCode });
+  const summaryText = `${t('results.interestCode')}: ${hollandCode || '---'}\n${summary.heading}: ${summary.body}\n${t('results.evidence')}: ${strongestEvidence}`;
   const handleShareFacebook = () => { window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`, '_blank'); };
   const handleShareLinkedIn = () => { window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(currentUrl)}`, '_blank'); };
   const handleShareWhatsApp = () => { window.open(`https://wa.me/?text=${encodeURIComponent(shareText + ' ' + currentUrl)}`, '_blank'); };
@@ -121,6 +196,14 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
     try { await navigator.clipboard.writeText(currentUrl); setCopied(true); setTimeout(() => setCopied(false), 2000); }
     catch { /* fallback */ }
   };
+  const handleCopySummary = async () => {
+    try { await navigator.clipboard.writeText(summaryText); setCopiedSummary(true); setTimeout(() => setCopiedSummary(false), 2000); }
+    catch { /* fallback */ }
+  };
+  const appendNote = (id: string, text: string) => {
+    setNotes(prev => ({ ...prev, [id]: prev[id] ? `${prev[id]}\n${text}` : text }));
+  };
+  const handlePrint = () => window.print();
 
   // --- PDF GENERATION — Inklings teen report (cover + results), modeled on Report/inklings-report-teen ---
   const generatePdfBlob = async (): Promise<Blob> => {
@@ -398,10 +481,10 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   };
 
   return (
-    <div className="flex flex-col h-full bg-white relative">
+    <div className="flex flex-col h-full bg-[#f6f9f6] relative">
 
       {/* --- HEADER --- */}
-      <div className="pt-12 pb-4 px-6 text-center border-b border-gray-100 bg-white shrink-0 z-10">
+      <div className="pt-12 pb-4 px-6 text-center border-b border-gray-100 bg-[#f6f9f6] shrink-0 z-10">
         <div className="flex items-center justify-center gap-2 mb-2">
           <CompassLogo size={28} />
           <h1 className="text-lg font-bold text-gray-900">Inklings</h1>
@@ -417,65 +500,169 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
       </div>
 
       {/* --- SCROLLABLE CONTENT --- */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-5 py-6 space-y-6 pb-24 bg-gray-50">
+      <div className="flex-1 overflow-y-auto overflow-x-hidden no-scrollbar px-5 py-6 space-y-6 pb-24 bg-[#eef5f2]">
 
-        {/* 1. HOLLAND CODE */}
         <div className="text-center bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h3 className="text-gray-500 font-bold tracking-widest text-xs uppercase mb-3">{t('results.interestCode')}</h3>
           <div className="text-6xl font-black tracking-wider mb-3" style={{ color: BRAND_COLORS.blue }}>{hollandCode || '---'}</div>
-          <p className="text-sm text-gray-500">{t('results.likedOf', { n: totalLikes, total: totalCards })}</p>
+          <p className="text-sm text-gray-500">{t('results.likedMaybeOf', { liked: totalLikes, maybe: maybeCount, total: totalCards })}</p>
+          <div className="mt-4 mx-auto max-w-xs rounded-xl border border-gray-100 bg-gray-50 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <span className="text-xs font-black uppercase tracking-wide text-gray-500">{t('results.confidence')}</span>
+              <span className="text-sm font-black" style={{ color: confidenceColor }}>{t('results.confidence.' + confidenceLevel)}</span>
+            </div>
+            <p className="mt-1 text-xs text-gray-500 leading-relaxed">
+              {t('results.confidenceBody.' + confidenceLevel, { answered: displayAnsweredCount, total: totalCards })}
+            </p>
+          </div>
           {hasTopTie && <p className="text-xs text-gray-500 mt-2">{t('results.topTie')}</p>}
-          {hasBoundaryTie && !hasTopTie && <p className="text-xs text-gray-500 mt-2">{t('results.boundaryTie')}</p>}
+          {hasBoundaryTie && !hasTopTie && (
+            <p className="text-xs text-gray-500 mt-2">
+              {t('results.boundaryTieTypes', { types: tiedTypes.map(type => t('riasec.label.' + type)).join(', ') })}
+            </p>
+          )}
+          <p className="text-xs text-gray-400 mt-4 leading-relaxed">{t('results.validityNote')}</p>
         </div>
 
-        {/* 2. PRIMARY CTA */}
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div className="flex items-center gap-2 mb-2">
+            <Lightbulb className="w-5 h-5" style={{ color: BRAND_COLORS.orange }} />
+            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">{summary.heading}</h3>
+          </div>
+          <p className="text-sm text-gray-600 leading-relaxed">{summary.body}</p>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">{t('results.whyTitle')}</h3>
+          <p className="text-sm text-gray-600 leading-relaxed mb-4">
+            {t('results.whyBody', { evidence: strongestEvidence || t('results.noEvidence') })}
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {topSignals.map(item => (
+              <div key={item.type} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <span className="text-xs font-bold uppercase tracking-wide" style={{ color: RIASEC_COLORS[item.type] }}>
+                    {t('riasec.label.' + item.type)}
+                  </span>
+                  <span className="text-xs font-bold text-gray-500">{Math.round(item.normalized * 10) / 10}%</span>
+                </div>
+                <p className="text-[11px] text-gray-500">
+                  {t('results.signalStats', { liked: item.liked, maybe: item.maybe, score: Math.round(item.weighted * 10) / 10 })}
+                </p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">{t('results.topSignals')}</h3>
+          <div className="space-y-2">
+            {topSignals.map(item => (
+              <div key={item.type} className="flex items-center gap-3 rounded-xl bg-gray-50 border border-gray-100 p-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-full text-white text-sm font-black shrink-0" style={{ backgroundColor: RIASEC_COLORS[item.type] }}>
+                  {item.letter}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-sm font-bold text-gray-800">{t('riasec.label.' + item.type)}</p>
+                  <p className="text-xs text-gray-500">{item.liked} {t('results.likesShort')} / {item.maybe} {t('results.maybesShort')}</p>
+                </div>
+                <div className="text-right shrink-0">
+                  <p className="text-sm font-black text-gray-900">{Math.round(item.weighted * 10) / 10}</p>
+                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">{t('results.rawScore')}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <button onClick={handleDownloadPdf} disabled={isGeneratingPdf}
+            className="flex items-center justify-center w-full py-4 text-white rounded-xl font-bold transition-transform active:scale-95 shadow-lg hover:opacity-90 disabled:opacity-60"
+            style={{ backgroundColor: BRAND_COLORS.blue }}>
+            {isGeneratingPdf ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <Download className="w-5 h-5 mr-2" />}
+            <span>{t('results.downloadReport')}</span>
+          </button>
+          <button onClick={handleCopySummary}
+            className="flex items-center justify-center w-full py-4 rounded-xl font-bold border-2 bg-white transition-transform active:scale-95 hover:bg-gray-50"
+            style={{ borderColor: BRAND_COLORS.blue, color: BRAND_COLORS.blue }}>
+            <Copy className="w-5 h-5 mr-2" />
+            <span>{copiedSummary ? t('results.summaryCopied') : t('results.copySummary')}</span>
+          </button>
+        </div>
+        <button
+          onClick={() => setCounselorView(v => !v)}
+          className="flex items-center justify-center w-full py-3 rounded-xl font-bold border border-gray-200 bg-white text-gray-700 transition-transform active:scale-95 hover:bg-gray-50"
+          aria-pressed={counselorView}
+        >
+          <ClipboardCheck className="w-4 h-4 mr-2" />
+          {counselorView ? t('results.studentView') : t('results.counselorView')}
+        </button>
+        <span className="sr-only" role="status" aria-live="polite">{copiedSummary ? t('results.summaryCopied') : ''}</span>
+        {pdfError && <p className="text-center text-sm text-red-600" role="alert">{t('results.pdfError')}</p>}
+
+        {counselorView && (
+          <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+            <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">{t('results.counselorHeading')}</h3>
+            <p className="text-sm text-gray-600 leading-relaxed mb-4">{t('results.counselorSub')}</p>
+            <div className="rounded-xl bg-gray-50 border border-gray-100 p-4 space-y-3">
+              <p className="text-sm text-gray-700 leading-relaxed"><strong>{summary.heading}:</strong> {summary.body}</p>
+              <p className="text-sm text-gray-700 leading-relaxed"><strong>{t('results.topSignals')}:</strong> {strongestEvidence || t('results.noEvidence')}</p>
+              <p className="text-sm text-gray-700 leading-relaxed"><strong>{t('results.nextSteps')}:</strong> {t('results.printableFocus')}</p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 mt-4">
+              <button onClick={handleCopySummary} className="py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50">
+                {copiedSummary ? t('results.summaryCopied') : t('results.copySummary')}
+              </button>
+              <button onClick={handleDownloadPdf} disabled={isGeneratingPdf} className="py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50 disabled:opacity-60">
+                {isGeneratingPdf ? t('results.generating') : t('results.downloadReport')}
+              </button>
+              <button onClick={handlePrint} className="py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-700 hover:bg-gray-50">
+                <Printer className="inline w-4 h-4 mr-1" />
+                {t('results.print')}
+              </button>
+            </div>
+          </div>
+        )}
+
         <a href={onetUrl} target="_blank" rel="noopener noreferrer"
-          className="flex items-center justify-center w-full py-4 text-white rounded-xl font-bold transition-transform active:scale-95 shadow-lg hover:opacity-90"
-          style={{ backgroundColor: BRAND_COLORS.blue }}>
+          className="flex items-center justify-center w-full py-4 rounded-xl font-bold border border-gray-200 bg-white text-gray-700 transition-transform active:scale-95 hover:bg-gray-50">
           <span>{t('results.viewMatching')}</span>
           <ExternalLink className="w-5 h-5 ml-2" />
         </a>
 
-        {/* LIKED CAREERS SHORTLIST */}
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide mb-1">{t('results.likedHeading')} ({likedUnique.length})</h3>
-          {likedUnique.length > 0 ? (
-            <>
-              <p className="text-xs text-gray-500 mb-3">{t('results.likedSub')}</p>
-              <div className="space-y-2">
-                {likedUnique.map(occ => {
-                  const lo = localizeOccupation(occ, lang);
-                  return (
-                  <a key={occ.id} href={`https://www.onetonline.org/link/summary/${encodeURIComponent(occ.onetCode)}`} target="_blank" rel="noopener noreferrer"
-                    className="flex items-center justify-between gap-3 p-3 rounded-xl border border-gray-100 hover:bg-gray-50 transition-colors">
-                    <div className="min-w-0">
-                      <p className="font-semibold text-gray-800 text-sm truncate">{lo.title}</p>
-                      <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: RIASEC_COLORS[occ.category] }}>{t('riasec.label.' + occ.category)}</span>
-                    </div>
-                    <ExternalLink className="w-4 h-4 text-gray-500 shrink-0" />
-                  </a>
-                  );
-                })}
-              </div>
-            </>
-          ) : (
-            <p className="text-sm text-gray-500">{t('results.likedEmpty')}</p>
-          )}
-        </div>
-
-        {/* 3. TOP INTERESTS */}
         <div>
           <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide mb-3">{t('results.topInterests')}</h3>
           <div className="space-y-3">
             {top3.length > 0 ? top3.map((item, i) => (
-              <ResultItemCard key={item.type} type={item.type} score={Math.round(item.normalized * 10) / 10} rank={i} />
+              <ResultItemCard key={item.type} type={item.type} score={Math.round(item.normalized * 10) / 10} rawScore={item.score} rank={i} />
             )) : (
               <div className="p-6 bg-white rounded-xl text-center text-gray-500">{t('results.noSignificant')}</div>
             )}
           </div>
         </div>
 
-        {/* 4. RIASEC RADAR */}
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div className="flex items-start gap-3 mb-3">
+            <RefreshCcw className="w-5 h-5 shrink-0 mt-0.5" style={{ color: BRAND_COLORS.blue }} />
+            <div>
+              <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">{t('results.retakeHeading')}</h3>
+              <p className="text-xs text-gray-500 mt-1">{t('results.retakeSub')}</p>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2 pb-1">
+            {RIASEC_TYPES.map(type => (
+              <button
+                key={type}
+                onClick={() => onRetakeType(type)}
+                className="min-h-11 px-3 py-2 rounded-full text-xs font-bold text-white"
+                style={{ backgroundColor: RIASEC_COLORS[type] }}
+              >
+                {t('results.retakeType', { type: t('riasec.label.' + type) })}
+              </button>
+            ))}
+          </div>
+        </div>
+
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <h3 className="text-sm font-bold text-gray-800 mb-3 uppercase tracking-wide">{t('results.riasecProfile')}</h3>
           <div className="w-full" style={{ height: 260 }} role="img"
@@ -491,7 +678,6 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           </div>
         </div>
 
-        {/* 5. SCORE BREAKDOWN */}
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <h3 className="text-sm font-bold text-gray-800 mb-5 uppercase tracking-wide">{t('results.fullBreakdown')}</h3>
           <div className="space-y-3" role="list">
@@ -499,7 +685,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
               const visualPercent = maxScore > 0 ? (item.score / maxScore) * 100 : 0;
               return (
                 <div key={item.type} className="flex items-center gap-3" role="listitem"
-                  aria-label={`${t('riasec.label.' + item.type)} ${item.normalized}%`}>
+                  aria-label={`${t('riasec.label.' + item.type)} ${item.normalized}%, ${Math.round(item.score * 10) / 10} ${t('results.rawScore')}`}>
                   <div className="w-24 text-xs font-bold text-gray-500 uppercase text-right" aria-hidden="true">{t('riasec.label.' + item.type)}</div>
                   <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden" aria-hidden="true">
                     <motion.div className="h-full rounded-full" style={{ backgroundColor: RIASEC_COLORS[item.type] }}
@@ -507,7 +693,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
                   </div>
                   <div className="w-16 text-right leading-tight" aria-hidden="true">
                     <div className="text-xs font-bold text-gray-900">{item.normalized}%</div>
-                    <div className="text-[10px] font-medium text-gray-500">{Math.round(item.score * 10) / 10} {t('results.pts')}</div>
+                    <div className="text-[10px] font-medium text-gray-500">{Math.round(item.score * 10) / 10} {t('results.rawScore')}</div>
                   </div>
                 </div>
               );
@@ -515,59 +701,187 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           </div>
         </div>
 
-        {/* FOOTER ACTIONS */}
-        <div className="space-y-4 pt-2">
-          {/* Share row */}
-          <div className="flex justify-center gap-3 flex-wrap">
-            {/* Facebook - brand blue */}
-            <button onClick={handleShareFacebook} className="w-12 h-12 rounded-full border border-gray-200 hover:opacity-80 flex items-center justify-center transition-opacity shadow-sm bg-white" aria-label="Share on Facebook">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#1877F2"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-            </button>
-            {/* LinkedIn - brand blue */}
-            <button onClick={handleShareLinkedIn} className="w-12 h-12 rounded-full border border-gray-200 hover:opacity-80 flex items-center justify-center transition-opacity shadow-sm bg-white" aria-label="Share on LinkedIn">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#0A66C2"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
-            </button>
-            {/* WhatsApp - brand green */}
-            <button onClick={handleShareWhatsApp} className="w-12 h-12 rounded-full border border-gray-200 hover:opacity-80 flex items-center justify-center transition-opacity shadow-sm bg-white" aria-label="Share on WhatsApp">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-            </button>
-            {/* X / Twitter - black */}
-            <button onClick={handleShareX} className="w-12 h-12 rounded-full border border-gray-200 hover:opacity-80 flex items-center justify-center transition-opacity shadow-sm bg-white" aria-label="Share on X">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="#000000"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-            </button>
-            {/* Copy Link */}
-            <button onClick={handleCopyLink} className="w-12 h-12 rounded-full border border-gray-200 hover:opacity-80 flex items-center justify-center transition-opacity shadow-sm bg-white" aria-label="Copy link">
-              {copied ? (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              ) : (
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
-              )}
-            </button>
-            {/* Download PDF - dark */}
-            <button onClick={handleDownloadPdf} disabled={isGeneratingPdf}
-              className="w-12 h-12 rounded-full border border-gray-200 hover:opacity-80 flex items-center justify-center transition-opacity shadow-sm bg-white disabled:opacity-50" aria-label="Download PDF report">
-              {isGeneratingPdf ? <Loader2 className="w-5 h-5 animate-spin text-gray-500" /> : <Download className="w-5 h-5 text-gray-900" />}
-            </button>
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <div className="flex items-start justify-between gap-3 mb-2">
+            <div>
+              <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide">{t('results.shortlistHeading')} ({shortlist.length})</h3>
+              <p className="text-xs text-gray-500 mt-1">{t('results.shortlistSub')}</p>
+            </div>
+            <Star className="w-5 h-5 text-yellow-500 shrink-0" />
           </div>
 
-          {/* Screen-reader announcement for copy-link */}
+          {shortlist.length > 0 ? (
+            <>
+              <label className="relative block mt-4">
+                <span className="sr-only">{t('results.searchPlaceholder')}</span>
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                <input
+                  value={careerQuery}
+                  onChange={(e) => setCareerQuery(e.target.value)}
+                  placeholder={t('results.searchPlaceholder')}
+                  className="w-full pl-9 pr-3 py-3 rounded-xl border border-gray-200 text-base focus:outline-none focus:ring-2 focus:ring-blue-100"
+                />
+              </label>
+
+              <div className="flex flex-wrap gap-2 py-3">
+                {[
+                  { id: 'all' as const, label: t('results.allTypes') },
+                  { id: 'starred' as const, label: t('results.starred') },
+                  ...RIASEC_TYPES.map(type => ({ id: type, label: t('riasec.label.' + type) })),
+                ].map(filter => {
+                  const active = careerFilter === filter.id;
+                  return (
+                    <button
+                      key={filter.id}
+                      onClick={() => setCareerFilter(filter.id)}
+                      className={`min-h-11 px-3 py-2 rounded-full text-xs font-bold border ${active ? 'text-white' : 'text-gray-600 bg-white border-gray-200'}`}
+                      style={active ? { backgroundColor: BRAND_COLORS.blue, borderColor: BRAND_COLORS.blue } : undefined}
+                    >
+                      {filter.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {visibleShortlist.length > 0 ? (
+                <div className="space-y-3">
+                  {visibleShortlist.map(({ occ, response }) => {
+                    const lo = localizeOccupation(occ, lang);
+                    const favorite = !!favorites[occ.id];
+                    return (
+                      <div key={`${response}-${occ.id}`} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                        <div className="flex items-start justify-between gap-3">
+                          <div className="min-w-0">
+                            <p className="font-semibold text-gray-800 text-sm">{lo.title}</p>
+                            <div className="flex flex-wrap items-center gap-2 mt-1">
+                              <span className="text-[10px] font-bold uppercase tracking-wide" style={{ color: RIASEC_COLORS[occ.category] }}>
+                                {t('riasec.label.' + occ.category)}
+                              </span>
+                              <span className={`text-[10px] font-bold uppercase tracking-wide px-2 py-0.5 rounded-full ${response === 'liked' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'}`}>
+                                {response === 'liked' ? t('results.likedBadge') : t('results.maybeBadge')}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => setFavorites(prev => ({ ...prev, [occ.id]: !prev[occ.id] }))}
+                              className="flex h-11 w-11 items-center justify-center rounded-full hover:bg-white"
+                              aria-label={favorite ? t('results.unfavorite') : t('results.favorite')}
+                              aria-pressed={favorite}
+                            >
+                              <Star className={`w-4 h-4 ${favorite ? 'fill-yellow-400 text-yellow-500' : 'text-gray-400'}`} />
+                            </button>
+                            <a
+                              href={`https://www.onetonline.org/link/summary/${encodeURIComponent(occ.onetCode)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex min-h-11 items-center gap-1 rounded-full px-3 py-2 text-xs font-bold text-gray-600 hover:bg-white"
+                              aria-label={t('results.openCareer', { title: lo.title })}
+                            >
+                              <ExternalLink className="w-4 h-4 text-gray-500" />
+                              <span>O*NET</span>
+                            </a>
+                          </div>
+                        </div>
+                        <p className="text-xs text-gray-500 leading-relaxed mt-2">{lo.description}</p>
+                        <textarea
+                          value={notes[occ.id] || ''}
+                          onChange={(e) => setNotes(prev => ({ ...prev, [occ.id]: e.target.value }))}
+                          placeholder={t('results.notePlaceholder')}
+                          className="mt-3 w-full min-h-24 resize-y rounded-lg border border-gray-200 bg-white px-3 py-3 text-base text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                        />
+                        <div className="mt-3 grid grid-cols-3 gap-2">
+                          <button
+                            onClick={() => setFavorites(prev => ({ ...prev, [occ.id]: true }))}
+                            className="flex min-h-11 items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white px-1.5 py-2 text-center text-[10px] font-bold leading-tight text-gray-700 hover:bg-gray-50 sm:text-[11px]"
+                          >
+                            <Star className={`w-3.5 h-3.5 ${favorite ? 'fill-yellow-400 text-yellow-500' : 'text-gray-400'}`} />
+                            <span>{favorite ? t('results.saved') : t('results.save')}</span>
+                          </button>
+                          <button
+                            onClick={() => appendNote(occ.id, t('results.askTemplate', { title: lo.title }))}
+                            className="flex min-h-11 items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white px-1.5 py-2 text-center text-[10px] font-bold leading-tight text-gray-700 hover:bg-gray-50 sm:text-[11px]"
+                          >
+                            <MessageCircle className="w-3.5 h-3.5 text-gray-500" />
+                            <span>{t('results.askThis')}</span>
+                          </button>
+                          <button
+                            onClick={() => appendNote(occ.id, t('results.tryTemplate', { title: lo.title }))}
+                            className="flex min-h-11 items-center justify-center gap-1 rounded-lg border border-gray-200 bg-white px-1.5 py-2 text-center text-[10px] font-bold leading-tight text-gray-700 hover:bg-gray-50 sm:text-[11px]"
+                          >
+                            <ClipboardCheck className="w-3.5 h-3.5 text-gray-500" />
+                            <span>{t('results.tryThis')}</span>
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 py-4">{t('results.noMatches')}</p>
+              )}
+
+              {filteredShortlist.length > 8 && (
+                <button
+                  onClick={() => setShortlistExpanded(v => !v)}
+                  className="mt-4 w-full py-3 rounded-xl border border-gray-200 text-sm font-bold text-gray-600 hover:bg-gray-50"
+                >
+                  {shortlistExpanded ? t('results.showLess') : t('results.showAll', { n: filteredShortlist.length })}
+                </button>
+              )}
+            </>
+          ) : (
+            <p className="text-sm text-gray-500 mt-4">{t('results.likedEmpty')}</p>
+          )}
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">{t('results.nextSteps')}</h3>
+          <div className="space-y-3">
+            {[t('results.stepClasses'), t('results.stepExplore'), t('results.stepConversation'), t('results.stepTry')].map((step, i) => (
+              <div key={step} className="flex gap-3 text-sm text-gray-600 leading-relaxed">
+                <span className="flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold shrink-0" style={{ backgroundColor: BRAND_COLORS.orange }}>
+                  {i + 1}
+                </span>
+                <span>{step}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* FOOTER ACTIONS */}
+        <div className="space-y-4 pt-2">
+          {!counselorView && (
+            <details className="rounded-xl border border-gray-200 bg-white p-3">
+              <summary className="flex cursor-pointer list-none items-center justify-center gap-2 text-sm font-bold text-gray-600">
+                <Share2 className="w-4 h-4" />
+                {t('results.shareApp')}
+              </summary>
+              <div className="mt-3 grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <button onClick={handleShareFacebook} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold text-gray-600 hover:bg-gray-50" aria-label={t('results.shareFacebook')}>{t('results.facebook')}</button>
+                <button onClick={handleShareLinkedIn} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold text-gray-600 hover:bg-gray-50" aria-label={t('results.shareLinkedIn')}>{t('results.linkedin')}</button>
+                <button onClick={handleShareWhatsApp} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold text-gray-600 hover:bg-gray-50" aria-label={t('results.shareWhatsApp')}>{t('results.whatsapp')}</button>
+                <button onClick={handleShareX} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold text-gray-600 hover:bg-gray-50" aria-label={t('results.shareX')}>{t('results.x')}</button>
+                <button onClick={handleCopyLink} className="rounded-lg border border-gray-200 px-3 py-2 text-xs font-bold text-gray-600 hover:bg-gray-50" aria-label={t('results.copyLink')}>
+                  {copied ? t('results.linkCopied') : t('results.copyLink')}
+                </button>
+              </div>
+            </details>
+          )}
           <span className="sr-only" role="status" aria-live="polite">{copied ? t('results.linkCopied') : ''}</span>
 
-          {/* PDF generation error (localized, inline) */}
-          {pdfError && <p className="text-center text-sm text-red-600" role="alert">{t('results.pdfError')}</p>}
-
-          {/* Edit Responses button */}
           <button onClick={onEditResponses}
             className="flex items-center justify-center w-full py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-colors gap-2">
             <ArrowLeft className="w-4 h-4" />
             {t('results.editResponses')}
           </button>
 
-          {/* Restart */}
           <button onClick={onRestart}
             className="flex items-center justify-center w-full py-3 text-gray-500 hover:text-gray-600 font-medium text-sm transition-colors">
             {t('results.startOver')}
           </button>
+
+          <LegalSupport onClearData={onClearData} className="pt-2" />
         </div>
 
       </div>

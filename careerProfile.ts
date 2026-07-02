@@ -38,18 +38,24 @@ export interface Profile {
   likedCount: number;
 }
 
-// Compute a weighted RIASEC profile from the cards the user liked.
-// Each card's full interest vector is summed, producing a real gradient
+// Compute a weighted RIASEC profile from the cards the user liked or marked as
+// "maybe." Likes count at full weight; maybes count as a lighter curiosity
+// signal. Each card's full interest vector is summed, producing a real gradient
 // instead of the old six small tallies capped at 10.
-export function computeProfile(likedCards: Occupation[]): Profile {
+export function computeProfile(likedCards: Occupation[], maybeCards: Occupation[] = []): Profile {
   const totals = {} as Record<RiasecType, number>;
   for (const t of RIASEC_TYPES) totals[t] = 0;
 
-  for (const card of likedCards) {
+  const weightedCards = [
+    ...likedCards.map(card => ({ card, weight: 1 })),
+    ...maybeCards.map(card => ({ card, weight: 0.45 })),
+  ];
+
+  for (const { card, weight } of weightedCards) {
     if (card.interests) {
       for (const t of RIASEC_TYPES) {
         const v = Number(card.interests[t]);
-        if (!Number.isNaN(v)) totals[t] += v;
+        if (!Number.isNaN(v)) totals[t] += v * weight;
       }
     }
   }

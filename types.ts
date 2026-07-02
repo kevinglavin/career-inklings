@@ -25,6 +25,20 @@ export interface Occupation {
 
 export type Scores = Record<RiasecType, number>;
 
+export type ResponseChoice = 'left' | 'maybe' | 'right';
+
+export interface SwipeResponse {
+  index: number;
+  direction: ResponseChoice;
+  category: RiasecType;
+  weight: number;
+}
+
+export interface DeckPreferences {
+  preferredTypes: RiasecType[];
+  avoidedTypes: RiasecType[];
+}
+
 export enum AppStage {
   Login = 'LOGIN',
   Instructions = 'INSTRUCTIONS',

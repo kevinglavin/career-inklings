@@ -29,3 +29,7 @@ dist-ssr
 # Large PNG art masters (app serves .webp; PNG masters stay local-only)
 public/images/occupations/*.png
 public/images/occupations/**/*.png
+public/images/occupations/*.docx
+public/images/occupations/**/*.docx
+public/images/occupations/*.md
+public/images/occupations/**/*.md
