@@ -520,7 +520,7 @@ export default function App() {
 
   if (isLoading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center" style={{ backgroundColor: BRAND_COLORS.blue }}>
+      <div className="h-screen h-[100dvh] w-screen flex items-center justify-center" style={{ backgroundColor: BRAND_COLORS.blue }}>
         <div className="text-center">
           <CompassLogo size={64} className="mx-auto mb-4 animate-pulse" />
           <p className="text-white/70 text-sm font-medium">{t('app.loading')}</p>
@@ -531,8 +531,8 @@ export default function App() {
 
   return (
     <MotionConfig reducedMotion="user">
-    <div className="h-screen w-screen flex items-center justify-center bg-[#dfeceb] overflow-hidden">
-      <div className="relative w-full max-w-md h-full max-h-[900px] bg-[#f6f9f6] shadow-2xl overflow-hidden flex flex-col">
+    <div className="h-screen h-[100dvh] w-screen flex items-center justify-center bg-[#dfeceb] overflow-hidden">
+      <div className="relative flex h-full min-h-0 w-full max-w-md flex-col overflow-hidden bg-[#f6f9f6] shadow-2xl sm:max-h-[900px]">
 
         {stage === AppStage.Login && <LoginView onLogin={handleLogin} onClearData={handleClearLocalData} />}
         {stage === AppStage.Instructions && <InstructionsView onStart={handleStartSwiping} isLoading={false} imagePack={imagePack} onPackChange={handlePackChange} soundEnabled={soundEnabled} onToggleSound={toggleSound} />}

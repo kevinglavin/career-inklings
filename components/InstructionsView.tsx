@@ -51,25 +51,25 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
   }, [showTutorial]);
 
   return (
-    <div className="h-full overflow-y-auto bg-[#fbfcfd] text-[#06132a] no-scrollbar">
-      <div className="flex min-h-full flex-col px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-3 min-[380px]:px-5">
-        <div className="flex shrink-0 items-center justify-between">
+    <div className="instructions-root h-full min-h-0 overflow-y-auto bg-[#fbfcfd] text-[#06132a] no-scrollbar">
+      <div className="instructions-frame flex min-h-full flex-col px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-3 min-[380px]:px-5">
+        <div className="instructions-header flex shrink-0 items-center justify-between">
           <div className="flex items-center gap-3">
             <CompassLogo size={32} />
-            <span className="text-[25px] font-black leading-none" style={{ color: BRAND_COLORS.blue }}>Inklings</span>
+            <span className="instructions-brand-name text-[25px] font-black leading-none" style={{ color: BRAND_COLORS.blue }}>Inklings</span>
           </div>
           <div className="flex items-center gap-2.5">
             <button
               ref={triggerRef}
               onClick={() => setShowTutorial(true)}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
+              className="instructions-icon-button flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
               aria-label={t('instr.tutorial')}
             >
               <BookOpen className="h-5 w-5" style={{ color: BRAND_COLORS.blue }} />
             </button>
             <button
               onClick={onToggleSound}
-              className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
+              className="instructions-icon-button flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
               aria-pressed={soundEnabled}
               aria-label={soundEnabled ? t('app.mute') : t('app.unmute')}
             >
@@ -80,17 +80,17 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
           </div>
         </div>
 
-        <section className="shrink-0 pt-3 text-center">
-          <h2 className="text-[22px] font-black leading-[1.05] text-[#071327] min-[380px]:text-[24px]">
+        <section className="instructions-copy shrink-0 pt-3 text-center">
+          <h2 className="instructions-title text-[22px] font-black leading-[1.05] text-[#071327] min-[380px]:text-[24px]">
             Discover What Draws You In
           </h2>
-          <p className="mx-auto mt-1.5 max-w-[350px] text-[13px] font-medium leading-[1.25] text-[#65708b] min-[380px]:text-[14px]">
+          <p className="instructions-subtitle mx-auto mt-1.5 max-w-[350px] text-[13px] font-medium leading-[1.25] text-[#65708b] min-[380px]:text-[14px]">
             Swipe through real career cards. Your reactions reveal the patterns behind what fits, what does not, and what makes you curious.
           </p>
         </section>
 
-        <section className="mt-2.5 shrink-0 overflow-hidden rounded-[22px] bg-white shadow-[0_14px_30px_rgba(15,23,42,0.10)]">
-          <div className="relative h-[clamp(200px,27vh,240px)] overflow-hidden bg-[#edf4f6]">
+        <section className="instructions-preview-card mt-2.5 shrink-0 overflow-hidden rounded-[22px] bg-white shadow-[0_14px_30px_rgba(15,23,42,0.10)]">
+          <div className="instructions-preview-media relative h-[clamp(174px,25dvh,230px)] overflow-hidden bg-[#edf4f6]">
             <img
               key={`${previewSrc}-backdrop`}
               src={previewSrc}
@@ -116,23 +116,23 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
             />
           </div>
 
-          <div className="bg-white px-4 pb-3 pt-3">
+          <div className="instructions-preview-body bg-white px-4 pb-3 pt-3">
             <div className="flex items-start gap-3">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-[0_8px_18px_rgba(0,56,77,0.18)]" style={{ backgroundColor: BRAND_COLORS.blue }}>
+              <div className="instructions-career-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-[0_8px_18px_rgba(0,56,77,0.18)]" style={{ backgroundColor: BRAND_COLORS.blue }}>
                 <HeartPulse className="h-6 w-6 text-white" />
               </div>
               <div className="min-w-0 text-left">
-                <h3 className="text-[21px] font-black leading-tight text-[#071327] min-[380px]:text-[23px]">Emergency Nurse</h3>
-                <p className="mt-0.5 text-[13px] font-medium leading-snug text-[#65708b] min-[380px]:text-[14px]">
+                <h3 className="instructions-career-title text-[21px] font-black leading-tight text-[#071327] min-[380px]:text-[23px]">Emergency Nurse</h3>
+                <p className="instructions-career-copy mt-0.5 text-[13px] font-medium leading-snug text-[#65708b] min-[380px]:text-[14px]">
                   Fast-paced care, teamwork, and helping people in urgent moments.
                 </p>
               </div>
             </div>
 
-            <div className="mt-2.5 grid grid-cols-3 gap-2.5">
+            <div className="instructions-reaction-grid mt-2.5 grid grid-cols-3 gap-2.5">
               <button
                 type="button"
-                className="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-red-100 bg-red-50/60 text-red-500"
+                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-red-100 bg-red-50/60 text-red-500"
                 aria-label="Dislike"
               >
                 <ThumbsDown className="h-5 w-5" />
@@ -140,7 +140,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
               </button>
               <button
                 type="button"
-                className="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-yellow-100 bg-yellow-50/80 text-yellow-700"
+                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-yellow-100 bg-yellow-50/80 text-yellow-700"
                 aria-label="Unsure"
               >
                 <span className="text-2xl font-black leading-none">?</span>
@@ -148,7 +148,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
               </button>
               <button
                 type="button"
-                className="flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-green-100 bg-green-50/70 text-green-600"
+                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-green-100 bg-green-50/70 text-green-600"
                 aria-label="Like"
               >
                 <ThumbsUp className="h-5 w-5" />
@@ -158,33 +158,33 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
           </div>
         </section>
 
-        <div className="mt-2.5 flex shrink-0 items-center justify-center gap-2 text-center text-[13px] font-medium leading-snug text-[#65708b]">
+        <div className="instructions-note mt-2.5 flex shrink-0 items-center justify-center gap-2 text-center text-[13px] font-medium leading-snug text-[#65708b]">
           <Info className="h-4 w-4 shrink-0" />
           <p>Tap any career card to learn what the work is really about.</p>
         </div>
 
-        <div className="mt-3 shrink-0 space-y-2">
+        <div className="instructions-actions mt-3 shrink-0 space-y-2">
           <button
             onClick={() => onStart('quick')}
             disabled={isLoading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-[18px] py-3 text-[16px] font-black text-white shadow-[0_10px_22px_rgba(0,56,77,0.20)] transition-transform active:scale-[0.98] disabled:opacity-50 min-[380px]:text-[17px]"
+            className="instructions-primary flex w-full items-center justify-center gap-2.5 rounded-[18px] px-3 py-3 text-[16px] font-black text-white shadow-[0_10px_22px_rgba(0,56,77,0.20)] transition-transform active:scale-[0.98] disabled:opacity-50 min-[380px]:text-[17px]"
             style={{ backgroundColor: BRAND_COLORS.blue }}
           >
             <Zap className="h-5 w-5 fill-white" />
-            {isLoading ? t('instr.loading') : <>Start Quick Mode &mdash; 3 min</>}
+            <span className="min-w-0 leading-tight">{isLoading ? t('instr.loading') : <>Start Quick Mode &mdash; 3 min</>}</span>
           </button>
 
           <button
             onClick={() => onStart('full')}
             disabled={isLoading}
-            className="flex w-full items-center justify-center gap-2.5 rounded-[18px] border-2 bg-white py-2.5 text-[15px] font-black transition-transform active:scale-[0.98] disabled:opacity-50 min-[380px]:text-[16px]"
+            className="instructions-secondary flex w-full items-center justify-center gap-2.5 rounded-[18px] border-2 bg-white px-3 py-2.5 text-[15px] font-black transition-transform active:scale-[0.98] disabled:opacity-50 min-[380px]:text-[16px]"
             style={{ borderColor: BRAND_COLORS.blue, color: '#071327' }}
           >
             <PanelsTopLeft className="h-5 w-5" style={{ color: BRAND_COLORS.blue }} />
-            Take the Full 60-Card Journey
+            <span className="min-w-0 leading-tight">Take the Full 60-Card Journey</span>
           </button>
 
-          <div className="overflow-hidden rounded-[18px] border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
+          <div className="instructions-style-picker overflow-hidden rounded-[18px] border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
             <button
               type="button"
               onClick={() => setStyleOpen(open => !open)}
@@ -193,7 +193,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
             >
               <span className="flex min-w-0 items-center gap-2.5 text-[15px] font-black text-[#071327] min-[380px]:text-[16px]">
                 <Palette className="h-5 w-5 shrink-0" style={{ color: BRAND_COLORS.blue }} />
-                <span><span className="font-black">Style:</span> {activePack.label}</span>
+                <span className="min-w-0 truncate"><span className="font-black">Style:</span> {activePack.label}</span>
               </span>
               <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${styleOpen ? 'rotate-180' : ''}`} />
             </button>

@@ -17,6 +17,21 @@ body {
   overscroll-behavior: none;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+}
+
+@supports (height: 100dvh) {
+  html,
+  body,
+  #root {
+    min-height: 100dvh;
+  }
+}
+
 button,
 input[type="button"],
 input[type="submit"],
@@ -55,6 +70,247 @@ textarea,
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+.instructions-title,
+.instructions-subtitle,
+.instructions-primary span,
+.instructions-secondary span {
+  text-wrap: balance;
+}
+
+/* Compact the landing screen on shorter mobile viewports without changing the
+   desktop/tablet rhythm. */
+@media (max-height: 740px) {
+  .instructions-frame {
+    padding-top: 0.5rem;
+    padding-bottom: calc(0.375rem + env(safe-area-inset-bottom));
+  }
+
+  .instructions-brand-name {
+    font-size: 1.375rem;
+  }
+
+  .instructions-icon-button {
+    height: 2.625rem;
+    width: 2.625rem;
+  }
+
+  .instructions-copy {
+    padding-top: 0.5rem;
+  }
+
+  .instructions-title {
+    font-size: 1.3rem;
+    line-height: 1.05;
+  }
+
+  .instructions-subtitle {
+    margin-top: 0.35rem;
+    max-width: 20rem;
+    font-size: 0.8rem;
+    line-height: 1.2;
+  }
+
+  .instructions-preview-card {
+    margin-top: 0.55rem;
+    border-radius: 1.125rem;
+  }
+
+  .instructions-preview-media {
+    height: clamp(140px, 23dvh, 178px);
+  }
+
+  .instructions-preview-body {
+    padding: 0.7rem 0.85rem 0.75rem;
+  }
+
+  .instructions-career-icon {
+    height: 2.375rem;
+    width: 2.375rem;
+    border-radius: 0.875rem;
+  }
+
+  .instructions-career-title {
+    font-size: 1.16rem;
+  }
+
+  .instructions-career-copy {
+    font-size: 0.8rem;
+    line-height: 1.25;
+  }
+
+  .instructions-reaction-grid {
+    gap: 0.5rem;
+    margin-top: 0.55rem;
+  }
+
+  .instructions-reaction {
+    min-height: 2.875rem;
+    border-radius: 0.875rem;
+  }
+
+  .instructions-reaction svg {
+    height: 1.05rem;
+    width: 1.05rem;
+  }
+
+  .instructions-reaction span {
+    margin-top: 0.15rem;
+    font-size: 0.75rem;
+  }
+
+  .instructions-note {
+    margin-top: 0.45rem;
+    font-size: 0.78rem;
+  }
+
+  .instructions-actions {
+    margin-top: 0.55rem;
+  }
+
+  .instructions-actions > :not([hidden]) ~ :not([hidden]) {
+    --tw-space-y-reverse: 0;
+    margin-top: calc(0.45rem * calc(1 - var(--tw-space-y-reverse)));
+    margin-bottom: calc(0.45rem * var(--tw-space-y-reverse));
+  }
+
+  .instructions-primary {
+    border-radius: 1rem;
+    padding-top: 0.68rem;
+    padding-bottom: 0.68rem;
+    font-size: 0.95rem;
+  }
+
+  .instructions-secondary {
+    border-radius: 1rem;
+    padding-top: 0.6rem;
+    padding-bottom: 0.6rem;
+    font-size: 0.9rem;
+  }
+
+  .instructions-style-picker {
+    border-radius: 1rem;
+  }
+
+  .instructions-style-picker > button {
+    padding-top: 0.55rem;
+    padding-bottom: 0.55rem;
+  }
+}
+
+@media (max-height: 660px) {
+  .instructions-frame {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .instructions-subtitle {
+    max-width: 18rem;
+  }
+
+  .instructions-preview-media {
+    height: clamp(122px, 21dvh, 150px);
+  }
+
+  .instructions-career-copy {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .instructions-note {
+    display: none;
+  }
+
+  .instructions-reaction {
+    min-height: 2.75rem;
+  }
+
+  .instructions-primary,
+  .instructions-secondary {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-height: 560px) {
+  .instructions-copy {
+    padding-top: 0.35rem;
+  }
+
+  .instructions-title {
+    font-size: 1.1rem;
+    line-height: 1.05;
+  }
+
+  .instructions-subtitle {
+    display: -webkit-box;
+    max-width: 16.5rem;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    font-size: 0.72rem;
+    line-height: 1.15;
+  }
+
+  .instructions-preview-card {
+    margin-top: 0.4rem;
+  }
+
+  .instructions-preview-media {
+    height: 104px;
+  }
+
+  .instructions-preview-body {
+    padding: 0.55rem 0.75rem 0.6rem;
+  }
+
+  .instructions-career-icon {
+    height: 2.2rem;
+    width: 2.2rem;
+  }
+
+  .instructions-career-title {
+    font-size: 1rem;
+  }
+
+  .instructions-career-copy {
+    font-size: 0.74rem;
+  }
+
+  .instructions-reaction-grid {
+    gap: 0.4rem;
+    margin-top: 0.45rem;
+  }
+
+  .instructions-actions {
+    margin-top: 0.45rem;
+  }
+}
+
+@media (max-width: 350px) {
+  .instructions-frame {
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .instructions-title {
+    font-size: 1.2rem;
+  }
+
+  .instructions-subtitle {
+    font-size: 0.76rem;
+  }
+
+  .instructions-career-title {
+    font-size: 1.08rem;
+  }
+
+  .instructions-primary,
+  .instructions-secondary {
+    font-size: 0.85rem;
+  }
 }
 
 /* Custom White Scrollbar for Flip Cards */
