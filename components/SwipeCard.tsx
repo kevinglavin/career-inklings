@@ -58,7 +58,7 @@ const AnimatedOccupationImage = ({ data, packId }: { data: Occupation; packId: s
   }
 
   const handleImageError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    // Pack art missing for this card — fall back to the default (root) image.
+    // Pack art missing for this card — fall back to the default Classic image.
     const fallback = defaultImageUrl(data.imageUrl);
     if (src !== fallback) {
       setSrc(fallback);

@@ -50,21 +50,21 @@ export const RIASEC_DETAILS: Record<RiasecType, string> = {
 
 // ===== IMAGE PACKS =====
 // Each pack is a subfolder under /images/occupations that mirrors the same
-// 60 filenames as the root (default) pack. Selecting a pack swaps which
+// 60 filenames. Selecting a pack swaps which
 // subfolder a card's art loads from; cards with no art in the chosen pack
 // fall back to the default image at render time (see resolvePackImageUrl
 // + the <img> onError handlers in SwipeCard / SettingsView).
 export interface ImagePack {
   id: string;
   label: string;
-  folder: string | null; // null = root/default art
+  folder: string | null; // null = use the canonical image path as-is
   ready?: boolean;       // true once the pack's art is complete enough to show in the picker
 }
 
 export const DEFAULT_PACK_ID = 'career-hero';
 
 export const IMAGE_PACKS: ImagePack[] = [
-  { id: 'classic', label: 'Classic', folder: null, ready: true },
+  { id: 'classic', label: 'Classic', folder: 'Classic', ready: true },
   { id: 'anime', label: 'Anime', folder: 'Anime' },
   { id: 'minecraft', label: 'Blocky World', folder: 'Minecraft', ready: true },
   { id: 'pokemon', label: 'Critters', folder: 'Pokemon', ready: true },
@@ -99,8 +99,8 @@ export const resolvePackImageUrl = (imageUrl: string, packId: string): string =>
   return toWebp(imageUrl);
 };
 
-// Default (Classic / root) WebP path for a card — the fallback when a pack image is missing.
-export const defaultImageUrl = (imageUrl: string): string => toWebp(imageUrl);
+// Default Classic WebP path for a card — the fallback when a pack image is missing.
+export const defaultImageUrl = (imageUrl: string): string => resolvePackImageUrl(imageUrl, 'classic');
 
 export const OCCUPATIONS: Occupation[] = [
   // ===== REALISTIC (10) =====

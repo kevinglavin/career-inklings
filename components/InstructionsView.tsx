@@ -51,25 +51,25 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
   }, [showTutorial]);
 
   return (
-    <div className="instructions-root h-full min-h-0 overflow-y-auto bg-[#fbfcfd] text-[#06132a] no-scrollbar">
-      <div className="instructions-frame flex min-h-full flex-col px-4 pb-[calc(0.5rem+env(safe-area-inset-bottom))] pt-3 min-[380px]:px-5">
+    <div className="instructions-root flex h-screen min-h-0 flex-col overflow-hidden bg-[#fbfcfd] text-[#06132a] supports-[height:100dvh]:h-[100dvh]">
+      <div className="instructions-frame flex h-full min-h-0 flex-col overflow-hidden px-4 pb-[calc(0.4rem+env(safe-area-inset-bottom))] pt-2 min-[380px]:px-5 [@media(max-height:430px)]:pb-[calc(0.25rem+env(safe-area-inset-bottom))] [@media(max-height:430px)]:pt-1.5">
         <div className="instructions-header flex shrink-0 items-center justify-between">
           <div className="flex items-center gap-3">
             <CompassLogo size={32} />
-            <span className="instructions-brand-name text-[25px] font-black leading-none" style={{ color: BRAND_COLORS.blue }}>Inklings</span>
+            <span className="instructions-brand-name text-[25px] font-black leading-none [@media(max-height:430px)]:text-[21px]" style={{ color: BRAND_COLORS.blue }}>Inklings</span>
           </div>
           <div className="flex items-center gap-2.5">
             <button
               ref={triggerRef}
               onClick={() => setShowTutorial(true)}
-              className="instructions-icon-button flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
+              className="instructions-icon-button flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)] [@media(max-height:430px)]:h-9 [@media(max-height:430px)]:w-9"
               aria-label={t('instr.tutorial')}
             >
               <BookOpen className="h-5 w-5" style={{ color: BRAND_COLORS.blue }} />
             </button>
             <button
               onClick={onToggleSound}
-              className="instructions-icon-button flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]"
+              className="instructions-icon-button flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)] [@media(max-height:430px)]:h-9 [@media(max-height:430px)]:w-9"
               aria-pressed={soundEnabled}
               aria-label={soundEnabled ? t('app.mute') : t('app.unmute')}
             >
@@ -80,26 +80,17 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
           </div>
         </div>
 
-        <section className="instructions-copy shrink-0 pt-3 text-center">
-          <h2 className="instructions-title text-[22px] font-black leading-[1.05] text-[#071327] min-[380px]:text-[24px]">
+        <section className="instructions-copy shrink-0 pt-2 text-center [@media(max-height:430px)]:pt-1">
+          <h2 className="instructions-title text-[22px] font-black leading-[1.05] text-[#071327] min-[380px]:text-[24px] [@media(max-height:430px)]:text-[19px]">
             Discover What Draws You In
           </h2>
-          <p className="instructions-subtitle mx-auto mt-1.5 max-w-[350px] text-[13px] font-medium leading-[1.25] text-[#65708b] min-[380px]:text-[14px]">
+          <p className="instructions-subtitle mx-auto mt-1 max-w-[350px] text-[13px] font-medium leading-[1.2] text-[#65708b] min-[380px]:text-[14px] [@media(max-height:520px)]:hidden">
             Swipe through real career cards. Your reactions reveal the patterns behind what fits, what does not, and what makes you curious.
           </p>
         </section>
 
-        <section className="instructions-preview-card mt-2.5 shrink-0 overflow-hidden rounded-[22px] bg-white shadow-[0_14px_30px_rgba(15,23,42,0.10)]">
-          <div className="instructions-preview-media relative h-[clamp(174px,25dvh,230px)] overflow-hidden bg-[#edf4f6]">
-            <img
-              key={`${previewSrc}-backdrop`}
-              src={previewSrc}
-              alt=""
-              aria-hidden="true"
-              className="absolute inset-0 h-full w-full scale-110 object-cover opacity-35 blur-xl"
-              style={{ objectPosition: 'center center' }}
-            />
-            <div className="absolute inset-0 bg-[#e8f3f4]/55" />
+        <section className="instructions-preview-card mt-2 flex min-h-0 flex-[1_1_auto] flex-col overflow-hidden rounded-[20px] bg-white shadow-[0_14px_30px_rgba(15,23,42,0.10)] [@media(max-height:430px)]:mt-1 [@media(max-height:430px)]:rounded-[16px]">
+          <div className="instructions-preview-media relative min-h-0 flex-[1_1_auto] overflow-hidden bg-[#edf4f6]">
             <img
               key={previewSrc}
               src={previewSrc}
@@ -111,28 +102,28 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
                   img.src = defaultImageUrl(PREVIEW_OCCUPATION.imageUrl);
                 }
               }}
-              className="relative z-10 h-full w-full object-contain"
-              style={{ objectPosition: 'center bottom' }}
+              className="h-full w-full object-cover"
+              style={{ objectPosition: 'top center' }}
             />
           </div>
 
-          <div className="instructions-preview-body bg-white px-4 pb-3 pt-3">
-            <div className="flex items-start gap-3">
-              <div className="instructions-career-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-[0_8px_18px_rgba(0,56,77,0.18)]" style={{ backgroundColor: BRAND_COLORS.blue }}>
-                <HeartPulse className="h-6 w-6 text-white" />
+          <div className="instructions-preview-body shrink-0 bg-white px-4 pb-2 pt-2 [@media(max-height:430px)]:px-3 [@media(max-height:430px)]:py-1.5">
+            <div className="flex shrink-0 items-start gap-3 [@media(max-height:430px)]:gap-2">
+              <div className="instructions-career-icon flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl shadow-[0_8px_18px_rgba(0,56,77,0.18)] [@media(max-height:430px)]:h-9 [@media(max-height:430px)]:w-9 [@media(max-height:430px)]:rounded-xl" style={{ backgroundColor: BRAND_COLORS.blue }}>
+                <HeartPulse className="h-6 w-6 text-white [@media(max-height:430px)]:h-5 [@media(max-height:430px)]:w-5" />
               </div>
               <div className="min-w-0 text-left">
-                <h3 className="instructions-career-title text-[21px] font-black leading-tight text-[#071327] min-[380px]:text-[23px]">Emergency Nurse</h3>
-                <p className="instructions-career-copy mt-0.5 text-[13px] font-medium leading-snug text-[#65708b] min-[380px]:text-[14px]">
+                <h3 className="instructions-career-title text-[21px] font-black leading-tight text-[#071327] min-[380px]:text-[23px] [@media(max-height:430px)]:text-[18px]">Emergency Nurse</h3>
+                <p className="instructions-career-copy mt-0.5 text-[13px] font-medium leading-snug text-[#65708b] min-[380px]:text-[14px] [@media(max-height:430px)]:text-[12px] [@media(max-height:430px)]:leading-tight">
                   Fast-paced care, teamwork, and helping people in urgent moments.
                 </p>
               </div>
             </div>
 
-            <div className="instructions-reaction-grid mt-2.5 grid grid-cols-3 gap-2.5">
+            <div className="instructions-reaction-grid mt-2 grid shrink-0 grid-cols-3 gap-2 [@media(max-height:430px)]:mt-1.5 [@media(max-height:430px)]:gap-1.5">
               <button
                 type="button"
-                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-red-100 bg-red-50/60 text-red-500"
+                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-red-100 bg-red-50/60 text-red-500 [@media(max-height:430px)]:min-h-[42px] [@media(max-height:430px)]:rounded-xl"
                 aria-label="Dislike"
               >
                 <ThumbsDown className="h-5 w-5" />
@@ -140,15 +131,15 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
               </button>
               <button
                 type="button"
-                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-yellow-100 bg-yellow-50/80 text-yellow-700"
+                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-yellow-100 bg-yellow-50/80 text-yellow-700 [@media(max-height:430px)]:min-h-[42px] [@media(max-height:430px)]:rounded-xl"
                 aria-label="Unsure"
               >
-                <span className="text-2xl font-black leading-none">?</span>
+                <span className="text-2xl font-black leading-none [@media(max-height:430px)]:text-xl">?</span>
                 <span className="mt-1 text-xs font-black min-[380px]:text-sm">Unsure</span>
               </button>
               <button
                 type="button"
-                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-green-100 bg-green-50/70 text-green-600"
+                className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-green-100 bg-green-50/70 text-green-600 [@media(max-height:430px)]:min-h-[42px] [@media(max-height:430px)]:rounded-xl"
                 aria-label="Like"
               >
                 <ThumbsUp className="h-5 w-5" />
@@ -158,16 +149,16 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
           </div>
         </section>
 
-        <div className="instructions-note mt-2.5 flex shrink-0 items-center justify-center gap-2 text-center text-[13px] font-medium leading-snug text-[#65708b]">
+        <div className="instructions-note mt-2 flex shrink-0 items-center justify-center gap-2 text-center text-[13px] font-medium leading-snug text-[#65708b] [@media(max-height:620px)]:hidden">
           <Info className="h-4 w-4 shrink-0" />
           <p>Tap any career card to learn what the work is really about.</p>
         </div>
 
-        <div className="instructions-actions mt-3 shrink-0 space-y-2">
+        <div className="instructions-actions mt-2 shrink-0 space-y-1.5 [@media(max-height:430px)]:mt-1.5 [@media(max-height:430px)]:space-y-1">
           <button
             onClick={() => onStart('quick')}
             disabled={isLoading}
-            className="instructions-primary flex w-full items-center justify-center gap-2.5 rounded-[18px] px-3 py-3 text-[16px] font-black text-white shadow-[0_10px_22px_rgba(0,56,77,0.20)] transition-transform active:scale-[0.98] disabled:opacity-50 min-[380px]:text-[17px]"
+            className="instructions-primary flex w-full items-center justify-center gap-2.5 rounded-[18px] px-3 py-2.5 text-[16px] font-black text-white shadow-[0_10px_22px_rgba(0,56,77,0.20)] transition-transform active:scale-[0.98] disabled:opacity-50 min-[380px]:text-[17px] [@media(max-height:430px)]:py-2 [@media(max-height:430px)]:text-[15px]"
             style={{ backgroundColor: BRAND_COLORS.blue }}
           >
             <Zap className="h-5 w-5 fill-white" />
@@ -177,7 +168,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
           <button
             onClick={() => onStart('full')}
             disabled={isLoading}
-            className="instructions-secondary flex w-full items-center justify-center gap-2.5 rounded-[18px] border-2 bg-white px-3 py-2.5 text-[15px] font-black transition-transform active:scale-[0.98] disabled:opacity-50 min-[380px]:text-[16px]"
+            className="instructions-secondary flex w-full items-center justify-center gap-2.5 rounded-[18px] border-2 bg-white px-3 py-2 text-[15px] font-black transition-transform active:scale-[0.98] disabled:opacity-50 min-[380px]:text-[16px] [@media(max-height:430px)]:text-[14px]"
             style={{ borderColor: BRAND_COLORS.blue, color: '#071327' }}
           >
             <PanelsTopLeft className="h-5 w-5" style={{ color: BRAND_COLORS.blue }} />
