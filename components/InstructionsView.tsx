@@ -82,10 +82,10 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
 
         <section className="instructions-copy shrink-0 pt-2 text-center [@media(max-height:430px)]:pt-1">
           <h2 className="instructions-title text-[22px] font-black leading-[1.05] text-[#071327] min-[380px]:text-[24px] [@media(max-height:430px)]:text-[19px]">
-            Discover What Draws You In
+            {t('instr.discoverTitle')}
           </h2>
           <p className="instructions-subtitle mx-auto mt-1 max-w-[350px] text-[13px] font-medium leading-[1.2] text-[#65708b] min-[380px]:text-[14px] [@media(max-height:520px)]:hidden">
-            Swipe through real career cards. Your reactions reveal the patterns behind what fits, what does not, and what makes you curious.
+            {t('instr.discoverBody')}
           </p>
         </section>
 
@@ -113,9 +113,9 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
                 <HeartPulse className="h-6 w-6 text-white [@media(max-height:430px)]:h-5 [@media(max-height:430px)]:w-5" />
               </div>
               <div className="min-w-0 text-left">
-                <h3 className="instructions-career-title text-[21px] font-black leading-tight text-[#071327] min-[380px]:text-[23px] [@media(max-height:430px)]:text-[18px]">Emergency Nurse</h3>
+                <h3 className="instructions-career-title text-[21px] font-black leading-tight text-[#071327] min-[380px]:text-[23px] [@media(max-height:430px)]:text-[18px]">{t('instr.nurseTitle')}</h3>
                 <p className="instructions-career-copy mt-0.5 text-[13px] font-medium leading-snug text-[#65708b] min-[380px]:text-[14px] [@media(max-height:430px)]:text-[12px] [@media(max-height:430px)]:leading-tight">
-                  Fast-paced care, teamwork, and helping people in urgent moments.
+                  {t('instr.nurseBody')}
                 </p>
               </div>
             </div>
@@ -124,26 +124,26 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
               <button
                 type="button"
                 className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-red-100 bg-red-50/60 text-red-500 [@media(max-height:430px)]:min-h-[42px] [@media(max-height:430px)]:rounded-xl"
-                aria-label="Dislike"
+                aria-label={t('instr.dislike')}
               >
                 <ThumbsDown className="h-5 w-5" />
-                <span className="mt-1 text-xs font-black min-[380px]:text-sm">Dislike</span>
+                <span className="mt-1 text-xs font-black min-[380px]:text-sm">{t('instr.dislike')}</span>
               </button>
               <button
                 type="button"
                 className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-yellow-100 bg-yellow-50/80 text-yellow-700 [@media(max-height:430px)]:min-h-[42px] [@media(max-height:430px)]:rounded-xl"
-                aria-label="Unsure"
+                aria-label={t('instr.unsure')}
               >
                 <span className="text-2xl font-black leading-none [@media(max-height:430px)]:text-xl">?</span>
-                <span className="mt-1 text-xs font-black min-[380px]:text-sm">Unsure</span>
+                <span className="mt-1 text-xs font-black min-[380px]:text-sm">{t('instr.unsure')}</span>
               </button>
               <button
                 type="button"
                 className="instructions-reaction flex min-h-[52px] flex-col items-center justify-center rounded-2xl border border-green-100 bg-green-50/70 text-green-600 [@media(max-height:430px)]:min-h-[42px] [@media(max-height:430px)]:rounded-xl"
-                aria-label="Like"
+                aria-label={t('instr.like')}
               >
                 <ThumbsUp className="h-5 w-5" />
-                <span className="mt-1 text-xs font-black min-[380px]:text-sm">Like</span>
+                <span className="mt-1 text-xs font-black min-[380px]:text-sm">{t('instr.like')}</span>
               </button>
             </div>
           </div>
@@ -151,7 +151,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
 
         <div className="instructions-note mt-2 flex shrink-0 items-center justify-center gap-2 text-center text-[13px] font-medium leading-snug text-[#65708b] [@media(max-height:620px)]:hidden">
           <Info className="h-4 w-4 shrink-0" />
-          <p>Tap any career card to learn what the work is really about.</p>
+          <p>{t('instr.tapAny')}</p>
         </div>
 
         <div className="instructions-actions mt-2 shrink-0 space-y-1.5 [@media(max-height:430px)]:mt-1.5 [@media(max-height:430px)]:space-y-1">
@@ -162,7 +162,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
             style={{ backgroundColor: BRAND_COLORS.blue }}
           >
             <Zap className="h-5 w-5 fill-white" />
-            <span className="min-w-0 leading-tight">{isLoading ? t('instr.loading') : <>Start Quick Mode &mdash; 3 min</>}</span>
+            <span className="min-w-0 leading-tight">{isLoading ? t('instr.loading') : t('instr.quickMode')}</span>
           </button>
 
           <button
@@ -172,7 +172,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
             style={{ borderColor: BRAND_COLORS.blue, color: '#071327' }}
           >
             <PanelsTopLeft className="h-5 w-5" style={{ color: BRAND_COLORS.blue }} />
-            <span className="min-w-0 leading-tight">Take the Full 60-Card Journey</span>
+            <span className="min-w-0 leading-tight">{t('instr.fullJourney')}</span>
           </button>
 
           <div className="instructions-style-picker overflow-hidden rounded-[18px] border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]">
@@ -184,7 +184,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
             >
               <span className="flex min-w-0 items-center gap-2.5 text-[15px] font-black text-[#071327] min-[380px]:text-[16px]">
                 <Palette className="h-5 w-5 shrink-0" style={{ color: BRAND_COLORS.blue }} />
-                <span className="min-w-0 truncate"><span className="font-black">Style:</span> {activePack.label}</span>
+                <span className="min-w-0 truncate"><span className="font-black">{t('instr.style')}</span> {activePack.label}</span>
               </span>
               <ChevronDown className={`h-5 w-5 shrink-0 transition-transform ${styleOpen ? 'rotate-180' : ''}`} />
             </button>
