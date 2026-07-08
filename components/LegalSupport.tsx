@@ -4,7 +4,7 @@ import { BRAND_COLORS } from '../constants';
 import { useT } from '../i18n';
 
 const SUPPORT_EMAIL = 'admin@createyourwhy.com';
-const LAST_UPDATED = 'June 29, 2026';
+const LAST_UPDATED = 'July 8, 2026';
 
 type LegalTopic = 'privacy' | 'terms' | 'sources';
 
@@ -15,7 +15,7 @@ interface LegalSupportProps {
 
 const TOPICS: Record<LegalTopic, { title: string; eyebrow: string; sections: { heading: string; body: string[] }[] }> = {
   privacy: {
-    eyebrow: `Draft privacy notice - last updated ${LAST_UPDATED}`,
+    eyebrow: `Privacy notice - last updated ${LAST_UPDATED}`,
     title: 'Privacy Policy',
     sections: [
       {
@@ -48,7 +48,7 @@ const TOPICS: Record<LegalTopic, { title: string; eyebrow: string; sections: { h
     ],
   },
   terms: {
-    eyebrow: `Draft terms - last updated ${LAST_UPDATED}`,
+    eyebrow: `Terms - last updated ${LAST_UPDATED}`,
     title: 'Terms of Use',
     sections: [
       {

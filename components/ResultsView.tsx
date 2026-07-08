@@ -124,11 +124,13 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           : t('summary.empty'),
       };
 
-  // O*NET link: point at the single top interest, not the multi-type path
-  const topInterestType = top3.length > 0 ? top3[0].type : '';
-  const onetUrl = topInterestType
-    ? `https://www.onetonline.org/explore/interests/${topInterestType}/`
-    : 'https://www.onetonline.org/';
+  // INK-021: deep-link to the user's interest code on O*NET. Verified that
+  // onetonline.org supports up to three chained interest areas in the path
+  // (e.g. /explore/interests/Social/Enterprising/); fall back to the interests
+  // browse page when there is no code yet.
+  const onetUrl = top3.length > 0
+    ? `https://www.onetonline.org/explore/interests/${top3.map(x => x.type).join('/')}/`
+    : 'https://www.onetonline.org/explore/interests/';
 
   // For the score breakdown bar chart
   const maxScore = ranked[0]?.score || 1;
@@ -560,25 +562,29 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
 
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <h3 className="text-sm font-bold text-gray-800 mb-5 uppercase tracking-wide">{t('results.fullBreakdown')}</h3>
-          <div className="space-y-3" role="list">
-            {ranked.map((item) => {
-              const visualPercent = maxScore > 0 ? (item.score / maxScore) * 100 : 0;
-              return (
-                <div key={item.type} className="flex items-center gap-3" role="listitem"
-                  aria-label={`${t('riasec.label.' + item.type)} ${item.normalized.toFixed(1)}%, ${Math.round(item.score * 10) / 10} ${t('results.rawScore')}`}>
-                  <div className="w-24 text-xs font-bold text-gray-500 uppercase text-right" aria-hidden="true">{t('riasec.label.' + item.type)}</div>
-                  <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden" aria-hidden="true">
-                    <motion.div className="h-full rounded-full" style={{ backgroundColor: RIASEC_COLORS[item.type] }}
-                      initial={{ width: 0 }} animate={{ width: `${visualPercent}%` }} transition={{ duration: 0.6, delay: 0.1 }} />
+          {top3.length > 0 ? (
+            <div className="space-y-3" role="list">
+              {ranked.map((item) => {
+                const visualPercent = maxScore > 0 ? (item.score / maxScore) * 100 : 0;
+                return (
+                  <div key={item.type} className="flex items-center gap-3" role="listitem"
+                    aria-label={`${t('riasec.label.' + item.type)} ${item.normalized.toFixed(1)}%, ${Math.round(item.score * 10) / 10} ${t('results.rawScore')}`}>
+                    <div className="w-24 text-xs font-bold text-gray-500 uppercase text-right" aria-hidden="true">{t('riasec.label.' + item.type)}</div>
+                    <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden" aria-hidden="true">
+                      <motion.div className="h-full rounded-full" style={{ backgroundColor: RIASEC_COLORS[item.type] }}
+                        initial={{ width: 0 }} animate={{ width: `${visualPercent}%` }} transition={{ duration: 0.6, delay: 0.1 }} />
+                    </div>
+                    <div className="w-24 text-right leading-tight shrink-0" aria-hidden="true">
+                      <div className="text-xs font-bold text-gray-900">{item.normalized.toFixed(1)}%</div>
+                      <div className="text-[10px] font-medium text-gray-500 whitespace-nowrap">{Math.round(item.score * 10) / 10} {t('results.rawScore')}</div>
+                    </div>
                   </div>
-                  <div className="w-24 text-right leading-tight shrink-0" aria-hidden="true">
-                    <div className="text-xs font-bold text-gray-900">{item.normalized.toFixed(1)}%</div>
-                    <div className="text-[10px] font-medium text-gray-500 whitespace-nowrap">{Math.round(item.score * 10) / 10} {t('results.rawScore')}</div>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">{t('results.noSignificant')}</p>
+          )}
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
@@ -946,7 +952,8 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           </button>
 
           <button onClick={onRestart}
-            className="flex items-center justify-center w-full py-3 text-gray-500 hover:text-gray-600 font-medium text-sm transition-colors">
+            className="flex items-center justify-center w-full py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-colors gap-2">
+            <RefreshCcw className="w-4 h-4" />
             {t('results.startOver')}
           </button>
 

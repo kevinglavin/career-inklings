@@ -652,14 +652,7 @@ export default function App() {
                 <p className="mt-3 hidden text-center text-xs font-medium text-gray-400 [@media(pointer:fine)]:block">
                   {t('app.keyboardHint')}
                 </p>
-                {swipeHistory.length > 0 && (
-                  <button onClick={handleUndo}
-                    className="mt-3 mx-auto flex items-center gap-1.5 text-xs font-bold underline underline-offset-2"
-                    style={{ color: BRAND_COLORS.blue }}>
-                    <RotateCcw className="w-3.5 h-3.5" />
-                    {t('app.undoLastChoice')}
-                  </button>
-                )}
+                {/* INK-020: undo is consolidated to the header icon; no duplicate text link here. */}
               </div>
             )}
 
