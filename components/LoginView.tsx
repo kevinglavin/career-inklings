@@ -121,9 +121,9 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData }) =>
                 <div className="flex-1 bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center">
                   <CompassLogo size={64} />
                 </div>
-                <div className="p-3 text-center">
-                  <p className="text-white font-bold text-sm">{t('login.cardPreview')}</p>
-                  <p className="text-white/60 text-xs">{t('login.cardCareers')}</p>
+                <div className="px-3 pt-2 pb-3 text-center shrink-0">
+                  <p className="text-white font-bold text-sm leading-tight">{t('login.cardPreview')}</p>
+                  <p className="text-white/90 text-sm leading-tight mt-0.5">{t('login.cardCareers')}</p>
                 </div>
               </div>
             </div>
