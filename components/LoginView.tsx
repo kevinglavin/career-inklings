@@ -16,12 +16,12 @@ export const CompassLogo = ({ size = 40, className = '' }: { size?: number; clas
     <circle cx="24" cy="24" r="22" stroke={BRAND_COLORS.blue} strokeWidth="2.5" fill="white"/>
     <circle cx="24" cy="24" r="19" stroke={BRAND_COLORS.lightBlue} strokeWidth="1" strokeDasharray="2 3" fill="none" opacity="0.5"/>
     {/* Cardinal markers */}
-    <circle cx="24" cy="5" r="2" fill={BRAND_COLORS.red}/>
+    <circle cx="24" cy="5" r="2" fill={BRAND_COLORS.orange}/>
     <circle cx="24" cy="43" r="1.5" fill={BRAND_COLORS.lightBlue}/>
     <circle cx="5" cy="24" r="1.5" fill={BRAND_COLORS.lightBlue}/>
     <circle cx="43" cy="24" r="1.5" fill={BRAND_COLORS.lightBlue}/>
     {/* Compass needle - North (red) */}
-    <path d="M24 10L28 24L24 22L20 24Z" fill={BRAND_COLORS.red}/>
+    <path d="M24 10L28 24L24 22L20 24Z" fill={BRAND_COLORS.orange}/>
     {/* Compass needle - South (blue) */}
     <path d="M24 38L20 24L24 26L28 24Z" fill={BRAND_COLORS.blue}/>
     {/* Center dot */}
@@ -40,7 +40,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData }) =>
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute -top-32 -right-32 w-80 h-80 rounded-full opacity-[0.07]" style={{ backgroundColor: BRAND_COLORS.lightBlue }}></div>
         <div className="absolute -bottom-40 -left-20 w-96 h-96 rounded-full opacity-[0.05]" style={{ backgroundColor: BRAND_COLORS.blue }}></div>
-        <div className="absolute top-1/3 -right-16 w-48 h-48 rounded-full opacity-[0.04]" style={{ backgroundColor: BRAND_COLORS.red }}></div>
+        <div className="absolute top-1/3 -right-16 w-48 h-48 rounded-full opacity-[0.04]" style={{ backgroundColor: BRAND_COLORS.orange }}></div>
       </div>
 
       {/* Scrollable content wrapper - ensures everything is reachable */}
@@ -82,7 +82,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData }) =>
             <h1 className="text-3xl sm:text-4xl font-black leading-[1.15] mb-3 tracking-tight" style={{ color: BRAND_COLORS.black }}>
               {t('login.title1')}
               <br/>
-              <span style={{ color: BRAND_COLORS.red }}>{t('login.title2')}</span>
+              <span style={{ color: BRAND_COLORS.orange }}>{t('login.title2')}</span>
             </h1>
             <p className="text-base text-gray-500 leading-relaxed max-w-sm">
               {t('login.tagline')}
@@ -92,8 +92,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData }) =>
           {/* Feature Cards - responsive grid */}
           <div className="grid grid-cols-3 gap-3 mb-6 sm:mb-8 shrink-0">
             <div className="bg-gray-50 rounded-2xl p-3 sm:p-4 text-center border border-gray-100">
-              <div className="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center" style={{ backgroundColor: `${BRAND_COLORS.red}15` }}>
-                <Zap className="w-5 h-5" style={{ color: BRAND_COLORS.red }} />
+              <div className="w-10 h-10 rounded-xl mx-auto mb-2 flex items-center justify-center" style={{ backgroundColor: `${BRAND_COLORS.orange}15` }}>
+                <Zap className="w-5 h-5" style={{ color: BRAND_COLORS.orange }} />
               </div>
               <p className="text-xs font-semibold text-gray-700 leading-tight">{t('login.feat.assessment')}</p>
             </div>

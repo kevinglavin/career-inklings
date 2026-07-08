@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { ExternalLink, Download, ChevronRight, Undo2, Loader2, ArrowLeft, Volume2, Copy, Star, Search, Share2, Lightbulb, Printer, MessageCircle, ClipboardCheck, RefreshCcw } from 'lucide-react';
 import { Scores, RiasecType, Occupation, SwipeResponse } from '../types';
-import { RIASEC_COLORS, BRAND_COLORS } from '../constants';
+import { RIASEC_COLORS, BRAND_COLORS, contrastText } from '../constants';
 import { computeProfile, generateSummary, topContributors, RIASEC_TYPES } from '../careerProfile';
 import { localizeOccupation } from '../occupations.es';
 import { CompassLogo } from './LoginView';
@@ -33,6 +33,7 @@ const ResultItemCard: React.FC<{ type: RiasecType; score: number; rawScore: numb
   const [isFlipped, setIsFlipped] = useState(false);
   const { t } = useT();
   const bgColor = RIASEC_COLORS[type];
+  const fg = contrastText(bgColor);
   const medals = ['🥇', '🥈', '🥉'];
   return (
     <div className="relative w-full h-52 perspective-1000 cursor-pointer group" onClick={() => setIsFlipped(!isFlipped)}
@@ -45,8 +46,8 @@ const ResultItemCard: React.FC<{ type: RiasecType; score: number; rawScore: numb
               <span className="text-2xl">{medals[rank] || ''}</span>
               <h4 className="font-bold text-gray-900 text-xl">{t('riasec.label.' + type)}</h4>
             </div>
-            <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: bgColor }}>
-              <span className="text-xs">{score}%</span>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold" style={{ backgroundColor: bgColor, color: contrastText(bgColor) }}>
+              <span className="text-xs">{score.toFixed(1)}%</span>
             </div>
           </div>
           <p className="text-gray-600 text-base leading-relaxed line-clamp-3 my-2">{t('riasec.desc.' + type)}</p>
@@ -55,13 +56,13 @@ const ResultItemCard: React.FC<{ type: RiasecType; score: number; rawScore: numb
             {t('results.tapToLearn')} <ChevronRight className="w-4 h-4 ml-1" />
           </div>
         </div>
-        <div className="absolute inset-0 backface-hidden rotate-y-180 text-white rounded-2xl shadow-sm p-5 flex flex-col" style={{ backgroundColor: bgColor }}>
+        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl shadow-sm p-5 flex flex-col" style={{ backgroundColor: bgColor, color: fg }}>
           <div className="flex items-center justify-between mb-3 shrink-0">
-            <h4 className="font-bold text-white text-xl">{t('riasec.label.' + type)}</h4>
-            <Undo2 className="w-5 h-5 text-white/70" />
+            <h4 className="font-bold text-xl">{t('riasec.label.' + type)}</h4>
+            <Undo2 className="w-5 h-5 opacity-70" />
           </div>
           <div className="overflow-y-auto custom-scrollbar pr-1 flex-1">
-            <p className="text-base leading-relaxed text-white/95">{t('riasec.detail.' + type)}</p>
+            <p className="text-base leading-relaxed opacity-95">{t('riasec.detail.' + type)}</p>
           </div>
         </div>
       </motion.div>
@@ -157,7 +158,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   const confidenceLevel = displayAnsweredCount < Math.min(12, totalCards || 12) || answeredRatio < 0.45
     ? 'low'
     : (hasTopTie || hasBoundaryTie || topGapRatio < 0.08 ? 'medium' : 'high');
-  const confidenceColor = confidenceLevel === 'high' ? BRAND_COLORS.green : confidenceLevel === 'medium' ? BRAND_COLORS.orange : BRAND_COLORS.red;
+  const confidenceColor = confidenceLevel === 'high' ? BRAND_COLORS.green : confidenceLevel === 'medium' ? BRAND_COLORS.orange : BRAND_COLORS.plum;
   const filteredShortlist = useMemo(() => shortlist.filter(({ occ }) => {
     const lo = localizeOccupation(occ, lang);
     const query = careerQuery.trim().toLowerCase();
@@ -555,7 +556,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
                       <span className="text-xs font-bold uppercase tracking-wide" style={{ color: RIASEC_COLORS[item.type] }}>
                         {t('riasec.label.' + item.type)}
                       </span>
-                      <span className="text-xs font-bold text-gray-500">{Math.round(item.normalized * 10) / 10}%</span>
+                      <span className="text-xs font-bold text-gray-500">{item.normalized.toFixed(1)}%</span>
                     </div>
                     <p className="text-[11px] text-gray-500">
                       {item.contributors.length
@@ -577,7 +578,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
             <div className="space-y-2">
               {topSignals.map(item => (
                 <div key={item.type} className="flex items-center gap-3 rounded-xl bg-gray-50 border border-gray-100 p-3">
-                  <span className="flex h-9 w-9 items-center justify-center rounded-full text-white text-sm font-black shrink-0" style={{ backgroundColor: RIASEC_COLORS[item.type] }}>
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-black shrink-0" style={{ backgroundColor: RIASEC_COLORS[item.type], color: contrastText(RIASEC_COLORS[item.type]) }}>
                     {item.letter}
                   </span>
                   <div className="min-w-0 flex-1">
@@ -589,7 +590,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
                     </p>
                   </div>
                   <div className="text-right shrink-0">
-                    <p className="text-sm font-black text-gray-900">{Math.round(item.normalized * 10) / 10}%</p>
+                    <p className="text-sm font-black text-gray-900">{item.normalized.toFixed(1)}%</p>
                     <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">{t('results.ofProfile')}</p>
                   </div>
                 </div>
@@ -679,8 +680,8 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
               <button
                 key={type}
                 onClick={() => onRetakeType(type)}
-                className="min-h-11 px-3 py-2 rounded-full text-xs font-bold text-white"
-                style={{ backgroundColor: RIASEC_COLORS[type] }}
+                className="min-h-11 min-w-[132px] px-3 py-2 rounded-full text-xs font-bold text-center"
+                style={{ backgroundColor: RIASEC_COLORS[type], color: contrastText(RIASEC_COLORS[type]) }}
               >
                 {t('results.retakeType', { type: t('riasec.label.' + type) })}
               </button>
@@ -710,15 +711,15 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
               const visualPercent = maxScore > 0 ? (item.score / maxScore) * 100 : 0;
               return (
                 <div key={item.type} className="flex items-center gap-3" role="listitem"
-                  aria-label={`${t('riasec.label.' + item.type)} ${item.normalized}%, ${Math.round(item.score * 10) / 10} ${t('results.rawScore')}`}>
+                  aria-label={`${t('riasec.label.' + item.type)} ${item.normalized.toFixed(1)}%, ${Math.round(item.score * 10) / 10} ${t('results.rawScore')}`}>
                   <div className="w-24 text-xs font-bold text-gray-500 uppercase text-right" aria-hidden="true">{t('riasec.label.' + item.type)}</div>
                   <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden" aria-hidden="true">
                     <motion.div className="h-full rounded-full" style={{ backgroundColor: RIASEC_COLORS[item.type] }}
                       initial={{ width: 0 }} animate={{ width: `${visualPercent}%` }} transition={{ duration: 0.6, delay: 0.1 }} />
                   </div>
-                  <div className="w-16 text-right leading-tight" aria-hidden="true">
-                    <div className="text-xs font-bold text-gray-900">{item.normalized}%</div>
-                    <div className="text-[10px] font-medium text-gray-500">{Math.round(item.score * 10) / 10} {t('results.rawScore')}</div>
+                  <div className="w-24 text-right leading-tight shrink-0" aria-hidden="true">
+                    <div className="text-xs font-bold text-gray-900">{item.normalized.toFixed(1)}%</div>
+                    <div className="text-[10px] font-medium text-gray-500 whitespace-nowrap">{Math.round(item.score * 10) / 10} {t('results.rawScore')}</div>
                   </div>
                 </div>
               );
@@ -865,7 +866,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           <div className="space-y-3">
             {[t('results.stepClasses'), t('results.stepExplore'), t('results.stepConversation'), t('results.stepTry')].map((step, i) => (
               <div key={step} className="flex gap-3 text-sm text-gray-600 leading-relaxed">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold shrink-0" style={{ backgroundColor: BRAND_COLORS.orange }}>
+                <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0" style={{ backgroundColor: BRAND_COLORS.orange, color: contrastText(BRAND_COLORS.orange) }}>
                   {i + 1}
                 </span>
                 <span>{step}</span>

@@ -6,7 +6,7 @@
 
 /* Keyboard focus: an app-controlled, high-contrast ring (don't depend on the UA default) */
 :focus-visible {
-  outline: 2px solid #00384D;
+  outline: 2px solid #005677;
   outline-offset: 2px;
   border-radius: inherit;
 }

@@ -240,7 +240,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
             <button
               onClick={() => setShowTutorial(false)}
               className="mt-6 w-full py-3 text-white rounded-2xl font-bold transition-all active:scale-[0.98]"
-              style={{ backgroundColor: BRAND_COLORS.red }}
+              style={{ backgroundColor: BRAND_COLORS.blue }}
             >
               {t('tutorial.close')}
             </button>

@@ -1,14 +1,32 @@
 import { Occupation, RiasecType } from './types';
 
-// Brand Palette from PDF
+// Brand Palette (INK-008). Deep Blue is the single primary; Orange is the hero
+// accent. The off-palette red (#CF3339) is removed. `plum` is the one derived
+// shade that rounds out the six RIASEC colors and sits with the coastal palette.
 export const BRAND_COLORS = {
-  blue: '#00384D',
-  red: '#CF3339',
+  blue: '#005677',      // Deep Blue — primary buttons, headers
   lightBlue: '#68A2B9',
-  yellow: '#FFB549',
-  green: '#44797B',
-  orange: '#FF6C37',
-  black: '#1D252C'
+  yellow: '#FCB34C',
+  green: '#447A7C',     // Teal
+  orange: '#F36C3E',    // hero accent
+  plum: '#9C5B8B',      // derived shade
+  black: '#1D252C',
+};
+
+// Choose black or white text for AA contrast (>=4.5:1) on any brand color.
+// Used for every colored pill/badge so the recolor keeps contrast AA.
+export const contrastText = (hex: string): string => {
+  const lum = (h: string) => {
+    const c = h.replace('#', '');
+    const ch = (i: number) => {
+      const s = parseInt(c.slice(i, i + 2), 16) / 255;
+      return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+    };
+    return 0.2126 * ch(0) + 0.7152 * ch(2) + 0.0722 * ch(4);
+  };
+  const ratio = (a: number, b: number) => (Math.max(a, b) + 0.05) / (Math.min(a, b) + 0.05);
+  const L = lum(hex);
+  return ratio(L, 1) >= ratio(L, lum(BRAND_COLORS.black)) ? '#FFFFFF' : BRAND_COLORS.black;
 };
 
 // Map RIASEC types to the Brand Palette
@@ -16,18 +34,18 @@ export const RIASEC_COLORS: Record<RiasecType, string> = {
   [RiasecType.Realistic]: BRAND_COLORS.blue,
   [RiasecType.Investigative]: BRAND_COLORS.lightBlue,
   [RiasecType.Artistic]: BRAND_COLORS.orange,
-  [RiasecType.Social]: BRAND_COLORS.red,
+  [RiasecType.Social]: BRAND_COLORS.plum,
   [RiasecType.Enterprising]: BRAND_COLORS.yellow,
   [RiasecType.Conventional]: BRAND_COLORS.green,
 };
 
 export const RIASEC_BG_COLORS: Record<RiasecType, string> = {
-  [RiasecType.Realistic]: 'bg-[#00384D]',
+  [RiasecType.Realistic]: 'bg-[#005677]',
   [RiasecType.Investigative]: 'bg-[#68A2B9]',
-  [RiasecType.Artistic]: 'bg-[#FF6C37]',
-  [RiasecType.Social]: 'bg-[#CF3339]',
-  [RiasecType.Enterprising]: 'bg-[#FFB549]',
-  [RiasecType.Conventional]: 'bg-[#44797B]',
+  [RiasecType.Artistic]: 'bg-[#F36C3E]',
+  [RiasecType.Social]: 'bg-[#9C5B8B]',
+  [RiasecType.Enterprising]: 'bg-[#FCB34C]',
+  [RiasecType.Conventional]: 'bg-[#447A7C]',
 };
 
 export const RIASEC_DESCRIPTIONS: Record<RiasecType, string> = {
