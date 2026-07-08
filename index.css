@@ -62,6 +62,12 @@ textarea,
   transform: rotateY(180deg);
 }
 
+/* Accordion (results page collapsible sections) */
+summary::-webkit-details-marker { display: none; }
+summary { list-style: none; }
+.accordion-chevron { transition: transform 0.2s ease; }
+details[open] > summary .accordion-chevron { transform: rotate(180deg); }
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
   display: none;
