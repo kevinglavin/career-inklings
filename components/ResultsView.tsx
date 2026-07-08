@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { ExternalLink, Download, ChevronRight, Undo2, Loader2, ArrowLeft, Volume2, Copy, Star, Search, Share2, Lightbulb, Printer, MessageCircle, ClipboardCheck, RefreshCcw } from 'lucide-react';
 import { Scores, RiasecType, Occupation, SwipeResponse } from '../types';
 import { RIASEC_COLORS, BRAND_COLORS } from '../constants';
-import { computeProfile, generateSummary, RIASEC_TYPES } from '../careerProfile';
+import { computeProfile, generateSummary, topContributors, RIASEC_TYPES } from '../careerProfile';
 import { localizeOccupation } from '../occupations.es';
 import { CompassLogo } from './LoginView';
 import { motion } from 'framer-motion';
@@ -118,7 +118,6 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   // For the score breakdown bar chart
   const maxScore = ranked[0]?.score || 1;
   const totalLikes = profile.likedCount;
-  const maybeCount = maybeCards.length;
   const likedSeen = new Set<string>();
   const likedUnique: Occupation[] = likedCards.filter(o => {
     if (likedSeen.has(o.id)) return false;
@@ -135,23 +134,21 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
     ...likedUnique.map(occ => ({ occ, response: 'liked' as const })),
     ...maybeUnique.map(occ => ({ occ, response: 'maybe' as const })),
   ];
-  const likedByType = RIASEC_TYPES.reduce((acc, type) => {
-    acc[type] = likedUnique.filter(o => o.category === type).length;
-    return acc;
-  }, {} as Record<RiasecType, number>);
-  const maybeByType = RIASEC_TYPES.reduce((acc, type) => {
-    acc[type] = maybeUnique.filter(o => o.category === type).length;
-    return acc;
-  }, {} as Record<RiasecType, number>);
-  const strongestEvidence = ranked
-    .slice(0, 3)
-    .map(item => `${t('riasec.label.' + item.type)} (${likedByType[item.type]} ${t('results.likesShort')}, ${maybeByType[item.type]} ${t('results.maybesShort')})`)
+  // INK-A: explain each top dimension by the occupations that most contribute to
+  // it, never by like/curious counts. Contributors are the occupations the user
+  // responded to (liked first, then curious), ranked by their interest value in
+  // that dimension — so a type can be explained even with zero direct likes
+  // (e.g. Social surfacing from liked occupations that carry a Social profile).
+  const contributorsFor = (type: RiasecType, n = 2): Occupation[] =>
+    topContributors(type, likedUnique, maybeUnique, n);
+  const contributorTitles = (type: RiasecType, n = 2): string =>
+    contributorsFor(type, n).map(o => localizeOccupation(o, lang).title).join(', ');
+  const strongestEvidence = top3
+    .map(item => `${t('riasec.label.' + item.type)}: ${contributorTitles(item.type) || t('results.contributorsGeneric')}`)
     .join(' | ');
-  const topSignals = ranked.slice(0, 3).map(item => ({
+  const topSignals = top3.map(item => ({
     ...item,
-    liked: likedByType[item.type],
-    maybe: maybeByType[item.type],
-    weighted: item.score,
+    contributors: contributorsFor(item.type),
   }));
   const displayAnsweredCount = totalCards > 0 ? Math.min(answeredCount, totalCards) : answeredCount;
   const answeredRatio = totalCards > 0 ? displayAnsweredCount / totalCards : 0;
@@ -173,7 +170,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   useEffect(() => { try { localStorage.setItem('cc_favoriteCareers', JSON.stringify(favorites)); } catch { /* ignore */ } }, [favorites]);
   useEffect(() => { try { localStorage.setItem('cc_careerNotes', JSON.stringify(notes)); } catch { /* ignore */ } }, [notes]);
   const spokenResults = hollandCode
-    ? t('report.spoken', { code: hollandCode.split('').join(', '), n: totalLikes, total: totalCards, types: top3.map(x => t('riasec.label.' + x.type)).join(', ') })
+    ? t('results.spoken', { code: hollandCode.split('').join(', '), types: top3.map(x => t('riasec.label.' + x.type)).join(', ') })
     : t('results.noSignificant');
 
   // Radar chart data
@@ -504,24 +501,38 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
 
         <div className="text-center bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h3 className="text-gray-500 font-bold tracking-widest text-xs uppercase mb-3">{t('results.interestCode')}</h3>
-          <div className="text-6xl font-black tracking-wider mb-3" style={{ color: BRAND_COLORS.blue }}>{hollandCode || '---'}</div>
-          <p className="text-sm text-gray-500">{t('results.likedMaybeOf', { liked: totalLikes, maybe: maybeCount, total: totalCards })}</p>
-          <div className="mt-4 mx-auto max-w-xs rounded-xl border border-gray-100 bg-gray-50 p-3">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-xs font-black uppercase tracking-wide text-gray-500">{t('results.confidence')}</span>
-              <span className="text-sm font-black" style={{ color: confidenceColor }}>{t('results.confidence.' + confidenceLevel)}</span>
+          {hollandCode ? (
+            <>
+              <div className="text-6xl font-black tracking-wider mb-3" style={{ color: BRAND_COLORS.blue }}>{hollandCode}</div>
+              <div className="mt-4 mx-auto max-w-xs rounded-xl border border-gray-100 bg-gray-50 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-black uppercase tracking-wide text-gray-500">{t('results.confidence')}</span>
+                  <span className="text-sm font-black" style={{ color: confidenceColor }}>{t('results.confidence.' + confidenceLevel)}</span>
+                </div>
+                <p className="mt-1 text-xs text-gray-500 leading-relaxed">
+                  {t('results.confidenceBody.' + confidenceLevel, { answered: displayAnsweredCount, total: totalCards })}
+                </p>
+              </div>
+              {hasTopTie && <p className="text-xs text-gray-500 mt-2">{t('results.topTie')}</p>}
+              {hasBoundaryTie && !hasTopTie && (
+                <p className="text-xs text-gray-500 mt-2">
+                  {t('results.boundaryTieTypes', { types: tiedTypes.map(type => t('riasec.label.' + type)).join(', ') })}
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mt-4 leading-relaxed">{t('results.validityNote')}</p>
+            </>
+          ) : (
+            <div className="py-2">
+              <p className="text-lg font-black text-gray-800">{t('results.emptyCodeTitle')}</p>
+              <p className="mt-2 mx-auto max-w-xs text-sm text-gray-500 leading-relaxed">{t('results.emptyCodeBody')}</p>
+              <button onClick={onRestart}
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl border-2 px-5 py-3 text-sm font-bold transition-transform active:scale-95"
+                style={{ borderColor: BRAND_COLORS.blue, color: BRAND_COLORS.blue }}>
+                <RefreshCcw className="w-4 h-4" />
+                {t('results.emptyCodeCta')}
+              </button>
             </div>
-            <p className="mt-1 text-xs text-gray-500 leading-relaxed">
-              {t('results.confidenceBody.' + confidenceLevel, { answered: displayAnsweredCount, total: totalCards })}
-            </p>
-          </div>
-          {hasTopTie && <p className="text-xs text-gray-500 mt-2">{t('results.topTie')}</p>}
-          {hasBoundaryTie && !hasTopTie && (
-            <p className="text-xs text-gray-500 mt-2">
-              {t('results.boundaryTieTypes', { types: tiedTypes.map(type => t('riasec.label.' + type)).join(', ') })}
-            </p>
           )}
-          <p className="text-xs text-gray-400 mt-4 leading-relaxed">{t('results.validityNote')}</p>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
@@ -534,45 +545,59 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
 
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">{t('results.whyTitle')}</h3>
-          <p className="text-sm text-gray-600 leading-relaxed mb-4">
-            {t('results.whyBody', { evidence: strongestEvidence || t('results.noEvidence') })}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {topSignals.map(item => (
-              <div key={item.type} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="text-xs font-bold uppercase tracking-wide" style={{ color: RIASEC_COLORS[item.type] }}>
-                    {t('riasec.label.' + item.type)}
-                  </span>
-                  <span className="text-xs font-bold text-gray-500">{Math.round(item.normalized * 10) / 10}%</span>
-                </div>
-                <p className="text-[11px] text-gray-500">
-                  {t('results.signalStats', { liked: item.liked, maybe: item.maybe, score: Math.round(item.weighted * 10) / 10 })}
-                </p>
+          {top3.length > 0 ? (
+            <>
+              <p className="text-sm text-gray-600 leading-relaxed mb-4">{t('results.whyBody')}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {topSignals.map(item => (
+                  <div key={item.type} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-xs font-bold uppercase tracking-wide" style={{ color: RIASEC_COLORS[item.type] }}>
+                        {t('riasec.label.' + item.type)}
+                      </span>
+                      <span className="text-xs font-bold text-gray-500">{Math.round(item.normalized * 10) / 10}%</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500">
+                      {item.contributors.length
+                        ? t('results.contributors', { occupations: item.contributors.map(o => localizeOccupation(o, lang).title).join(', ') })
+                        : t('results.contributorsGeneric')}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <p className="text-sm text-gray-500">{t('results.noSignificant')}</p>
+          )}
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">{t('results.topSignals')}</h3>
-          <div className="space-y-2">
-            {topSignals.map(item => (
-              <div key={item.type} className="flex items-center gap-3 rounded-xl bg-gray-50 border border-gray-100 p-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full text-white text-sm font-black shrink-0" style={{ backgroundColor: RIASEC_COLORS[item.type] }}>
-                  {item.letter}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-gray-800">{t('riasec.label.' + item.type)}</p>
-                  <p className="text-xs text-gray-500">{item.liked} {t('results.likesShort')} / {item.maybe} {t('results.maybesShort')}</p>
+          {top3.length > 0 ? (
+            <div className="space-y-2">
+              {topSignals.map(item => (
+                <div key={item.type} className="flex items-center gap-3 rounded-xl bg-gray-50 border border-gray-100 p-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full text-white text-sm font-black shrink-0" style={{ backgroundColor: RIASEC_COLORS[item.type] }}>
+                    {item.letter}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-gray-800">{t('riasec.label.' + item.type)}</p>
+                    <p className="text-xs text-gray-500">
+                      {item.contributors.length
+                        ? t('results.signalFrom', { occupations: item.contributors.map(o => localizeOccupation(o, lang).title).join(', ') })
+                        : t('results.contributorsGeneric')}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-black text-gray-900">{Math.round(item.normalized * 10) / 10}%</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">{t('results.ofProfile')}</p>
+                  </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-black text-gray-900">{Math.round(item.weighted * 10) / 10}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">{t('results.rawScore')}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 bg-gray-50 rounded-xl text-center text-gray-500 text-sm">{t('results.noSignificant')}</div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
