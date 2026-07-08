@@ -150,23 +150,23 @@ export const LegalSupport: React.FC<LegalSupportProps> = ({ onClearData, classNa
       <div className="flex flex-wrap items-center justify-center gap-2 text-xs font-bold">
         <button onClick={() => openTopic('privacy')} className="inline-flex min-h-11 items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-2 text-gray-600 hover:bg-gray-50">
           <ShieldCheck className="h-3.5 w-3.5" />
-          Privacy
+          {t('legal.privacy')}
         </button>
         <button onClick={() => openTopic('terms')} className="min-h-11 rounded-full border border-gray-200 bg-white px-3 py-2 text-gray-600 hover:bg-gray-50">
-          Terms
+          {t('legal.terms')}
         </button>
         <button onClick={() => openTopic('sources')} className="inline-flex min-h-11 items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-2 text-gray-600 hover:bg-gray-50">
           <DatabaseZap className="h-3.5 w-3.5" />
-          Sources
+          {t('legal.sources')}
         </button>
         <a href={`mailto:${SUPPORT_EMAIL}`} className="inline-flex min-h-11 items-center gap-1 rounded-full border border-gray-200 bg-white px-3 py-2 text-gray-600 hover:bg-gray-50">
           <LifeBuoy className="h-3.5 w-3.5" />
-          Support
+          {t('legal.support')}
         </a>
         {onClearData && (
           <button onClick={handleClearData} disabled={isClearing} className="inline-flex min-h-11 items-center gap-1 rounded-full border border-red-100 bg-white px-3 py-2 text-red-600 hover:bg-red-50 disabled:opacity-60">
             <Trash2 className="h-3.5 w-3.5" />
-            {isClearing ? 'Clearing...' : 'Clear data'}
+            {isClearing ? t('legal.clearing') : t('legal.clearAll')}
           </button>
         )}
       </div>
@@ -198,17 +198,17 @@ export const LegalSupport: React.FC<LegalSupportProps> = ({ onClearData, classNa
               {activeTopic === 'sources' && (
                 <div className="grid grid-cols-1 gap-2">
                   <a href="https://www.onetonline.org/" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50">
-                    O*NET(R) OnLine <ExternalLink className="h-4 w-4" />
+                    {t('legal.onetOnline')} <ExternalLink className="h-4 w-4" />
                   </a>
                   <a href="https://www.onetcenter.org/database.html" target="_blank" rel="noopener noreferrer" className="inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 px-3 py-3 text-sm font-bold text-gray-700 hover:bg-gray-50">
-                    O*NET(R) Database <ExternalLink className="h-4 w-4" />
+                    {t('legal.onetDatabase')} <ExternalLink className="h-4 w-4" />
                   </a>
                 </div>
               )}
             </div>
             <div className="border-t border-gray-100 p-4">
               <button onClick={() => setActiveTopic(null)} className="w-full rounded-2xl py-3 text-sm font-black text-white" style={{ backgroundColor: BRAND_COLORS.blue }}>
-                Close
+                {t('legal.close')}
               </button>
             </div>
           </div>
