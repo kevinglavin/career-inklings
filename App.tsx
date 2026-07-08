@@ -1,7 +1,11 @@
-import React, { useState, useEffect, useCallback, useRef, lazy, Suspense } from 'react';
+import React, { useState, useEffect, useCallback, useRef, useMemo, lazy, Suspense } from 'react';
 import { AnimatePresence, motion, MotionConfig } from 'framer-motion';
 import { RotateCcw, Volume2, VolumeX, Trophy, ThumbsUp, ThumbsDown, Home, HelpCircle } from 'lucide-react';
 import { OCCUPATIONS, BRAND_COLORS, DEFAULT_PACK_ID, resolvePackImageUrl } from './constants';
+import { computeProfile, topContributors } from './careerProfile';
+import { localizeOccupation } from './occupations.es';
+import { careerVerseUrl } from './careerverse';
+import { Ink, InkTrigger, InkContext } from './components/Ink';
 import { AppStage, DeckPreferences, Occupation, ResponseChoice, Scores, SwipeResponse, RiasecType } from './types';
 import { SwipeCard, SwipeCardHandle } from './components/SwipeCard';
 import { LoginView, CompassLogo } from './components/LoginView';
@@ -208,7 +212,8 @@ export default function App() {
   const [demoMode] = useState(() => {
     try { return new URLSearchParams(window.location.search).get('demo') === '1'; } catch { return false; }
   });
-  const { t } = useT();
+  const [inkOpen, setInkOpen] = useState(false);
+  const { t, lang } = useT();
 
   const [milestoneNum, setMilestoneNum] = useState<number | null>(null);
   const milestoneTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -511,6 +516,46 @@ export default function App() {
 
   const progress = deck.length > 0 ? (currentIndex / deck.length) * 100 : 0;
 
+  // --- INK ASSISTANT CONTEXT ---
+  const inkScreen: InkContext['screen'] =
+    stage === AppStage.Instructions ? 'mode_select'
+      : stage === AppStage.Swipe ? 'swiping'
+        : stage === AppStage.Results ? 'results'
+          : 'landing';
+
+  const inkContext: InkContext = useMemo(() => {
+    const ctx: InkContext = { app_language: lang, screen: inkScreen };
+    if (stage === AppStage.Swipe && deck[currentIndex]) {
+      ctx.current_card = { id: deck[currentIndex].id, title: localizeOccupation(deck[currentIndex], lang).title };
+    }
+    if (stage === AppStage.Results) {
+      const profile = computeProfile(likedCards, maybeCards);
+      const scores: Record<string, { raw: number; pct: number }> = {};
+      profile.ranked.forEach(r => { scores[r.type] = { raw: Math.round(r.score * 10) / 10, pct: r.normalized }; });
+      ctx.results = {
+        interest_code: profile.code,
+        scores,
+        liked_ids: likedCards.map(o => o.id),
+        unsure_ids: maybeCards.map(o => o.id),
+        liked_titles: likedCards.map(o => localizeOccupation(o, lang).title),
+        unsure_titles: maybeCards.map(o => localizeOccupation(o, lang).title),
+      };
+    }
+    return ctx;
+  }, [lang, inkScreen, stage, deck, currentIndex, likedCards, maybeCards]);
+
+  // CareerVerse handoff for the top occupation — null (CTA hidden) unless a
+  // verified slug exists (see careerverse.ts).
+  const inkCareerVerse = useMemo(() => {
+    if (stage !== AppStage.Results) return null;
+    const profile = computeProfile(likedCards, maybeCards);
+    if (!profile.codeTypes.length) return null;
+    const top = topContributors(profile.codeTypes[0].type, likedCards, maybeCards, 1)[0];
+    if (!top) return null;
+    const url = careerVerseUrl(top.id);
+    return url ? { title: localizeOccupation(top, lang).title, url } : null;
+  }, [stage, likedCards, maybeCards, lang]);
+
   // --- EXIT ANIMATION VARIANTS (direction-aware) ---
   const cardExitVariants = {
     exit: {
@@ -538,8 +583,8 @@ export default function App() {
     <div className="h-screen h-[100dvh] w-screen flex items-center justify-center bg-[#dfeceb] overflow-hidden">
       <div className="relative flex h-full min-h-0 w-full max-w-md flex-col overflow-hidden bg-[#f6f9f6] shadow-2xl sm:max-h-[900px]">
 
-        {stage === AppStage.Login && <LoginView onLogin={handleLogin} onClearData={handleClearLocalData} showCustomize={demoMode} />}
-        {stage === AppStage.Instructions && <InstructionsView onStart={handleStartSwiping} isLoading={false} imagePack={imagePack} onPackChange={handlePackChange} soundEnabled={soundEnabled} onToggleSound={toggleSound} />}
+        {stage === AppStage.Login && <LoginView onLogin={handleLogin} onClearData={handleClearLocalData} showCustomize={demoMode} onOpenInk={() => setInkOpen(true)} />}
+        {stage === AppStage.Instructions && <InstructionsView onStart={handleStartSwiping} isLoading={false} imagePack={imagePack} onPackChange={handlePackChange} soundEnabled={soundEnabled} onToggleSound={toggleSound} onOpenInk={() => setInkOpen(true)} />}
         {(stage === AppStage.Settings || stage === AppStage.Results) && (
           <Suspense fallback={<div className="h-full w-full flex items-center justify-center"><CompassLogo size={48} className="animate-pulse" /></div>}>
             {stage === AppStage.Settings && (
@@ -548,7 +593,8 @@ export default function App() {
             {stage === AppStage.Results && (
               <ResultsView scores={scores} onRestart={handleRestart} onEditResponses={handleEditResponses}
                 totalCards={resultTotalCards || deck.length} answeredCount={answeredCount} onRetakeType={handleRetakeType}
-                userName={userName} swipeHistory={swipeHistory} deck={deck} likedCards={likedCards} maybeCards={maybeCards} onClearData={handleClearLocalData} />
+                userName={userName} swipeHistory={swipeHistory} deck={deck} likedCards={likedCards} maybeCards={maybeCards} onClearData={handleClearLocalData}
+                onOpenInk={() => setInkOpen(true)} careerVerse={inkCareerVerse} />
             )}
           </Suspense>
         )}
@@ -577,6 +623,7 @@ export default function App() {
                   aria-label={t('app.undo')}>
                   <RotateCcw className="w-4 h-4 text-gray-600" />
                 </button>
+                <InkTrigger onClick={() => setInkOpen(true)} className="bg-gray-100 hover:bg-gray-200 transition-colors" />
               </div>
             </div>
 
@@ -671,6 +718,9 @@ export default function App() {
             </AnimatePresence>
           </div>
         )}
+
+        {/* Ink career guide — available on every screen via each header's launcher. */}
+        <Ink open={inkOpen} onClose={() => setInkOpen(false)} context={inkContext} careerVerse={inkCareerVerse} />
 
       </div>
     </div>

@@ -3,12 +3,14 @@ import { ArrowRight, Compass, Zap, Target, BarChart3 } from 'lucide-react';
 import { BRAND_COLORS } from '../constants';
 import { useT, LANGUAGES } from '../i18n';
 import { LegalSupport } from './LegalSupport';
+import { InkTrigger } from './Ink';
 
 interface LoginViewProps {
   onLogin: (asAdmin: boolean, name?: string) => void;
   onClearData: () => void | Promise<void>;
   // INK-018: the demo editor is gated behind ?demo=1 and hidden from the public build.
   showCustomize?: boolean;
+  onOpenInk?: () => void;
 }
 
 // Compass Logo Component - reusable across the app
@@ -32,7 +34,7 @@ export const CompassLogo = ({ size = 40, className = '' }: { size?: number; clas
   </svg>
 );
 
-export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData, showCustomize = false }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData, showCustomize = false, onOpenInk }) => {
   const [name, setName] = useState('');
   const { t, lang, setLang } = useT();
   return (
@@ -59,6 +61,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData, show
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {onOpenInk && <InkTrigger onClick={onOpenInk} className="border border-gray-200 bg-white shadow-sm" />}
               <div className="flex min-h-11 items-center gap-0.5 rounded-full border border-gray-200 bg-gray-50 p-0.5" role="group" aria-label="Language">
                 {LANGUAGES.map(l => (
                   <button key={l.code} onClick={() => setLang(l.code)}

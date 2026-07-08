@@ -5,6 +5,11 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# Serverless functions (Ink chat proxy). The CLI bundles this directory on
+# `netlify deploy`, including with --no-build.
+[functions]
+  directory = "netlify/functions"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

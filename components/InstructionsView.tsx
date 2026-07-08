@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { BookOpen, ChevronDown, HeartPulse, Info, Palette, PanelsTopLeft, ThumbsDown, ThumbsUp, Volume2, VolumeX, X, Zap } from 'lucide-react';
 import { BRAND_COLORS, OCCUPATIONS, SELECTABLE_PACKS, defaultImageUrl, resolvePackImageUrl } from '../constants';
 import { CompassLogo } from './LoginView';
+import { InkTrigger } from './Ink';
 import { useT } from '../i18n';
 
 interface InstructionsViewProps {
@@ -11,11 +12,12 @@ interface InstructionsViewProps {
   onPackChange: (packId: string) => void;
   soundEnabled: boolean;
   onToggleSound: () => void;
+  onOpenInk?: () => void;
 }
 
 const PREVIEW_OCCUPATION = OCCUPATIONS.find(occupation => occupation.id === 's6') || OCCUPATIONS[0];
 
-export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isLoading, imagePack, onPackChange, soundEnabled, onToggleSound }) => {
+export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isLoading, imagePack, onPackChange, soundEnabled, onToggleSound, onOpenInk }) => {
   const { t } = useT();
   const [showTutorial, setShowTutorial] = useState(false);
   const [styleOpen, setStyleOpen] = useState(false);
@@ -59,6 +61,7 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
             <span className="instructions-brand-name text-[25px] font-black leading-none [@media(max-height:430px)]:text-[21px]" style={{ color: BRAND_COLORS.blue }}>Inklings</span>
           </div>
           <div className="flex items-center gap-2.5">
+            {onOpenInk && <InkTrigger onClick={onOpenInk} className="border border-gray-200 bg-white shadow-[0_8px_18px_rgba(15,23,42,0.08)]" />}
             <button
               ref={triggerRef}
               onClick={() => setShowTutorial(true)}

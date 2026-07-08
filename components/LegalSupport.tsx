@@ -28,6 +28,7 @@ const TOPICS: Record<LegalTopic, { title: string; eyebrow: string; sections: { h
       {
         heading: 'What leaves the device',
         body: [
+          'When you chat with Ink, the in-app guide, your typed messages plus a little context (app language, current screen, the current card while swiping, and — on the results screen — your interest code, scores, and the occupations you liked or marked Unsure) are sent to Anthropic’s API to generate replies. Those messages are not stored by the app, and Ink is instructed never to ask for personal information.',
           'Career links open third-party sites such as O*NET OnLine in a new tab. Those sites have their own privacy practices.',
           `If you email support at ${SUPPORT_EMAIL}, you choose what information to include in that email.`,
         ],

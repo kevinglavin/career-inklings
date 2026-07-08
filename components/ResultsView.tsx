@@ -5,6 +5,7 @@ import { RIASEC_COLORS, BRAND_COLORS, contrastText } from '../constants';
 import { computeProfile, generateSummary, topContributors, RIASEC_TYPES } from '../careerProfile';
 import { localizeOccupation } from '../occupations.es';
 import { CompassLogo } from './LoginView';
+import { InkTrigger } from './Ink';
 import { motion } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 // @ts-ignore
@@ -26,6 +27,8 @@ interface ResultsViewProps {
   likedCards: Occupation[];
   maybeCards: Occupation[];
   onClearData: () => void | Promise<void>;
+  onOpenInk?: () => void;
+  careerVerse?: { title: string; url: string } | null;
 }
 
 // Flippable Result Card
@@ -91,7 +94,7 @@ function hexToRgb(hex: string): [number, number, number] {
   return [r, g, b];
 }
 
-export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onEditResponses, onRetakeType, totalCards, answeredCount, userName, swipeHistory, deck, likedCards, maybeCards, onClearData }) => {
+export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onEditResponses, onRetakeType, totalCards, answeredCount, userName, swipeHistory, deck, likedCards, maybeCards, onClearData, onOpenInk, careerVerse }) => {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfError, setPdfError] = useState(false);
   const [shortlistExpanded, setShortlistExpanded] = useState(false);
@@ -505,6 +508,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
         </div>
         <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mt-1">{t('results.title')}</h2>
         {userName && <p className="text-xs text-gray-500">{t('results.for', { name: userName })}</p>}
+        {onOpenInk && <InkTrigger onClick={onOpenInk} className="absolute top-3 left-4 bg-gray-100 hover:bg-gray-200 transition-colors" />}
         {speechSupported && (
           <button onClick={() => speak(spokenResults, lang)} aria-label={t('results.readResults')}
             className="absolute top-3 right-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
@@ -698,6 +702,19 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           <span>{t('results.viewMatching')}</span>
           <ExternalLink className="w-5 h-5 ml-2" />
         </a>
+
+        {/* CareerVerse handoff — only when a verified slug exists for the top occupation. */}
+        {careerVerse && (
+          <a href={careerVerse.url} target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-between gap-3 w-full py-4 px-4 rounded-xl font-bold border-2 bg-white transition-transform active:scale-95 hover:bg-gray-50"
+            style={{ borderColor: BRAND_COLORS.orange, color: BRAND_COLORS.blue }}>
+            <span className="min-w-0 text-left">
+              <span className="block truncate">{t('ink.careerverseCta', { occupation: careerVerse.title })}</span>
+              <span className="block truncate text-xs font-medium text-gray-500">{t('ink.careerverseBody')}</span>
+            </span>
+            <ExternalLink className="w-5 h-5 shrink-0" />
+          </a>
+        )}
 
         <div>
           <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide mb-3">{t('results.topInterests')}</h3>
