@@ -237,6 +237,19 @@ export const InstructionsView: React.FC<InstructionsViewProps> = ({ onStart, isL
                 </li>
               ))}
             </ol>
+            {/* INK-015: plain-language sections on what it measures, how scoring works, and data storage. */}
+            <div className="mt-5 space-y-4 border-t border-gray-100 pt-4">
+              {[
+                { title: 'help.measureTitle', body: 'help.measureBody' },
+                { title: 'help.scoringTitle', body: 'help.scoringBody' },
+                { title: 'help.storageTitle', body: 'help.storageBody' },
+              ].map(section => (
+                <section key={section.title}>
+                  <h4 className="text-sm font-black" style={{ color: BRAND_COLORS.blue }}>{t(section.title)}</h4>
+                  <p className="mt-1 text-sm text-gray-600 leading-relaxed">{t(section.body)}</p>
+                </section>
+              ))}
+            </div>
             <button
               onClick={() => setShowTutorial(false)}
               className="mt-6 w-full py-3 text-white rounded-2xl font-bold transition-all active:scale-[0.98]"

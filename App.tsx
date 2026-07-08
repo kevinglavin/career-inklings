@@ -204,6 +204,10 @@ export default function App() {
   const [userName, setUserName] = useState('');
   const [imagePack, setImagePack] = useState<string>(DEFAULT_PACK_ID);
   const [lastSwipeDirection, setLastSwipeDirection] = useState<ResponseChoice>('right');
+  // INK-018: the demo/customize editor is only reachable with ?demo=1.
+  const [demoMode] = useState(() => {
+    try { return new URLSearchParams(window.location.search).get('demo') === '1'; } catch { return false; }
+  });
   const { t } = useT();
 
   const [milestoneNum, setMilestoneNum] = useState<number | null>(null);
@@ -534,7 +538,7 @@ export default function App() {
     <div className="h-screen h-[100dvh] w-screen flex items-center justify-center bg-[#dfeceb] overflow-hidden">
       <div className="relative flex h-full min-h-0 w-full max-w-md flex-col overflow-hidden bg-[#f6f9f6] shadow-2xl sm:max-h-[900px]">
 
-        {stage === AppStage.Login && <LoginView onLogin={handleLogin} onClearData={handleClearLocalData} />}
+        {stage === AppStage.Login && <LoginView onLogin={handleLogin} onClearData={handleClearLocalData} showCustomize={demoMode} />}
         {stage === AppStage.Instructions && <InstructionsView onStart={handleStartSwiping} isLoading={false} imagePack={imagePack} onPackChange={handlePackChange} soundEnabled={soundEnabled} onToggleSound={toggleSound} />}
         {(stage === AppStage.Settings || stage === AppStage.Results) && (
           <Suspense fallback={<div className="h-full w-full flex items-center justify-center"><CompassLogo size={48} className="animate-pulse" /></div>}>
@@ -644,6 +648,10 @@ export default function App() {
                     <ThumbsUp className="w-6 h-6 text-green-500" />
                   </button>
                 </div>
+                {/* INK-017: desktop-only keyboard hint (arrow keys drive all three actions). */}
+                <p className="mt-3 hidden text-center text-xs font-medium text-gray-400 [@media(pointer:fine)]:block">
+                  {t('app.keyboardHint')}
+                </p>
                 {swipeHistory.length > 0 && (
                   <button onClick={handleUndo}
                     className="mt-3 mx-auto flex items-center gap-1.5 text-xs font-bold underline underline-offset-2"

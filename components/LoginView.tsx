@@ -7,6 +7,8 @@ import { LegalSupport } from './LegalSupport';
 interface LoginViewProps {
   onLogin: (asAdmin: boolean, name?: string) => void;
   onClearData: () => void | Promise<void>;
+  // INK-018: the demo editor is gated behind ?demo=1 and hidden from the public build.
+  showCustomize?: boolean;
 }
 
 // Compass Logo Component - reusable across the app
@@ -30,7 +32,7 @@ export const CompassLogo = ({ size = 40, className = '' }: { size?: number; clas
   </svg>
 );
 
-export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData }) => {
+export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData, showCustomize = false }) => {
   const [name, setName] = useState('');
   const { t, lang, setLang } = useT();
   return (
@@ -67,13 +69,15 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData }) =>
                   </button>
                 ))}
               </div>
-              <button
-                onClick={() => onLogin(true)}
-                className="inline-flex min-h-11 items-center px-2 text-xs font-medium text-gray-500 transition-colors hover:text-gray-700"
-                aria-label={t('admin.label')}
-              >
-                {t('admin.label')}
-              </button>
+              {showCustomize && (
+                <button
+                  onClick={() => onLogin(true)}
+                  className="inline-flex min-h-11 items-center px-2 text-xs font-medium text-gray-500 transition-colors hover:text-gray-700"
+                  aria-label={t('admin.label')}
+                >
+                  {t('admin.label')}
+                </button>
+              )}
             </div>
           </div>
 
@@ -151,8 +155,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData }) =>
               </span>
             </button>
 
-            <p className="text-center text-xs text-gray-400 font-medium pb-2">
+            <p className="text-center text-xs text-gray-400 font-medium">
               {t('login.note')}
+            </p>
+            <p className="text-center text-[11px] leading-snug text-gray-400 pb-2">
+              {t('login.onetCredit')}
             </p>
             <LegalSupport onClearData={onClearData} />
           </div>
