@@ -119,6 +119,23 @@ export function computeProfile(likedCards: Occupation[], maybeCards: Occupation[
   };
 }
 
+// INK-A: name the occupations that most contribute to a given RIASEC dimension,
+// never like/curious counts. Contributors are the occupations the user responded
+// to (liked first, then curious), ranked by their O*NET interest value in that
+// dimension. This lets a dimension be explained even with zero direct likes — e.g.
+// Social surfacing from liked occupations that carry a strong Social profile.
+export function topContributors(
+  type: RiasecType,
+  likedCards: Occupation[],
+  maybeCards: Occupation[] = [],
+  n = 2,
+): Occupation[] {
+  const rank = (arr: Occupation[]) => arr
+    .filter(o => Number(o.interests?.[type]) > 0)
+    .sort((a, b) => Number(b.interests[type]) - Number(a.interests[type]));
+  return [...rank(likedCards), ...rank(maybeCards)].slice(0, n);
+}
+
 // --- Summary generation ---
 
 const RIASEC_INFO: Record<RiasecType, { label: string; gerund: string }> = {
@@ -150,7 +167,7 @@ export function generateSummary(profile: Profile): { heading: string; body: stri
   if (!top.length) {
     return {
       heading: HEADING,
-      body: 'You did not mark any careers as interesting. Swipe through again and tap the ones that catch your eye, including the unfamiliar ones.',
+      body: 'You did not mark any occupations as interesting. Swipe through again and tap the ones that catch your eye, including the unfamiliar ones.',
     };
   }
 

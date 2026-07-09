@@ -68,7 +68,7 @@ describe('computeProfile', () => {
 
     expect(profile.code).toBe('');
     expect(profile.codeTypes).toEqual([]);
-    expect(summary.body).toContain('did not mark any careers');
+    expect(summary.body).toContain('did not mark any occupations');
   });
 
   it('handles all-Dislike input (no likes, no maybes)', () => {

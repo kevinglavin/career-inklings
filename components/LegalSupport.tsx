@@ -4,7 +4,7 @@ import { BRAND_COLORS } from '../constants';
 import { useT } from '../i18n';
 
 const SUPPORT_EMAIL = 'admin@createyourwhy.com';
-const LAST_UPDATED = 'June 29, 2026';
+const LAST_UPDATED = 'July 8, 2026';
 
 type LegalTopic = 'privacy' | 'terms' | 'sources';
 
@@ -15,7 +15,7 @@ interface LegalSupportProps {
 
 const TOPICS: Record<LegalTopic, { title: string; eyebrow: string; sections: { heading: string; body: string[] }[] }> = {
   privacy: {
-    eyebrow: `Draft privacy notice - last updated ${LAST_UPDATED}`,
+    eyebrow: `Privacy notice - last updated ${LAST_UPDATED}`,
     title: 'Privacy Policy',
     sections: [
       {
@@ -28,6 +28,7 @@ const TOPICS: Record<LegalTopic, { title: string; eyebrow: string; sections: { h
       {
         heading: 'What leaves the device',
         body: [
+          'When you chat with Ink, the in-app guide, your typed messages plus a little context (app language, current screen, the current card while swiping, and — on the results screen — your interest code, scores, and the occupations you liked or marked Unsure) are sent to Anthropic’s API to generate replies. Those messages are not stored by the app, and Ink is instructed never to ask for personal information.',
           'Career links open third-party sites such as O*NET OnLine in a new tab. Those sites have their own privacy practices.',
           `If you email support at ${SUPPORT_EMAIL}, you choose what information to include in that email.`,
         ],
@@ -48,7 +49,7 @@ const TOPICS: Record<LegalTopic, { title: string; eyebrow: string; sections: { h
     ],
   },
   terms: {
-    eyebrow: `Draft terms - last updated ${LAST_UPDATED}`,
+    eyebrow: `Terms - last updated ${LAST_UPDATED}`,
     title: 'Terms of Use',
     sections: [
       {

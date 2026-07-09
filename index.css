@@ -6,7 +6,7 @@
 
 /* Keyboard focus: an app-controlled, high-contrast ring (don't depend on the UA default) */
 :focus-visible {
-  outline: 2px solid #00384D;
+  outline: 2px solid #005677;
   outline-offset: 2px;
   border-radius: inherit;
 }
@@ -61,6 +61,12 @@ textarea,
 .rotate-y-180 {
   transform: rotateY(180deg);
 }
+
+/* Accordion (results page collapsible sections) */
+summary::-webkit-details-marker { display: none; }
+summary { list-style: none; }
+.accordion-chevron { transition: transform 0.2s ease; }
+details[open] > summary .accordion-chevron { transform: rotate(180deg); }
 
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {

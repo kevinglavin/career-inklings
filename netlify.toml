@@ -5,6 +5,19 @@
 [build.environment]
   NODE_VERSION = "22"
 
+# `netlify dev`: run our Vite server (port 3000) and proxy it, instead of
+# assuming Vite's default 5173.
+[dev]
+  command = "npm run dev"
+  targetPort = 3000
+  framework = "#custom"
+  autoLaunch = false
+
+# Serverless functions (Ink chat proxy). The CLI bundles this directory on
+# `netlify deploy`, including with --no-build.
+[functions]
+  directory = "netlify/functions"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"

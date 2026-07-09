@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { ExternalLink, Download, ChevronRight, Undo2, Loader2, ArrowLeft, Volume2, Copy, Star, Search, Share2, Lightbulb, Printer, MessageCircle, ClipboardCheck, RefreshCcw } from 'lucide-react';
+import { ExternalLink, Download, ChevronRight, ChevronDown, Undo2, Loader2, ArrowLeft, Volume2, Copy, Star, Search, Share2, Lightbulb, Printer, MessageCircle, ClipboardCheck, RefreshCcw } from 'lucide-react';
 import { Scores, RiasecType, Occupation, SwipeResponse } from '../types';
-import { RIASEC_COLORS, BRAND_COLORS } from '../constants';
-import { computeProfile, generateSummary, RIASEC_TYPES } from '../careerProfile';
+import { RIASEC_COLORS, BRAND_COLORS, contrastText } from '../constants';
+import { computeProfile, generateSummary, topContributors, RIASEC_TYPES } from '../careerProfile';
 import { localizeOccupation } from '../occupations.es';
 import { CompassLogo } from './LoginView';
+import { InkTrigger } from './Ink';
 import { motion } from 'framer-motion';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 // @ts-ignore
@@ -26,6 +27,8 @@ interface ResultsViewProps {
   likedCards: Occupation[];
   maybeCards: Occupation[];
   onClearData: () => void | Promise<void>;
+  onOpenInk?: () => void;
+  careerVerse?: { title: string; url: string; officialTitle?: string | null } | null;
 }
 
 // Flippable Result Card
@@ -33,6 +36,7 @@ const ResultItemCard: React.FC<{ type: RiasecType; score: number; rawScore: numb
   const [isFlipped, setIsFlipped] = useState(false);
   const { t } = useT();
   const bgColor = RIASEC_COLORS[type];
+  const fg = contrastText(bgColor);
   const medals = ['🥇', '🥈', '🥉'];
   return (
     <div className="relative w-full h-52 perspective-1000 cursor-pointer group" onClick={() => setIsFlipped(!isFlipped)}
@@ -45,8 +49,8 @@ const ResultItemCard: React.FC<{ type: RiasecType; score: number; rawScore: numb
               <span className="text-2xl">{medals[rank] || ''}</span>
               <h4 className="font-bold text-gray-900 text-xl">{t('riasec.label.' + type)}</h4>
             </div>
-            <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold" style={{ backgroundColor: bgColor }}>
-              <span className="text-xs">{score}%</span>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold" style={{ backgroundColor: bgColor, color: contrastText(bgColor) }}>
+              <span className="text-xs">{score.toFixed(1)}%</span>
             </div>
           </div>
           <p className="text-gray-600 text-base leading-relaxed line-clamp-3 my-2">{t('riasec.desc.' + type)}</p>
@@ -55,19 +59,32 @@ const ResultItemCard: React.FC<{ type: RiasecType; score: number; rawScore: numb
             {t('results.tapToLearn')} <ChevronRight className="w-4 h-4 ml-1" />
           </div>
         </div>
-        <div className="absolute inset-0 backface-hidden rotate-y-180 text-white rounded-2xl shadow-sm p-5 flex flex-col" style={{ backgroundColor: bgColor }}>
+        <div className="absolute inset-0 backface-hidden rotate-y-180 rounded-2xl shadow-sm p-5 flex flex-col" style={{ backgroundColor: bgColor, color: fg }}>
           <div className="flex items-center justify-between mb-3 shrink-0">
-            <h4 className="font-bold text-white text-xl">{t('riasec.label.' + type)}</h4>
-            <Undo2 className="w-5 h-5 text-white/70" />
+            <h4 className="font-bold text-xl">{t('riasec.label.' + type)}</h4>
+            <Undo2 className="w-5 h-5 opacity-70" />
           </div>
           <div className="overflow-y-auto custom-scrollbar pr-1 flex-1">
-            <p className="text-base leading-relaxed text-white/95">{t('riasec.detail.' + type)}</p>
+            <p className="text-base leading-relaxed opacity-95">{t('riasec.detail.' + type)}</p>
           </div>
         </div>
       </motion.div>
     </div>
   );
 };
+
+// INK-013: collapsible results section. Lower-value modules collapse by default
+// to shorten the page; the headline modules stay expanded (rendered as plain
+// cards). Native <details> keeps this keyboard- and screen-reader-accessible.
+const Collapsible: React.FC<{ header: React.ReactNode; defaultOpen?: boolean; children: React.ReactNode }> = ({ header, defaultOpen = false, children }) => (
+  <details open={defaultOpen} className="bg-white rounded-2xl border border-gray-100 shadow-sm">
+    <summary className="flex cursor-pointer items-center justify-between gap-3 p-5">
+      <div className="min-w-0 flex-1">{header}</div>
+      <ChevronDown className="accordion-chevron w-5 h-5 shrink-0 text-gray-400" aria-hidden="true" />
+    </summary>
+    <div className="px-5 pb-5 pt-0">{children}</div>
+  </details>
+);
 
 // Hex to RGB helper
 function hexToRgb(hex: string): [number, number, number] {
@@ -77,7 +94,7 @@ function hexToRgb(hex: string): [number, number, number] {
   return [r, g, b];
 }
 
-export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onEditResponses, onRetakeType, totalCards, answeredCount, userName, swipeHistory, deck, likedCards, maybeCards, onClearData }) => {
+export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onEditResponses, onRetakeType, totalCards, answeredCount, userName, swipeHistory, deck, likedCards, maybeCards, onClearData, onOpenInk, careerVerse }) => {
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
   const [pdfError, setPdfError] = useState(false);
   const [shortlistExpanded, setShortlistExpanded] = useState(false);
@@ -85,6 +102,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   const [careerFilter, setCareerFilter] = useState<'all' | 'starred' | RiasecType>('all');
   const [copiedSummary, setCopiedSummary] = useState(false);
   const [counselorView, setCounselorView] = useState(false);
+  const [radarInfo, setRadarInfo] = useState<RiasecType | null>(null);
   const [favorites, setFavorites] = useState<Record<string, boolean>>(() => {
     try { return JSON.parse(localStorage.getItem('cc_favoriteCareers') || '{}'); } catch { return {}; }
   });
@@ -109,16 +127,16 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           : t('summary.empty'),
       };
 
-  // O*NET link: point at the single top interest, not the multi-type path
-  const topInterestType = top3.length > 0 ? top3[0].type : '';
-  const onetUrl = topInterestType
-    ? `https://www.onetonline.org/explore/interests/${topInterestType}/`
-    : 'https://www.onetonline.org/';
+  // INK-021: deep-link to the user's interest code on O*NET. Verified that
+  // onetonline.org supports up to three chained interest areas in the path
+  // (e.g. /explore/interests/Social/Enterprising/); fall back to the interests
+  // browse page when there is no code yet.
+  const onetUrl = top3.length > 0
+    ? `https://www.onetonline.org/explore/interests/${top3.map(x => x.type).join('/')}/`
+    : 'https://www.onetonline.org/explore/interests/';
 
   // For the score breakdown bar chart
   const maxScore = ranked[0]?.score || 1;
-  const totalLikes = profile.likedCount;
-  const maybeCount = maybeCards.length;
   const likedSeen = new Set<string>();
   const likedUnique: Occupation[] = likedCards.filter(o => {
     if (likedSeen.has(o.id)) return false;
@@ -135,23 +153,21 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
     ...likedUnique.map(occ => ({ occ, response: 'liked' as const })),
     ...maybeUnique.map(occ => ({ occ, response: 'maybe' as const })),
   ];
-  const likedByType = RIASEC_TYPES.reduce((acc, type) => {
-    acc[type] = likedUnique.filter(o => o.category === type).length;
-    return acc;
-  }, {} as Record<RiasecType, number>);
-  const maybeByType = RIASEC_TYPES.reduce((acc, type) => {
-    acc[type] = maybeUnique.filter(o => o.category === type).length;
-    return acc;
-  }, {} as Record<RiasecType, number>);
-  const strongestEvidence = ranked
-    .slice(0, 3)
-    .map(item => `${t('riasec.label.' + item.type)} (${likedByType[item.type]} ${t('results.likesShort')}, ${maybeByType[item.type]} ${t('results.maybesShort')})`)
+  // INK-A: explain each top dimension by the occupations that most contribute to
+  // it, never by like/curious counts. Contributors are the occupations the user
+  // responded to (liked first, then curious), ranked by their interest value in
+  // that dimension — so a type can be explained even with zero direct likes
+  // (e.g. Social surfacing from liked occupations that carry a Social profile).
+  const contributorsFor = (type: RiasecType, n = 2): Occupation[] =>
+    topContributors(type, likedUnique, maybeUnique, n);
+  const contributorTitles = (type: RiasecType, n = 2): string =>
+    contributorsFor(type, n).map(o => localizeOccupation(o, lang).title).join(', ');
+  const strongestEvidence = top3
+    .map(item => `${t('riasec.label.' + item.type)}: ${contributorTitles(item.type) || t('results.contributorsGeneric')}`)
     .join(' | ');
-  const topSignals = ranked.slice(0, 3).map(item => ({
+  const topSignals = top3.map(item => ({
     ...item,
-    liked: likedByType[item.type],
-    maybe: maybeByType[item.type],
-    weighted: item.score,
+    contributors: contributorsFor(item.type),
   }));
   const displayAnsweredCount = totalCards > 0 ? Math.min(answeredCount, totalCards) : answeredCount;
   const answeredRatio = totalCards > 0 ? displayAnsweredCount / totalCards : 0;
@@ -160,7 +176,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   const confidenceLevel = displayAnsweredCount < Math.min(12, totalCards || 12) || answeredRatio < 0.45
     ? 'low'
     : (hasTopTie || hasBoundaryTie || topGapRatio < 0.08 ? 'medium' : 'high');
-  const confidenceColor = confidenceLevel === 'high' ? BRAND_COLORS.green : confidenceLevel === 'medium' ? BRAND_COLORS.orange : BRAND_COLORS.red;
+  const confidenceColor = confidenceLevel === 'high' ? BRAND_COLORS.green : confidenceLevel === 'medium' ? BRAND_COLORS.orange : BRAND_COLORS.plum;
   const filteredShortlist = useMemo(() => shortlist.filter(({ occ }) => {
     const lo = localizeOccupation(occ, lang);
     const query = careerQuery.trim().toLowerCase();
@@ -173,7 +189,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   useEffect(() => { try { localStorage.setItem('cc_favoriteCareers', JSON.stringify(favorites)); } catch { /* ignore */ } }, [favorites]);
   useEffect(() => { try { localStorage.setItem('cc_careerNotes', JSON.stringify(notes)); } catch { /* ignore */ } }, [notes]);
   const spokenResults = hollandCode
-    ? t('report.spoken', { code: hollandCode.split('').join(', '), n: totalLikes, total: totalCards, types: top3.map(x => t('riasec.label.' + x.type)).join(', ') })
+    ? t('results.spoken', { code: hollandCode.split('').join(', '), types: top3.map(x => t('riasec.label.' + x.type)).join(', ') })
     : t('results.noSignificant');
 
   // Radar chart data
@@ -234,10 +250,13 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
     const bg = (rgb: [number, number, number]) => { P.setFillColor(...rgb); P.rect(0, 0, W, H, 'F'); };
     const ensure = (space: number) => { if (y + space > H - 14) { pdf.addPage(); bg(C.paper); y = 20; } };
 
-    // liked-career counts per type
-    const likedByType = {} as Record<RiasecType, number>;
-    for (const rt of RIASEC_TYPES) likedByType[rt] = 0;
-    likedUnique.forEach(o => { if (likedByType[o.category] !== undefined) likedByType[o.category]++; });
+    // Truncate to a pixel width with an ellipsis (font/size must be set first).
+    const fitText = (text: string, maxW: number): string => {
+      if (P.getTextWidth(text) <= maxW) return text;
+      let s = text;
+      while (s.length > 1 && P.getTextWidth(s + '…') > maxW) s = s.slice(0, -1);
+      return s.replace(/[\s,]+$/, '') + '…';
+    };
 
     // ============== PAGE 1 — COVER ==============
     bg(C.cover);
@@ -318,8 +337,12 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
         P.text(rt.type.charAt(0), cx0 + cardW / 2, cardY + capH / 2 + 4, { align: 'center' });
         P.setTextColor(...C.deep); P.setFont('helvetica', 'bold'); P.setFontSize(11);
         P.text(typeLabel(rt.type), cx0 + cardW / 2, cardY + capH + 7, { align: 'center' });
-        P.setTextColor(...C.muted); P.setFont('helvetica', 'normal'); P.setFontSize(8.5);
-        P.text(t('report.youLiked', { n: likedByType[rt.type] }), cx0 + cardW / 2, cardY + capH + 12.5, { align: 'center' });
+        // INK-A: name the occupation that most contributes to this type, not a like count.
+        const ev = contributorsFor(rt.type, 1)[0];
+        if (ev) {
+          P.setTextColor(...C.muted); P.setFont('helvetica', 'italic'); P.setFontSize(8);
+          P.text(fitText(localizeOccupation(ev, lang).title, cardW - 6), cx0 + cardW / 2, cardY + capH + 12.5, { align: 'center' });
+        }
         P.link(cx0, cardY, cardW, cardH, { url: `https://www.onetonline.org/explore/interests/${rt.type}/` });
       });
       y = cardY + cardH + 4;
@@ -364,7 +387,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
       P.text(capLines, W / 2, cy2, { align: 'center' });
       cy2 += capLines.length * 3.6 + 1.5;
       P.setTextColor(...C.deep); P.setFont('helvetica', 'bold'); P.setFontSize(8.5);
-      P.text(t('report.likedTotal', { n: totalLikes, total: totalCards }), W / 2, cy2, { align: 'center' });
+      P.text(t('report.exploredTotal', { n: displayAnsweredCount, total: totalCards }), W / 2, cy2, { align: 'center' });
       y += panelH + 9;
 
       // what these mean
@@ -483,17 +506,18 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
   return (
     <div className="flex flex-col h-full bg-[#f6f9f6] relative">
 
-      {/* --- HEADER --- */}
-      <div className="pt-12 pb-4 px-6 text-center border-b border-gray-100 bg-[#f6f9f6] shrink-0 z-10">
-        <div className="flex items-center justify-center gap-2 mb-2">
-          <CompassLogo size={28} />
-          <h1 className="text-lg font-bold text-gray-900">Inklings</h1>
+      {/* --- HEADER (compact, INK-013) --- */}
+      <div className="pt-6 pb-3 px-6 text-center border-b border-gray-100 bg-[#f6f9f6] shrink-0 z-10">
+        <div className="flex items-center justify-center gap-2">
+          <CompassLogo size={24} />
+          <h1 className="text-base font-bold text-gray-900">Inklings</h1>
         </div>
-        <h2 className="text-base font-semibold text-gray-500">{t('results.title')}</h2>
-        {userName && <p className="text-sm text-gray-500 mt-1">{t('results.for', { name: userName })}</p>}
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mt-1">{t('results.title')}</h2>
+        {userName && <p className="text-xs text-gray-500">{t('results.for', { name: userName })}</p>}
+        {onOpenInk && <InkTrigger onClick={onOpenInk} className="absolute top-3 left-4 bg-gray-100 hover:bg-gray-200 transition-colors" />}
         {speechSupported && (
           <button onClick={() => speak(spokenResults, lang)} aria-label={t('results.readResults')}
-            className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
+            className="absolute top-3 right-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors">
             <Volume2 className="w-5 h-5 text-gray-600" />
           </button>
         )}
@@ -504,24 +528,38 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
 
         <div className="text-center bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
           <h3 className="text-gray-500 font-bold tracking-widest text-xs uppercase mb-3">{t('results.interestCode')}</h3>
-          <div className="text-6xl font-black tracking-wider mb-3" style={{ color: BRAND_COLORS.blue }}>{hollandCode || '---'}</div>
-          <p className="text-sm text-gray-500">{t('results.likedMaybeOf', { liked: totalLikes, maybe: maybeCount, total: totalCards })}</p>
-          <div className="mt-4 mx-auto max-w-xs rounded-xl border border-gray-100 bg-gray-50 p-3">
-            <div className="flex items-center justify-between gap-3">
-              <span className="text-xs font-black uppercase tracking-wide text-gray-500">{t('results.confidence')}</span>
-              <span className="text-sm font-black" style={{ color: confidenceColor }}>{t('results.confidence.' + confidenceLevel)}</span>
+          {hollandCode ? (
+            <>
+              <div className="text-6xl font-black tracking-wider mb-3" style={{ color: BRAND_COLORS.blue }}>{hollandCode}</div>
+              <div className="mt-4 mx-auto max-w-xs rounded-xl border border-gray-100 bg-gray-50 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-xs font-black uppercase tracking-wide text-gray-500">{t('results.confidence')}</span>
+                  <span className="text-sm font-black" style={{ color: confidenceColor }}>{t('results.confidence.' + confidenceLevel)}</span>
+                </div>
+                <p className="mt-1 text-xs text-gray-500 leading-relaxed">
+                  {t('results.confidenceBody.' + confidenceLevel, { answered: displayAnsweredCount, total: totalCards })}
+                </p>
+              </div>
+              {hasTopTie && <p className="text-xs text-gray-500 mt-2">{t('results.topTie')}</p>}
+              {hasBoundaryTie && !hasTopTie && (
+                <p className="text-xs text-gray-500 mt-2">
+                  {t('results.boundaryTieTypes', { types: tiedTypes.map(type => t('riasec.label.' + type)).join(', ') })}
+                </p>
+              )}
+              <p className="text-xs text-gray-400 mt-4 leading-relaxed">{t('results.validityNote')}</p>
+            </>
+          ) : (
+            <div className="py-2">
+              <p className="text-lg font-black text-gray-800">{t('results.emptyCodeTitle')}</p>
+              <p className="mt-2 mx-auto max-w-xs text-sm text-gray-500 leading-relaxed">{t('results.emptyCodeBody')}</p>
+              <button onClick={onRestart}
+                className="mt-4 inline-flex items-center justify-center gap-2 rounded-xl border-2 px-5 py-3 text-sm font-bold transition-transform active:scale-95"
+                style={{ borderColor: BRAND_COLORS.blue, color: BRAND_COLORS.blue }}>
+                <RefreshCcw className="w-4 h-4" />
+                {t('results.emptyCodeCta')}
+              </button>
             </div>
-            <p className="mt-1 text-xs text-gray-500 leading-relaxed">
-              {t('results.confidenceBody.' + confidenceLevel, { answered: displayAnsweredCount, total: totalCards })}
-            </p>
-          </div>
-          {hasTopTie && <p className="text-xs text-gray-500 mt-2">{t('results.topTie')}</p>}
-          {hasBoundaryTie && !hasTopTie && (
-            <p className="text-xs text-gray-500 mt-2">
-              {t('results.boundaryTieTypes', { types: tiedTypes.map(type => t('riasec.label.' + type)).join(', ') })}
-            </p>
           )}
-          <p className="text-xs text-gray-400 mt-4 leading-relaxed">{t('results.validityNote')}</p>
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
@@ -533,46 +571,87 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
+          <h3 className="text-sm font-bold text-gray-800 mb-5 uppercase tracking-wide">{t('results.fullBreakdown')}</h3>
+          {top3.length > 0 ? (
+            <div className="space-y-3" role="list">
+              {ranked.map((item) => {
+                const visualPercent = maxScore > 0 ? (item.score / maxScore) * 100 : 0;
+                return (
+                  <div key={item.type} className="flex items-center gap-3" role="listitem"
+                    aria-label={`${t('riasec.label.' + item.type)} ${item.normalized.toFixed(1)}%, ${Math.round(item.score * 10) / 10} ${t('results.rawScore')}`}>
+                    <div className="w-24 text-xs font-bold text-gray-500 uppercase text-right" aria-hidden="true">{t('riasec.label.' + item.type)}</div>
+                    <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden" aria-hidden="true">
+                      <motion.div className="h-full rounded-full" style={{ backgroundColor: RIASEC_COLORS[item.type] }}
+                        initial={{ width: 0 }} animate={{ width: `${visualPercent}%` }} transition={{ duration: 0.6, delay: 0.1 }} />
+                    </div>
+                    <div className="w-24 text-right leading-tight shrink-0" aria-hidden="true">
+                      <div className="text-xs font-bold text-gray-900">{item.normalized.toFixed(1)}%</div>
+                      <div className="text-[10px] font-medium text-gray-500 whitespace-nowrap">{Math.round(item.score * 10) / 10} {t('results.rawScore')}</div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <p className="text-sm text-gray-500">{t('results.noSignificant')}</p>
+          )}
+        </div>
+
+        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2">{t('results.whyTitle')}</h3>
-          <p className="text-sm text-gray-600 leading-relaxed mb-4">
-            {t('results.whyBody', { evidence: strongestEvidence || t('results.noEvidence') })}
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-            {topSignals.map(item => (
-              <div key={item.type} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <span className="text-xs font-bold uppercase tracking-wide" style={{ color: RIASEC_COLORS[item.type] }}>
-                    {t('riasec.label.' + item.type)}
-                  </span>
-                  <span className="text-xs font-bold text-gray-500">{Math.round(item.normalized * 10) / 10}%</span>
-                </div>
-                <p className="text-[11px] text-gray-500">
-                  {t('results.signalStats', { liked: item.liked, maybe: item.maybe, score: Math.round(item.weighted * 10) / 10 })}
-                </p>
+          {top3.length > 0 ? (
+            <>
+              <p className="text-sm text-gray-600 leading-relaxed mb-4">{t('results.whyBody')}</p>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {topSignals.map(item => (
+                  <div key={item.type} className="rounded-xl border border-gray-100 bg-gray-50 p-3">
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <span className="text-xs font-bold uppercase tracking-wide" style={{ color: RIASEC_COLORS[item.type] }}>
+                        {t('riasec.label.' + item.type)}
+                      </span>
+                      <span className="text-xs font-bold text-gray-500">{item.normalized.toFixed(1)}%</span>
+                    </div>
+                    <p className="text-[11px] text-gray-500">
+                      {item.contributors.length
+                        ? t('results.contributors', { occupations: item.contributors.map(o => localizeOccupation(o, lang).title).join(', ') })
+                        : t('results.contributorsGeneric')}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
+            </>
+          ) : (
+            <p className="text-sm text-gray-500">{t('results.noSignificant')}</p>
+          )}
         </div>
 
         <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
           <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">{t('results.topSignals')}</h3>
-          <div className="space-y-2">
-            {topSignals.map(item => (
-              <div key={item.type} className="flex items-center gap-3 rounded-xl bg-gray-50 border border-gray-100 p-3">
-                <span className="flex h-9 w-9 items-center justify-center rounded-full text-white text-sm font-black shrink-0" style={{ backgroundColor: RIASEC_COLORS[item.type] }}>
-                  {item.letter}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-gray-800">{t('riasec.label.' + item.type)}</p>
-                  <p className="text-xs text-gray-500">{item.liked} {t('results.likesShort')} / {item.maybe} {t('results.maybesShort')}</p>
+          {top3.length > 0 ? (
+            <div className="space-y-2">
+              {topSignals.map(item => (
+                <div key={item.type} className="flex items-center gap-3 rounded-xl bg-gray-50 border border-gray-100 p-3">
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full text-sm font-black shrink-0" style={{ backgroundColor: RIASEC_COLORS[item.type], color: contrastText(RIASEC_COLORS[item.type]) }}>
+                    {item.letter}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-gray-800">{t('riasec.label.' + item.type)}</p>
+                    <p className="text-xs text-gray-500">
+                      {item.contributors.length
+                        ? t('results.signalFrom', { occupations: item.contributors.map(o => localizeOccupation(o, lang).title).join(', ') })
+                        : t('results.contributorsGeneric')}
+                    </p>
+                  </div>
+                  <div className="text-right shrink-0">
+                    <p className="text-sm font-black text-gray-900">{item.normalized.toFixed(1)}%</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">{t('results.ofProfile')}</p>
+                  </div>
                 </div>
-                <div className="text-right shrink-0">
-                  <p className="text-sm font-black text-gray-900">{Math.round(item.weighted * 10) / 10}</p>
-                  <p className="text-[10px] font-bold uppercase tracking-wide text-gray-500">{t('results.rawScore')}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-6 bg-gray-50 rounded-xl text-center text-gray-500 text-sm">{t('results.noSignificant')}</div>
+          )}
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -630,6 +709,24 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           <ExternalLink className="w-5 h-5 ml-2" />
         </a>
 
+        {/* CareerVerse handoff — only when a verified slug exists for the top occupation. */}
+        {careerVerse && (
+          <a href={careerVerse.url} target="_blank" rel="noopener noreferrer"
+            className="flex items-center justify-between gap-3 w-full py-4 px-4 rounded-xl font-bold border-2 bg-white transition-transform active:scale-95 hover:bg-gray-50"
+            style={{ borderColor: BRAND_COLORS.orange, color: BRAND_COLORS.blue }}>
+            <span className="min-w-0 text-left">
+              <span className="block">{t('ink.careerverseCta', { occupation: careerVerse.title })}</span>
+              {careerVerse.officialTitle && (
+                <span className="block text-xs font-semibold text-gray-600 mt-0.5">
+                  {t('ink.careerverseOfficial', { title: careerVerse.officialTitle })}
+                </span>
+              )}
+              <span className="block text-xs font-medium text-gray-500 mt-0.5">{t('ink.careerverseBody')}</span>
+            </span>
+            <ExternalLink className="w-5 h-5 shrink-0" />
+          </a>
+        )}
+
         <div>
           <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide mb-3">{t('results.topInterests')}</h3>
           <div className="space-y-3">
@@ -641,32 +738,35 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <div className="flex items-start gap-3 mb-3">
+        <Collapsible defaultOpen={false} header={
+          <div className="flex items-start gap-3">
             <RefreshCcw className="w-5 h-5 shrink-0 mt-0.5" style={{ color: BRAND_COLORS.blue }} />
             <div>
               <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">{t('results.retakeHeading')}</h3>
               <p className="text-xs text-gray-500 mt-1">{t('results.retakeSub')}</p>
             </div>
           </div>
+        }>
           <div className="flex flex-wrap gap-2 pb-1">
             {RIASEC_TYPES.map(type => (
               <button
                 key={type}
                 onClick={() => onRetakeType(type)}
-                className="min-h-11 px-3 py-2 rounded-full text-xs font-bold text-white"
-                style={{ backgroundColor: RIASEC_COLORS[type] }}
+                className="min-h-11 min-w-[132px] px-3 py-2 rounded-full text-xs font-bold text-center"
+                style={{ backgroundColor: RIASEC_COLORS[type], color: contrastText(RIASEC_COLORS[type]) }}
               >
                 {t('results.retakeType', { type: t('riasec.label.' + type) })}
               </button>
             ))}
           </div>
-        </div>
+        </Collapsible>
 
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-800 mb-3 uppercase tracking-wide">{t('results.riasecProfile')}</h3>
+        <Collapsible defaultOpen={false} header={
+          <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">{t('results.riasecProfile')}</h3>
+        }>
+          <p className="text-xs text-gray-500 mb-3 leading-relaxed">{t('results.radarHowTo')}</p>
           <div className="w-full" style={{ height: 260 }} role="img"
-            aria-label={`${t('results.riasecProfile')}: ${ranked.map(r => `${t('riasec.label.' + r.type)} ${r.normalized}%`).join(', ')}`}>
+            aria-label={`${t('results.riasecProfile')}: ${ranked.map(r => `${t('riasec.label.' + r.type)} ${r.normalized.toFixed(1)}%`).join(', ')}`}>
             <ResponsiveContainer width="100%" height="100%">
               <RadarChart data={radarData} cx="50%" cy="50%" outerRadius="72%">
                 <PolarGrid stroke="#e5e7eb" />
@@ -676,40 +776,42 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
               </RadarChart>
             </ResponsiveContainer>
           </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-800 mb-5 uppercase tracking-wide">{t('results.fullBreakdown')}</h3>
-          <div className="space-y-3" role="list">
-            {ranked.map((item) => {
-              const visualPercent = maxScore > 0 ? (item.score / maxScore) * 100 : 0;
-              return (
-                <div key={item.type} className="flex items-center gap-3" role="listitem"
-                  aria-label={`${t('riasec.label.' + item.type)} ${item.normalized}%, ${Math.round(item.score * 10) / 10} ${t('results.rawScore')}`}>
-                  <div className="w-24 text-xs font-bold text-gray-500 uppercase text-right" aria-hidden="true">{t('riasec.label.' + item.type)}</div>
-                  <div className="flex-1 h-3 bg-gray-100 rounded-full overflow-hidden" aria-hidden="true">
-                    <motion.div className="h-full rounded-full" style={{ backgroundColor: RIASEC_COLORS[item.type] }}
-                      initial={{ width: 0 }} animate={{ width: `${visualPercent}%` }} transition={{ duration: 0.6, delay: 0.1 }} />
-                  </div>
-                  <div className="w-16 text-right leading-tight" aria-hidden="true">
-                    <div className="text-xs font-bold text-gray-900">{item.normalized}%</div>
-                    <div className="text-[10px] font-medium text-gray-500">{Math.round(item.score * 10) / 10} {t('results.rawScore')}</div>
-                  </div>
-                </div>
-              );
-            })}
+          {/* INK-012: tap a node/type for a one-line description + O*NET link. */}
+          <div className="mt-3 flex flex-wrap gap-2">
+            {RIASEC_TYPES.map(type => (
+              <button
+                key={type}
+                onClick={() => setRadarInfo(prev => (prev === type ? null : type))}
+                aria-expanded={radarInfo === type}
+                className="flex min-h-11 items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-bold text-gray-700"
+                style={{ borderColor: RIASEC_COLORS[type] }}
+              >
+                <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: RIASEC_COLORS[type] }} />
+                {t('riasec.label.' + type)}
+              </button>
+            ))}
           </div>
-        </div>
-
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <div className="flex items-start justify-between gap-3 mb-2">
-            <div>
-              <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide">{t('results.shortlistHeading')} ({shortlist.length})</h3>
-              <p className="text-xs text-gray-500 mt-1">{t('results.shortlistSub')}</p>
+          {radarInfo && (
+            <div className="mt-3 rounded-xl border border-gray-100 bg-gray-50 p-4 text-left" role="status">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="h-3 w-3 rounded-full" style={{ backgroundColor: RIASEC_COLORS[radarInfo] }} />
+                <span className="text-sm font-bold text-gray-800">{t('riasec.label.' + radarInfo)}</span>
+              </div>
+              <p className="text-sm text-gray-600 leading-relaxed">{t('riasec.desc.' + radarInfo)}</p>
+              <a href={`https://www.onetonline.org/explore/interests/${radarInfo}/`} target="_blank" rel="noopener noreferrer"
+                className="mt-2 inline-flex items-center gap-1 text-sm font-bold" style={{ color: BRAND_COLORS.blue }}>
+                {t('results.viewOnet')} <ExternalLink className="w-4 h-4" />
+              </a>
             </div>
-            <Star className="w-5 h-5 text-yellow-500 shrink-0" />
-          </div>
+          )}
+        </Collapsible>
 
+        <Collapsible defaultOpen={false} header={
+          <>
+            <h3 className="font-bold text-gray-800 text-sm uppercase tracking-wide">{t('results.shortlistHeading')} ({shortlist.length})</h3>
+            <p className="text-xs text-gray-500 mt-1">{t('results.shortlistSub')}</p>
+          </>
+        }>
           {shortlist.length > 0 ? (
             <>
               <label className="relative block mt-4">
@@ -833,21 +935,22 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           ) : (
             <p className="text-sm text-gray-500 mt-4">{t('results.likedEmpty')}</p>
           )}
-        </div>
+        </Collapsible>
 
-        <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
-          <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">{t('results.nextSteps')}</h3>
+        <Collapsible defaultOpen={false} header={
+          <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">{t('results.nextSteps')}</h3>
+        }>
           <div className="space-y-3">
             {[t('results.stepClasses'), t('results.stepExplore'), t('results.stepConversation'), t('results.stepTry')].map((step, i) => (
               <div key={step} className="flex gap-3 text-sm text-gray-600 leading-relaxed">
-                <span className="flex items-center justify-center w-6 h-6 rounded-full text-white text-xs font-bold shrink-0" style={{ backgroundColor: BRAND_COLORS.orange }}>
+                <span className="flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold shrink-0" style={{ backgroundColor: BRAND_COLORS.orange, color: contrastText(BRAND_COLORS.orange) }}>
                   {i + 1}
                 </span>
                 <span>{step}</span>
               </div>
             ))}
           </div>
-        </div>
+        </Collapsible>
 
         {/* FOOTER ACTIONS */}
         <div className="space-y-4 pt-2">
@@ -877,7 +980,8 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
           </button>
 
           <button onClick={onRestart}
-            className="flex items-center justify-center w-full py-3 text-gray-500 hover:text-gray-600 font-medium text-sm transition-colors">
+            className="flex items-center justify-center w-full py-3 rounded-xl border-2 border-gray-200 text-gray-600 font-semibold text-sm hover:bg-gray-50 transition-colors gap-2">
+            <RefreshCcw className="w-4 h-4" />
             {t('results.startOver')}
           </button>
 

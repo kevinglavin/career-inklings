@@ -2,7 +2,7 @@ import React, { useState, useEffect, useImperativeHandle, forwardRef } from 'rea
 import { motion, PanInfo, useMotionValue, useTransform } from 'framer-motion';
 import { Undo2, Info, ListChecks, Activity, ExternalLink, Volume2 } from 'lucide-react';
 import { Occupation, ResponseChoice } from '../types';
-import { RIASEC_BG_COLORS, BRAND_COLORS, resolvePackImageUrl, defaultImageUrl } from '../constants';
+import { RIASEC_COLORS, BRAND_COLORS, contrastText, resolvePackImageUrl, defaultImageUrl } from '../constants';
 import { useT } from '../i18n';
 import { localizeOccupation } from '../occupations.es';
 import { speak, speechSupported } from '../speech';
@@ -123,7 +123,7 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
     }
   };
 
-  const tagBg = RIASEC_BG_COLORS[data.category];
+  const tagColor = RIASEC_COLORS[data.category];
 
   return (
     <motion.div
@@ -211,7 +211,8 @@ export const SwipeCard = forwardRef<SwipeCardHandle, SwipeCardProps>(({ data, on
           <div className="flex justify-between items-start p-4 border-b border-gray-100 bg-white sticky top-0 z-10">
             <div className="pr-2">
               <h3 className="text-3xl font-bold text-gray-800 leading-tight">{card.title}</h3>
-              <span className={`inline-block mt-1.5 px-3 py-0.5 rounded-full text-xs font-bold uppercase text-white ${tagBg}`}>
+              <span className="inline-block mt-1.5 px-3 py-0.5 rounded-full text-xs font-bold uppercase"
+                style={{ backgroundColor: tagColor, color: contrastText(tagColor) }}>
                 {t('riasec.label.' + data.category)}
               </span>
             </div>
