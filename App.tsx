@@ -4,7 +4,7 @@ import { RotateCcw, Volume2, VolumeX, Trophy, ThumbsUp, ThumbsDown, Home, HelpCi
 import { OCCUPATIONS, BRAND_COLORS, DEFAULT_PACK_ID, resolvePackImageUrl } from './constants';
 import { computeProfile, topContributors } from './careerProfile';
 import { localizeOccupation } from './occupations.es';
-import { careerVerseUrl } from './careerverse';
+import { careerVerseHandoff } from './careerverse';
 import { Ink, InkTrigger, InkContext } from './components/Ink';
 import { AppStage, DeckPreferences, Occupation, ResponseChoice, Scores, SwipeResponse, RiasecType } from './types';
 import { SwipeCard, SwipeCardHandle } from './components/SwipeCard';
@@ -552,8 +552,12 @@ export default function App() {
     if (!profile.codeTypes.length) return null;
     const top = topContributors(profile.codeTypes[0].type, likedCards, maybeCards, 1)[0];
     if (!top) return null;
-    const url = careerVerseUrl(top.id);
-    return url ? { title: localizeOccupation(top, lang).title, url } : null;
+    // Compare the official title against the ENGLISH card title (top.title), so the
+    // "official title" note fires on real differences, not on ES<->EN translation.
+    const handoff = careerVerseHandoff(top.id, top.title);
+    return handoff
+      ? { title: localizeOccupation(top, lang).title, url: handoff.url, officialTitle: handoff.officialTitle }
+      : null;
   }, [stage, likedCards, maybeCards, lang]);
 
   // --- EXIT ANIMATION VARIANTS (direction-aware) ---

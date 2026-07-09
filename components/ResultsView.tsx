@@ -28,7 +28,7 @@ interface ResultsViewProps {
   maybeCards: Occupation[];
   onClearData: () => void | Promise<void>;
   onOpenInk?: () => void;
-  careerVerse?: { title: string; url: string } | null;
+  careerVerse?: { title: string; url: string; officialTitle?: string | null } | null;
 }
 
 // Flippable Result Card
@@ -709,8 +709,13 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
             className="flex items-center justify-between gap-3 w-full py-4 px-4 rounded-xl font-bold border-2 bg-white transition-transform active:scale-95 hover:bg-gray-50"
             style={{ borderColor: BRAND_COLORS.orange, color: BRAND_COLORS.blue }}>
             <span className="min-w-0 text-left">
-              <span className="block truncate">{t('ink.careerverseCta', { occupation: careerVerse.title })}</span>
-              <span className="block truncate text-xs font-medium text-gray-500">{t('ink.careerverseBody')}</span>
+              <span className="block">{t('ink.careerverseCta', { occupation: careerVerse.title })}</span>
+              {careerVerse.officialTitle && (
+                <span className="block text-xs font-semibold text-gray-600 mt-0.5">
+                  {t('ink.careerverseOfficial', { title: careerVerse.officialTitle })}
+                </span>
+              )}
+              <span className="block text-xs font-medium text-gray-500 mt-0.5">{t('ink.careerverseBody')}</span>
             </span>
             <ExternalLink className="w-5 h-5 shrink-0" />
           </a>

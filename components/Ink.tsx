@@ -26,7 +26,7 @@ interface InkProps {
   onClose: () => void;
   context: InkContext;
   // CareerVerse handoff, only when a verified slug exists for the top occupation.
-  careerVerse?: { title: string; url: string } | null;
+  careerVerse?: { title: string; url: string; officialTitle?: string | null } | null;
 }
 
 const MAX_USER_CHARS = 1000;
@@ -197,8 +197,13 @@ export const Ink: React.FC<InkProps> = ({ open, onClose, context, careerVerse })
                 className="mx-4 mb-2 flex items-center justify-between gap-2 rounded-xl border px-3 py-2 text-xs font-bold"
                 style={{ borderColor: BRAND_COLORS.orange, color: BRAND_COLORS.blue }}>
                 <span className="min-w-0">
-                  <span className="block truncate">{t('ink.careerverseCta', { occupation: careerVerse.title })}</span>
-                  <span className="block truncate text-[11px] font-medium text-gray-500">{t('ink.careerverseBody')}</span>
+                  <span className="block">{t('ink.careerverseCta', { occupation: careerVerse.title })}</span>
+                  {careerVerse.officialTitle && (
+                    <span className="block text-[11px] font-semibold text-gray-600 mt-0.5">
+                      {t('ink.careerverseOfficial', { title: careerVerse.officialTitle })}
+                    </span>
+                  )}
+                  <span className="block text-[11px] font-medium text-gray-500 mt-0.5">{t('ink.careerverseBody')}</span>
                 </span>
                 <ExternalLink className="h-4 w-4 shrink-0" />
               </a>
