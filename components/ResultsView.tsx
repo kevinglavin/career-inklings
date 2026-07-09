@@ -137,7 +137,6 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
 
   // For the score breakdown bar chart
   const maxScore = ranked[0]?.score || 1;
-  const totalLikes = profile.likedCount;
   const likedSeen = new Set<string>();
   const likedUnique: Occupation[] = likedCards.filter(o => {
     if (likedSeen.has(o.id)) return false;
@@ -251,10 +250,13 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
     const bg = (rgb: [number, number, number]) => { P.setFillColor(...rgb); P.rect(0, 0, W, H, 'F'); };
     const ensure = (space: number) => { if (y + space > H - 14) { pdf.addPage(); bg(C.paper); y = 20; } };
 
-    // liked-career counts per type
-    const likedByType = {} as Record<RiasecType, number>;
-    for (const rt of RIASEC_TYPES) likedByType[rt] = 0;
-    likedUnique.forEach(o => { if (likedByType[o.category] !== undefined) likedByType[o.category]++; });
+    // Truncate to a pixel width with an ellipsis (font/size must be set first).
+    const fitText = (text: string, maxW: number): string => {
+      if (P.getTextWidth(text) <= maxW) return text;
+      let s = text;
+      while (s.length > 1 && P.getTextWidth(s + '…') > maxW) s = s.slice(0, -1);
+      return s.replace(/[\s,]+$/, '') + '…';
+    };
 
     // ============== PAGE 1 — COVER ==============
     bg(C.cover);
@@ -335,8 +337,12 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
         P.text(rt.type.charAt(0), cx0 + cardW / 2, cardY + capH / 2 + 4, { align: 'center' });
         P.setTextColor(...C.deep); P.setFont('helvetica', 'bold'); P.setFontSize(11);
         P.text(typeLabel(rt.type), cx0 + cardW / 2, cardY + capH + 7, { align: 'center' });
-        P.setTextColor(...C.muted); P.setFont('helvetica', 'normal'); P.setFontSize(8.5);
-        P.text(t('report.youLiked', { n: likedByType[rt.type] }), cx0 + cardW / 2, cardY + capH + 12.5, { align: 'center' });
+        // INK-A: name the occupation that most contributes to this type, not a like count.
+        const ev = contributorsFor(rt.type, 1)[0];
+        if (ev) {
+          P.setTextColor(...C.muted); P.setFont('helvetica', 'italic'); P.setFontSize(8);
+          P.text(fitText(localizeOccupation(ev, lang).title, cardW - 6), cx0 + cardW / 2, cardY + capH + 12.5, { align: 'center' });
+        }
         P.link(cx0, cardY, cardW, cardH, { url: `https://www.onetonline.org/explore/interests/${rt.type}/` });
       });
       y = cardY + cardH + 4;
@@ -381,7 +387,7 @@ export const ResultsView: React.FC<ResultsViewProps> = ({ scores, onRestart, onE
       P.text(capLines, W / 2, cy2, { align: 'center' });
       cy2 += capLines.length * 3.6 + 1.5;
       P.setTextColor(...C.deep); P.setFont('helvetica', 'bold'); P.setFontSize(8.5);
-      P.text(t('report.likedTotal', { n: totalLikes, total: totalCards }), W / 2, cy2, { align: 'center' });
+      P.text(t('report.exploredTotal', { n: displayAnsweredCount, total: totalCards }), W / 2, cy2, { align: 'center' });
       y += panelH + 9;
 
       // what these mean

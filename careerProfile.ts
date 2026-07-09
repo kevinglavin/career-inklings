@@ -167,7 +167,7 @@ export function generateSummary(profile: Profile): { heading: string; body: stri
   if (!top.length) {
     return {
       heading: HEADING,
-      body: 'You did not mark any careers as interesting. Swipe through again and tap the ones that catch your eye, including the unfamiliar ones.',
+      body: 'You did not mark any occupations as interesting. Swipe through again and tap the ones that catch your eye, including the unfamiliar ones.',
     };
   }
 

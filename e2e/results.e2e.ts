@@ -37,11 +37,49 @@ test.describe('results coverage', () => {
   });
 
   // Work order item 24 (coverage gap): Copy Counselor Summary.
-  test('Copy Counselor Summary confirms in the UI', async ({ page, context }) => {
+  // Item 5: the copied text is INK-A aligned — interest code + occupation evidence,
+  // with no like/curious counts and no "career card" terminology.
+  test('Copy Counselor Summary confirms in the UI and is INK-A aligned', async ({ page, context }) => {
     await context.grantPermissions(['clipboard-read', 'clipboard-write']);
     await startQuick(page);
     await swipeAll(page, 'ArrowRight');
     await page.getByRole('button', { name: /Copy Counselor Summary/ }).click();
     await expect(page.getByRole('button', { name: 'Summary copied' })).toBeVisible();
+
+    const clip = await page.evaluate(() => navigator.clipboard.readText());
+    expect(clip).toContain('Your Interest Code');
+    expect(clip).toContain('Evidence');
+    // No like/curious counts, no "career card" terminology.
+    expect(clip).not.toMatch(/you liked/i);
+    expect(clip).not.toMatch(/\d+\s+(likes|curious)/i);
+    expect(clip).not.toMatch(/career cards?/i);
+  });
+});
+
+test.describe('mode select (item 2 + 3)', () => {
+  // Item 3: the Card Deck control is a single compact chip under the subtitle that
+  // expands only on tap and collapses on outside click.
+  test('Card Deck chip expands on tap and collapses on outside click', async ({ page }) => {
+    await page.goto('/');
+    await page.getByRole('button', { name: /Start Exploring/ }).click();
+
+    const chip = page.getByRole('button', { name: /Card Deck/ });
+    await expect(chip).toBeVisible();
+    await expect(chip).toHaveAttribute('aria-expanded', 'false');
+
+    // The chip sits above (before) the Quick Mode button in the layout.
+    const chipBox = await chip.boundingBox();
+    const quickBox = await page.getByRole('button', { name: /Quick Mode/ }).boundingBox();
+    expect(chipBox!.y).toBeLessThan(quickBox!.y);
+
+    // Options are hidden until tapped.
+    await expect(page.getByRole('button', { name: 'Classic' })).toHaveCount(0);
+    await chip.click();
+    await expect(chip).toHaveAttribute('aria-expanded', 'true');
+    await expect(page.getByRole('button', { name: 'Classic' })).toBeVisible();
+
+    // Outside click collapses it.
+    await page.getByRole('heading', { name: /Discover What Draws You In/ }).click();
+    await expect(chip).toHaveAttribute('aria-expanded', 'false');
   });
 });

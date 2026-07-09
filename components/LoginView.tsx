@@ -124,7 +124,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData, show
               {/* Stacked card preview */}
               <div className="absolute w-[70%] max-w-[240px] h-[85%] rounded-2xl shadow-sm border border-gray-200 bg-gray-100 transform rotate-6 translate-x-4 opacity-40"></div>
               <div className="absolute w-[70%] max-w-[240px] h-[85%] rounded-2xl shadow-sm border border-gray-200 bg-gray-50 transform -rotate-3 -translate-x-2 opacity-60"></div>
-              <div data-testid="preview-card" className="relative w-[70%] max-w-[240px] h-[85%] rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col" style={{ backgroundColor: BRAND_COLORS.blue }}>
+              <div data-testid="preview-card" className="relative w-[70%] max-w-[240px] h-[85%] [min-height:fit-content] rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col" style={{ backgroundColor: BRAND_COLORS.blue }}>
                 {/* min-h-0 lets the compass area shrink so the caption below is never clipped (INK-004). */}
                 <div className="flex-1 min-h-0 bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center">
                   <CompassLogo size={64} />

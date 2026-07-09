@@ -28,6 +28,7 @@ async function assertCaptionInsideCard(page: Page) {
 const widths = [
   { label: 'narrow mobile', size: { width: 320, height: 568 } },
   { label: 'standard mobile', size: { width: 390, height: 844 } },
+  { label: 'short landscape', size: { width: 480, height: 400 } },
 ];
 
 for (const lang of ['en', 'es'] as const) {
