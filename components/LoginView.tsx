@@ -124,13 +124,14 @@ export const LoginView: React.FC<LoginViewProps> = ({ onLogin, onClearData, show
               {/* Stacked card preview */}
               <div className="absolute w-[70%] max-w-[240px] h-[85%] rounded-2xl shadow-sm border border-gray-200 bg-gray-100 transform rotate-6 translate-x-4 opacity-40"></div>
               <div className="absolute w-[70%] max-w-[240px] h-[85%] rounded-2xl shadow-sm border border-gray-200 bg-gray-50 transform -rotate-3 -translate-x-2 opacity-60"></div>
-              <div className="relative w-[70%] max-w-[240px] h-[85%] rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col" style={{ backgroundColor: BRAND_COLORS.blue }}>
-                <div className="flex-1 bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center">
+              <div data-testid="preview-card" className="relative w-[70%] max-w-[240px] h-[85%] rounded-2xl shadow-lg border border-gray-200 overflow-hidden flex flex-col" style={{ backgroundColor: BRAND_COLORS.blue }}>
+                {/* min-h-0 lets the compass area shrink so the caption below is never clipped (INK-004). */}
+                <div className="flex-1 min-h-0 bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center">
                   <CompassLogo size={64} />
                 </div>
-                <div className="px-3 pt-2 pb-3 text-center shrink-0">
+                <div data-testid="preview-caption" className="px-3 pt-2 pb-3 text-center shrink-0">
                   <p className="text-white font-bold text-sm leading-tight">{t('login.cardPreview')}</p>
-                  <p className="text-white/90 text-sm leading-tight mt-0.5">{t('login.cardCareers')}</p>
+                  <p className="text-white font-semibold text-sm leading-tight mt-0.5">{t('login.cardCareers')}</p>
                 </div>
               </div>
             </div>
